@@ -1,0 +1,31 @@
+<?php
+/**
+ * Created by: Tanmnt
+ * Email: maingocthanhan96@gmail.com
+ * Date Time: {{DATE}}
+ */
+
+/**
+ * @OA\Schema(
+ *     type="object",
+ *     title="{{MODEL_CLASS}}",
+ *     required={"id", "{{REQUIRED_FIELD_1}}", "{{REQUIRED_FIELD_2}}"},
+ *     description="{{RELATIONSHIP}}",
+ * )
+ */
+class {{MODEL_CLASS}}
+{
+    /**
+     * @OA\Property(property="id", type="BIGINT", description="AUTO_INCREMENT")
+     */
+
+    //{{SWAGGER_PROPERTY_NOT_DELETE_THIS_LINE}}
+
+    /**
+     * @OA\Property(property="created_at", type="TIMESTAMP", default="NULL", description="")
+     */
+
+    /**
+     * @OA\Property(property="updated_at", type="TIMESTAMP", default="NULL", description="")
+     */
+}

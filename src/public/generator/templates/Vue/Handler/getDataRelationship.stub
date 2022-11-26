@@ -1,0 +1,4 @@
+const {
+        data: { data: {{$MODEL_RELATIONSHIP$}} },
+      } = await {{$USE_MODEL_RELATIONSHIP$}}();
+      state.{{$MODEL_RELATIONSHIP$}} = {{$MODEL_RELATIONSHIP$}};

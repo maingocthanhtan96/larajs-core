@@ -1,0 +1,5 @@
+
+                <template #default="{ row }">
+                  {{ $filters.parseTime(row.updated_at, '{y}-{m}-{d}') }}
+                </template>
+              </el-table-column>

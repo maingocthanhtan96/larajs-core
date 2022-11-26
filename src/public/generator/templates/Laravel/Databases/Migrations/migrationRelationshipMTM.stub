@@ -1,0 +1,49 @@
+<?php
+
+/**
+ * Created by: Tanmnt
+ * Email: maingocthanhan96@gmail.com
+ * Date Time: {{DATE_TIME}}
+ */
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+return new class extends Migration {
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('{{TABLE_NAME}}', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->foreignId('{{FOREIGN_KEY_1}}');
+            $table->foreignId('{{FOREIGN_KEY_2}}');
+            $table->timestamps();
+
+            // $table->index('{{FOREIGN_KEY_1}}');
+            // $table->foreign('{{FOREIGN_KEY_1}}')
+            //     ->references('id')
+            //     ->on('{{TABLE_FOREIGN_KEY_1}}')
+            //     ->onDelete('cascade');
+            // $table->index('{{FOREIGN_KEY_2}}');
+            // $table->foreign('{{FOREIGN_KEY_2}}')
+            //     ->references('id')
+            //     ->on('{{TABLE_FOREIGN_KEY_2}}')
+            //     ->onDelete('cascade');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('{{TABLE_NAME}}');
+    }
+};

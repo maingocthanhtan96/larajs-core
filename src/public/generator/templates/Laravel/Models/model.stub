@@ -1,0 +1,24 @@
+<?php
+/**
+ * Created by: Tanmnt
+ * Email: maingocthanhtan96@gmail.com
+ * Date Time: {{DATE}}
+ * File: {{MODEL_CLASS}}.php
+ */
+namespace App\Models;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+//{{USE_CLASS_NOT_DELETE_THIS_LINE}}
+
+class {{MODEL_CLASS}} extends BaseModel
+{
+	use HasFactory;
+	//{{USE_NOT_DELETE_THIS_LINE}}
+
+    protected $table = '{{TABLE_NAME}}';
+    //{{TIMESTAMPS_NOT_DELETE_THIS_LINE}}
+    protected $fillable = [
+    	{{FIELDS}}
+    ];
+
+	//{{RELATIONS_NOT_DELETE_THIS_LINE}}
+}

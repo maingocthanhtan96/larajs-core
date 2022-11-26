@@ -1,0 +1,5 @@
+/**
+     * @OA\Property(property="{{FIELD}}", default="{{DEFAULT_VALUE}}", description="")
+     *
+     * @var {{MODEL_RELATIONSHIP}}
+     */

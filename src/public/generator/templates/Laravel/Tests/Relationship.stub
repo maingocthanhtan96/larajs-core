@@ -1,0 +1,5 @@
+public function test_all()
+    {
+        $response = $this->getJson("/api/{{$API_VERSION$}}/{{RESOURCE}}/all");
+        $response->assertStatus(Response::HTTP_OK);
+    }

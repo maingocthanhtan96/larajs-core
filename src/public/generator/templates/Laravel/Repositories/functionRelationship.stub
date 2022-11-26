@@ -1,0 +1,27 @@
+public function store(Request $request): Model
+    {
+        ${{MODEL}} = parent::store($request->validated());
+        //{{REPOSITORY_RELATIONSHIP_MTM_CREATE_NOT_DELETE_THIS_LINE}}
+        return ${{MODEL}};
+    }
+
+    public function show(int $id, array $relationship = []): Model
+    {
+        ${{MODEL}} = parent::show($id, $relationship);
+        //{{REPOSITORY_RELATIONSHIP_MTM_SHOW_NOT_DELETE_THIS_LINE}}
+        return ${{MODEL}};
+    }
+
+    public function update(int $id, Request $request): Model
+    {
+        ${{MODEL}} = parent::update($id, $request->validated());
+        //{{REPOSITORY_RELATIONSHIP_MTM_UPDATE_NOT_DELETE_THIS_LINE}}
+        return ${{MODEL}};
+    }
+
+    public function destroy(int $id): bool
+    {
+        ${{MODEL}} = parent::show($id);
+        //{{REPOSITORY_RELATIONSHIP_MTM_DELETE_NOT_DELETE_THIS_LINE}}
+        return ${{MODEL}}->delete();
+    }

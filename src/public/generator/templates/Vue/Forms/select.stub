@@ -1,0 +1,3 @@
+<el-select v-model={form.{{$FIELD_NAME$}}} filterable class="tw-w-full">
+  {state.{{$LIST_SELECT$}}.map(item => <el-option key={{{$VALUE_OPTION$}}} label={{{$LABEL_OPTION$}}} value={{{$VALUE_OPTION$}}} />)}
+</el-select>

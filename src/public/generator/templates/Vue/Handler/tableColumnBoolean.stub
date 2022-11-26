@@ -1,0 +1,3 @@
+<el-tag type={row.{{$FIELD_NAME$}} ? 'success' : 'danger'}>
+            {row.{{$FIELD_NAME$}} ? t('common.switch.on') : t('common.switch.off')}
+          </el-tag>

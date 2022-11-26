@@ -1,0 +1,127 @@
+<?php
+/**
+ * Created by: Tanmnt
+ * Email: maingocthanhan96@gmail.com
+ * Date Time: {{DATE}}
+ */
+
+/**
+ * @OA\Get(
+ *     path="/{{RESOURCE}}",
+ *     tags={"{{MODEL_CLASS}}"},
+ *     summary="List {{MODEL_CLASS}}",
+ *     security={{"authApi":{}}},
+ *     @OA\Parameter(
+ *          name="search",
+ *          in="query",
+ *          @OA\Schema (type="string")
+ *     ),
+ *     @OA\Parameter(
+ *          name="limit",
+ *          in="query",
+ *          @OA\Schema (type="integer")
+ *     ),
+ *     @OA\Parameter(
+ *          name="direction",
+ *          in="query",
+ *          description="0: asc, 1: desc",
+ *          @OA\Schema (type="integer", default=1)
+ *     ),
+ *     @OA\Parameter(
+ *          name="page",
+ *          in="query",
+ *          @OA\Schema (type="integer", default=1)
+ *     ),
+ *     @OA\Parameter(
+ *          name="orderBy",
+ *          in="query",
+ *          description="column order by",
+ *          @OA\Schema (type="string", default="updated_at")
+ *     ),
+ *     @OA\Response(response="200", ref="#/components/responses/OK"),
+ *     @OA\Response(response="404", ref="#/components/responses/NotFound"),
+ *     @OA\Response(response="500", ref="#/components/responses/Error"),
+ * )
+ *
+ * @OA\Post(
+ *     path="/{{RESOURCE}}",
+ *     tags={"{{MODEL_CLASS}}"},
+ *     summary="Create {{MODEL_CLASS}}",
+ *     security={{"authApi":{}}},
+ *     @OA\RequestBody(
+ *          required=true,
+ *          @OA\MediaType(
+ *              mediaType="multipart/form-data",
+ *              @OA\Schema (
+ *                  required={{REQUIRED_FIELDS}},
+ *                  x="{{SWAGGER_PROPERTY_JSON_CONTENT_NOT_DELETE_THIS_LINE}}"
+ *              )
+ *          )
+ *     ),
+ *     @OA\Response(response="200", ref="#/components/responses/OK"),
+ *     @OA\Response(response="404", ref="#/components/responses/NotFound"),
+ *     @OA\Response(response="500", ref="#/components/responses/Error"),
+ * )
+ * @OA\Get(
+ *     path="/{{RESOURCE}}/{id}",
+ *     tags={"{{MODEL_CLASS}}"},
+ *     summary="Edit {{MODEL_CLASS}}",
+ *     security={{"authApi":{}}},
+ *     @OA\Parameter(ref="#/components/parameters/id"),
+ *     @OA\Response(response="200", ref="#/components/responses/OK"),
+ *     @OA\Response(response="404", ref="#/components/responses/NotFound"),
+ *     @OA\Response(response="500", ref="#/components/responses/Error"),
+ * )
+ *
+ * @OA\Put(
+ *     path="/{{RESOURCE}}/{id}",
+ *     tags={"{{MODEL_CLASS}}"},
+ *     summary="Update {{MODEL_CLASS}}",
+ *     security={{"authApi":{}}},
+ *     @OA\Parameter(ref="#/components/parameters/id"),
+ *     @OA\RequestBody(
+ *          required=true,
+ *          @OA\MediaType(
+ *              mediaType="multipart/form-data",
+ *              @OA\Schema (
+ *                  required={{REQUIRED_FIELDS}},
+ *                  x="{{SWAGGER_PROPERTY_JSON_CONTENT_NOT_DELETE_THIS_LINE}}"
+ *              )
+ *          )
+ *     ),
+ *     @OA\Response(response="200", ref="#/components/responses/OK"),
+ *     @OA\Response(response="404", ref="#/components/responses/NotFound"),
+ *     @OA\Response(response="500", ref="#/components/responses/Error"),
+ * )
+ *
+ * @OA\Delete(
+ *     path="/{{RESOURCE}}/{id}",
+ *     tags={"{{MODEL_CLASS}}"},
+ *     summary="Delete {{MODEL_CLASS}}",
+ *     security={{"authApi":{}}},
+ *     @OA\Parameter(ref="#/components/parameters/id"),
+ *     @OA\Response(response="200", ref="#/components/responses/OK"),
+ *     @OA\Response(response="404", ref="#/components/responses/NotFound"),
+ *     @OA\Response(response="500", ref="#/components/responses/Error"),
+ * )
+ */
+
+/**
+ * @OA\Schema(
+ *     type="object",
+ *     title="{{MODEL_CLASS}}",
+ *     required={{REQUIRED_FIELDS}},
+ * )
+ */
+class {{MODEL_CLASS}}
+{
+    /**
+     * @OA\Property(property="id", type="BIGINT", description="AUTO_INCREMENT")
+     */
+
+    //{{SWAGGER_PROPERTY_NOT_DELETE_THIS_LINE}}
+
+    //{{SWAGGER_TIMESTAMPS_NOT_DELETE_THIS_LINE}}
+
+    //{{SWAGGER_SOFT_DELETES_NOT_DELETE_THIS_LINE}}
+}

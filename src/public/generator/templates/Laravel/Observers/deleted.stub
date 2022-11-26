@@ -1,0 +1,1 @@
+${{MODAL_CLASS_PARAM}}->{{FUNCTION_NAME}}()->detach();

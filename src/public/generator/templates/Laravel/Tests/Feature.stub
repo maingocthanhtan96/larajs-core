@@ -1,0 +1,93 @@
+<?php
+
+namespace Tests\Feature\Controllers\Api\v1;
+
+use Database\Seeders\{{CONTROLLER_CLASS}}Seeder;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Testing\Fluent\AssertableJson;
+use Symfony\Component\HttpFoundation\Response;
+use Tests\TestCase;
+
+class {{CONTROLLER_CLASS}}Test extends TestCase
+{
+    use WithFaker;
+
+    /**
+     * Run a specific seeder before each test.
+     *
+     * @var string
+     */
+    protected $seeder = {{CONTROLLER_CLASS}}Seeder::class;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $faker = $this->faker;
+        $this->data = [
+            {{FIELDS}}
+            //{{SEEDER_NOT_DELETE_THIS_LINE}}
+        ];
+    }
+
+    public function test_get_table_list()
+    {
+        $query = http_build_query([...$this->query, 'direction' => 'ascending', 'orderBy' => 'id']);
+        $response = $this->getJson("/api/{{$API_VERSION$}}/{{RESOURCE}}?$query");
+        $response->assertStatus(Response::HTTP_OK)->assertJson(
+            fn(AssertableJson $json) => $json
+                ->has('count')
+                ->where('data.0.id', 1)
+                ->etc()
+        );
+    }
+
+    public function test_CRUD_{{CONTROLLER_CLASS}}()
+    {
+        $response = $this->create{{CONTROLLER_CLASS}}();
+        $response = $this->edit{{CONTROLLER_CLASS}}($response);
+        $response = $this->update{{CONTROLLER_CLASS}}($response);
+        $this->delete{{CONTROLLER_CLASS}}($response);
+    }
+
+    //{{TESTS_RELATIONSHIP_NOT_DELETE_THIS_LINE}}
+
+    protected function create{{CONTROLLER_CLASS}}()
+    {
+        $response = $this->postJson('/api/{{$API_VERSION$}}/{{RESOURCE}}', $this->data)->assertStatus(Response::HTTP_OK);
+
+        return $response->json('data');
+    }
+
+    public function edit{{CONTROLLER_CLASS}}($body)
+    {
+        return $this->getJson("/api/{{$API_VERSION$}}/{{RESOURCE}}/{$body['id']}")
+            ->assertStatus(Response::HTTP_OK)
+            ->assertJson(
+                fn(AssertableJson $json) => $json
+                    ->where('data.id', $body['id'])
+                    ->missing('data.password')
+                    ->etc()
+            )
+            ->json('data');
+    }
+
+    public function update{{CONTROLLER_CLASS}}($body)
+    {
+        $response = $this->putJson("/api/{{$API_VERSION$}}/{{RESOURCE}}/{$body['id']}", $this->data)
+            ->assertStatus(Response::HTTP_OK)
+            ->assertJson(
+                fn(AssertableJson $json) => $json
+                    ->where('data.id', $body['id'])
+                    ->etc()
+            );
+
+        return $response->json('data');
+    }
+
+    public function delete{{CONTROLLER_CLASS}}($body)
+    {
+        $this->deleteJson("/api/{{$API_VERSION$}}/{{RESOURCE}}/{$body['id']}")
+            ->assertStatus(Response::HTTP_OK)
+            ->assertJson(fn(AssertableJson $json) => $json->where('message', trans('messages.delete'))->etc());
+    }
+}

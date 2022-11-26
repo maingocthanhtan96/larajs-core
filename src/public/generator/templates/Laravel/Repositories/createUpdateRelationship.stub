@@ -1,0 +1,1 @@
+${{MODEL}}->{{MODEL_RELATIONSHIP}}()->{{ATTACH_ASYNC}}($request->get('{{SNAKE_FIELD_MODEL_ID}}', []));

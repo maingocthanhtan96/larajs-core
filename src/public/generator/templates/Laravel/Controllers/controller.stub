@@ -1,0 +1,131 @@
+<?php
+
+/**
+ * Created by: Tanmnt
+ * Email: maingocthanhan96@gmail.com
+ * Date Time: {{DATE}}
+ * File: {{CONTROLLER_CLASS}}.php
+ */
+
+namespace App\Http\Controllers\Api\v1;
+
+use App\Enums\PermissionEnum;
+use App\Repositories\{{MODAL_CLASS}}\{{MODAL_CLASS}}Interface;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Store{{MODAL_CLASS}}Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+class {{CONTROLLER_CLASS}}Controller extends Controller
+{
+    /**
+     * {{CONTROLLER_CLASS}} constructor.
+     *
+     * @author tanmnt
+     */
+    public function __construct(private readonly {{MODAL_CLASS}}Interface ${{MODAL_CLASS_PARAM}}Repository)
+    {
+        $this->middleware('permission:' . PermissionEnum::VISIT->name, ['only' => ['index']]);
+        $this->middleware('permission:' . PermissionEnum::CREATE->name, ['only' => ['store']]);
+        $this->middleware('permission:' . PermissionEnum::EDIT->name, ['only' => ['show', 'update']]);
+        $this->middleware('permission:' . PermissionEnum::DELETE->name, ['only' => ['destroy']]);
+    }
+
+	/**
+	 * Table list
+	 *
+	 * @param  Request $request
+	 * @return JsonResponse
+	 *
+	 * @author tanmnt
+	 */
+	public function index(Request $request): JsonResponse
+	{
+		try {
+            ${{MODAL_CLASS_PARAM_LIST}} = $this->{{MODAL_CLASS_PARAM}}Repository->index($request);
+
+			return $this->jsonTable(${{MODAL_CLASS_PARAM_LIST}});
+		} catch (\Exception $e) {
+			return $this->jsonError($e);
+		}
+	}
+
+	/**
+	 * Create
+	 *
+	 * @param  Store{{MODAL_CLASS}}Request $request
+	 * @return JsonResponse
+	 *
+	 * @author tanmnt
+	 */
+	public function store(Store{{MODAL_CLASS}}Request $request): JsonResponse
+	{
+		try {
+            ${{MODAL_CLASS_PARAM}} = $this->{{MODAL_CLASS_PARAM}}Repository->store($request->validated());
+
+			return $this->jsonData(${{MODAL_CLASS_PARAM}}, trans('messages.create'));
+		} catch (\Exception $e) {
+			return $this->jsonError($e);
+		}
+	}
+
+	/**
+	 * Get once by id
+	 *
+	 * @param  int ${{MODAL_CLASS_PARAM}}
+	 * @return JsonResponse
+	 *
+	 * @author tanmnt
+	 */
+	public function show(int ${{MODAL_CLASS_PARAM}}): JsonResponse
+	{
+		try {
+		    ${{MODAL_CLASS_PARAM}} = $this->{{MODAL_CLASS_PARAM}}Repository->show(${{MODAL_CLASS_PARAM}}, []);
+
+			return $this->jsonData(${{MODAL_CLASS_PARAM}});
+		} catch (\Exception $e) {
+			return $this->jsonError($e);
+		}
+	}
+
+	/**
+	 * Update once by id
+	 *
+	 * @param  int ${{MODAL_CLASS_PARAM}}
+	 * @param  Store{{MODAL_CLASS}}Request $request
+	 * @return JsonResponse
+	 *
+	 * @author tanmnt
+	 */
+	public function update(int ${{MODAL_CLASS_PARAM}}, Store{{MODAL_CLASS}}Request $request): JsonResponse
+	{
+		try {
+		    ${{MODAL_CLASS_PARAM}} = $this->{{MODAL_CLASS_PARAM}}Repository->update(${{MODAL_CLASS_PARAM}}, $request->validated());
+
+			return $this->jsonData(${{MODAL_CLASS_PARAM}}, trans('messages.update'));
+		} catch (\Exception $e) {
+			return $this->jsonError($e);
+		}
+	}
+
+	/**
+	 * Delete once by id
+	 *
+	 * @param  int ${{MODAL_CLASS_PARAM}}
+	 * @return JsonResponse
+	 *
+	 * @author tanmnt
+	 */
+    public function destroy(int ${{MODAL_CLASS_PARAM}}): JsonResponse
+    {
+	    try {
+			$this->{{MODAL_CLASS_PARAM}}Repository->destroy(${{MODAL_CLASS_PARAM}});
+
+		    return $this->jsonMessage(trans('messages.delete'));
+	    } catch (\Exception $e) {
+	    	return $this->jsonError($e);
+	    }
+    }
+
+    //{{CONTROLLER_RELATIONSHIP_NOT_DELETE_THIS_LINE}}
+}

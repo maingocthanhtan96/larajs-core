@@ -1,0 +1,6 @@
+all() {
+    return request({
+      url: `${this.uri}/all`,
+      method: 'get',
+    });
+  }

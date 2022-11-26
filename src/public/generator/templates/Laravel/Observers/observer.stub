@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Observers;
+
+use App\Models\{{MODEL_CLASS}};
+use Throwable;
+
+class {{MODEL_CLASS}}Observer
+{
+    /**
+     * Handle the {{MODEL_CLASS}} "saved" event.
+     *
+     * @param  {{MODEL_CLASS}}  ${{MODAL_CLASS_PARAM}}
+     * @return void
+     * @throws Throwable
+     */
+    public function saved({{MODEL_CLASS}} ${{MODAL_CLASS_PARAM}}): void
+    {
+        //{{OBSERVER_RELATIONSHIP_MTM_SAVED_NOT_DELETE_THIS_LINE}}
+    }
+
+    /**
+     * Handle the {{MODEL_CLASS}} "deleted" event.
+     *
+     * @param  {{MODEL_CLASS}}  ${{MODAL_CLASS_PARAM}}
+     * @return void
+     */
+    public function deleted({{MODEL_CLASS}} ${{MODAL_CLASS_PARAM}}): void
+    {
+        //{{OBSERVER_RELATIONSHIP_MTM_DELETED_NOT_DELETE_THIS_LINE}}
+    }
+}
