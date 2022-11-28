@@ -11,6 +11,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Request;
+use LaraJS\Core\Commands\SetupCommand;
 
 class GeneratorProvider extends ServiceProvider
 {
@@ -23,7 +24,13 @@ class GeneratorProvider extends ServiceProvider
 
     public function boot()
     {
+        $this->app->singleton('larajs.setup', function () {
+            return new SetupCommand;
+        });
 
+        $this->commands(
+            'larajs.setup'
+        );
     }
 
     public function register()
