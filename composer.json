@@ -1,5 +1,5 @@
 {
-    "name": "larajs/generator",
+    "name": "larajs/core",
     "autoload": {
         "psr-4": {
             "LaraJS\\Core\\": "src/"
@@ -26,7 +26,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "LaraJS\\Core\\GeneratorProvider"
+                "LaraJS\\Core\\LaraJSCoreProvider"
             ]
         }
     }

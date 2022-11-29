@@ -99,7 +99,6 @@ return [
             'timestamps' => 'Timestamps',
             'user_signature' => 'User Signature',
             'datatables' => 'Datatables',
-            'role_admin' => 'Role Admin',
             'ignore_migrate' => 'Ignore Migrate',
             'only_migrate' => 'Only Migrate',
             'test_cases' => 'Test Cases',
@@ -179,7 +178,6 @@ return [
             ],
             'route' => [
                 'api' => [
-                    'admin' => '//{{ROUTE_ADMIN_NOT_DELETE_THIS_LINE}}',
                     'user' => '//{{ROUTE_USER_NOT_DELETE_THIS_LINE}}',
                 ],
             ],

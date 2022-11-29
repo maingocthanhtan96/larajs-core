@@ -20,11 +20,7 @@ class RouteGenerator extends BaseGenerator
     {
         $now = Carbon::now();
         $pathTemplate = 'Router/';
-        if ($this->serviceGenerator->getOptions(config('generator.model.options.role_admin'), $model['options'])) {
-            $templateData = $this->serviceGenerator->get_template('routeAdmin', $pathTemplate, 'vue');
-        } else {
-            $templateData = $this->serviceGenerator->get_template('route', $pathTemplate, 'vue');
-        }
+        $templateData = $this->serviceGenerator->get_template('route', $pathTemplate, 'vue');
 
         $templateData = str_replace('{{$DATE$}}', $now->toDateTimeString(), $templateData);
         $templateData = str_replace(
@@ -54,17 +50,13 @@ class RouteGenerator extends BaseGenerator
         );
 
         $templateDataReal = $this->serviceGenerator->getFile('router', 'vue', 'index.ts');
-        if ($this->serviceGenerator->getOptions(config('generator.model.options.role_admin'), $model['options'])) {
-            $templateData = str_replace('{{$ADMIN_ROLE$}}', 'roles: [superAdmin],', $templateData);
-        } else {
-            $namePermission = strtoupper(\Str::snake($model['name']));
-            $viewMenu = config('generator.permission.view_menu');
-            $templateData = str_replace(
-                '{{$ADMIN_ROLE$}}',
-                "permissions: ['{$viewMenu}_$namePermission'],",
-                $templateData,
-            );
-        }
+        $namePermission = strtoupper(\Str::snake($model['name']));
+        $viewMenu = config('generator.permission.view_menu');
+        $templateData = str_replace(
+            '{{$ADMIN_ROLE$}}',
+            "permissions: ['{$viewMenu}_$namePermission'],",
+            $templateData,
+        );
         $templateDataReal = $this->serviceGenerator->replaceNotDelete(
             $this->notDelete['async'],
             "{$this->serviceGenerator->modelNameNotPluralFe($model['name'])},",
