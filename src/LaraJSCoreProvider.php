@@ -32,11 +32,17 @@ class LaraJSCoreProvider extends ServiceProvider
         );
         $this->publishes([
             __DIR__.'/config/generator.php' => config_path('generator.php'),
-        ]);
+        ], 'larajs-config');
         $this->mergeConfigFrom(
             __DIR__.'/config/generator.php',
             'generator'
         );
+        $this->publishes([
+            __DIR__.'/../public' => public_path('vendor'),
+        ], 'larajs-public');
+        $this->publishes([
+            __DIR__.'/../database/migrations' => database_path('migrations'),
+        ], 'larajs-migrations');
     }
 
     public function register()

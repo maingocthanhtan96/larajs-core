@@ -14,9 +14,9 @@ return [
     |
     */
     'template' => [
-        'laravel' => public_path('generator/templates/Laravel/'),
-        'vue' => public_path('generator/templates/Vue/'),
-        'package' => public_path('generator/templates/Package/'),
+        'laravel' => public_path('vendor/generator/templates/Laravel/'),
+        'vue' => public_path('vendor/generator/templates/Vue/'),
+        'package' => public_path('vendor/generator/templates/Package/'),
     ],
 
     /*

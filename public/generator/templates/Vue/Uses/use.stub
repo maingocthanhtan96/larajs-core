@@ -1,0 +1,23 @@
+import {{$CONST_NAME_MODEL$}}Resource from '@/api/{{$API_VERSION$}}/{{$NAME_ROUTE_API$}}';
+import { AxiosRequestConfig } from 'axios';
+// {{$IMPORT_API_NOT_DELETE_THIS_LINE$}}
+
+export * from './table';
+export * from './form';
+export function use{{$NAME_USES$}}() {
+  const list = (query, props?: AxiosRequestConfig) => {{$CONST_NAME_MODEL$}}Resource.list(query, props);
+  const store = (data, props?: AxiosRequestConfig) => {{$CONST_NAME_MODEL$}}Resource.store(data, props);
+  const show = (id, props?: AxiosRequestConfig) => {{$CONST_NAME_MODEL$}}Resource.show(id, props);
+  const update = (id, data, props?: AxiosRequestConfig) => {{$CONST_NAME_MODEL$}}Resource.update(id, data, props);
+  const destroy = (id, props?: AxiosRequestConfig) => {{$CONST_NAME_MODEL$}}Resource.destroy(id, props);
+  // {{$IMPORT_FUNCTION_NOT_DELETE_THIS_LINE$}}
+
+  return {
+    list,
+    store,
+    show,
+    update,
+    destroy,
+    // {{$EXPORT_FUNCTION_NOT_DELETE_THIS_LINE$}}
+  };
+}
