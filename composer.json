@@ -4,7 +4,10 @@
         "psr-4": {
             "LaraJS\\Core\\": "src/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "src/Helpers/Helper.php"
+        ]
     },
     "authors": [
         {

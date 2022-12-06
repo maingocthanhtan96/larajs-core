@@ -62,7 +62,7 @@ class BaseLaraJSController extends BaseController
         if ($error instanceof HttpException) {
             $status = $error->getStatusCode();
         }
-        if ($error instanceof Exception) {
+        if ($error instanceof \Exception) {
             write_log_exception($error);
         }
         if (app()->isProduction()) {
