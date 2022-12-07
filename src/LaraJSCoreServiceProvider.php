@@ -31,10 +31,10 @@ class LaraJSCoreServiceProvider extends ServiceProvider
             'larajs.setup'
         );
         $this->publishes([
-            __DIR__.'/config/generator.php' => config_path('generator.php'),
+            __DIR__.'/../config/generator.php' => config_path('generator.php'),
         ], 'larajs-core-config');
         $this->mergeConfigFrom(
-            __DIR__.'/config/generator.php',
+            __DIR__.'/../config/generator.php',
             'generator'
         );
         $this->publishes([

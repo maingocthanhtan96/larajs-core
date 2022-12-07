@@ -297,7 +297,7 @@ return [
                     'name' => 'use SoftDeletes;',
                 ],
                 'trait_user_signature' => [
-                    'file' => 'use App\Traits\UserSignature;',
+                    'file' => 'use LaraJS\Core\Traits\UserSignature;',
                     'name' => 'use UserSignature;',
                 ],
             ],
