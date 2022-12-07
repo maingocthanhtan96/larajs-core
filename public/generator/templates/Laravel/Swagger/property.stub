@@ -1,3 +1,0 @@
-/**
-     * <###> @OA\Property(property="{{FIELD}}", type="{{DB_TYPE}}", default="{{DEFAULT_VALUE}}", description="")
-     */

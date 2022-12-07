@@ -19,8 +19,6 @@ use LaraJS\Core\Generators\Backend\RepositoryGenerator;
 use LaraJS\Core\Generators\Backend\RequestGenerator;
 use LaraJS\Core\Generators\Backend\RouteGenerator;
 use LaraJS\Core\Generators\Backend\SeederGenerator;
-use LaraJS\Core\Generators\Backend\SwaggerGenerator;
-use LaraJS\Core\Generators\Backend\SwaggerRelationshipGenerator;
 use LaraJS\Core\Generators\Backend\TestsGenerator;
 use LaraJS\Core\Generators\BackendUpdate\FactoryUpdateGenerator;
 use LaraJS\Core\Generators\BackendUpdate\LangUpdateGenerator;
@@ -28,7 +26,6 @@ use LaraJS\Core\Generators\BackendUpdate\MigrationUpdateGenerator;
 use LaraJS\Core\Generators\BackendUpdate\ModelUpdateGenerator;
 use LaraJS\Core\Generators\BackendUpdate\RequestUpdateGenerator;
 use LaraJS\Core\Generators\BackendUpdate\SeederUpdateGenerator;
-use LaraJS\Core\Generators\BackendUpdate\SwaggerUpdateGenerator;
 use LaraJS\Core\Generators\BackendUpdate\TestsUpdateGenerator;
 use LaraJS\Core\Generators\Frontend\ApiGenerator;
 use LaraJS\Core\Generators\Frontend\FormGenerator;
@@ -383,7 +380,6 @@ class GeneratorController extends BaseLaraJSController
             // git commit
             $this->_gitCommit($model);
             new RelationshipGenerator($relationship, $model, $modelCurrent, $column, $column2, $options);
-            new SwaggerRelationshipGenerator($relationship, $model, $modelCurrent);
             $this->_runCommand();
 
             return $this->jsonMessage(trans('messages.success'));
@@ -493,7 +489,6 @@ class GeneratorController extends BaseLaraJSController
         if ($this->serviceGenerator->getOptions(config('generator.model.options.test_cases'), $model['options'])) {
             new TestsGenerator($fields, $model);
         }
-        new SwaggerGenerator($fields, $model);
 
         return [
             'migration' => [
@@ -530,7 +525,6 @@ class GeneratorController extends BaseLaraJSController
 
         $files['api_controller'] = $configGeneratorLaravel['api_controller'] . $model['name'] . 'Controller.php';
         $files['request'] = $configGeneratorLaravel['request'] . 'Store' . $model['name'] . 'Request.php';
-        $files['swagger'] = $configGeneratorLaravel['swagger'] . $model['name'] . '.php';
         $files['model'] = $configGeneratorLaravel['model'] . $model['name'] . '.php';
         $files['repositories']['interface'] =
             $configGeneratorLaravel['repository'] . $model['name'] . '/' . $model['name'] . 'Interface.php';
@@ -577,7 +571,6 @@ class GeneratorController extends BaseLaraJSController
         if ($this->serviceGenerator->getOptions(config('generator.model.options.test_cases'), $model['options'])) {
             new TestsUpdateGenerator($generator, $model, $updateFields);
         }
-        new SwaggerUpdateGenerator($generator, $model, $updateFields);
     }
 
     /**
@@ -604,7 +597,6 @@ class GeneratorController extends BaseLaraJSController
         $basePath = base_path();
         Artisan::call('vue-i18n:generate');
         exec("cd $basePath && ./node_modules/pretty-quick/bin/pretty-quick.js");
-        exec("cd $basePath && ./swagger.sh");
         exec("cd $basePath && php composer.phar dump-autoload");
         //        $this->_gitResetHEAD();
     }

@@ -987,104 +987,7 @@ class GeneratorService
     }
     // END - SEEDER
 
-    // START - SWAGGER
-    public function swaggerField($field, $propertyJson): string
-    {
-        $faker = \Faker\Factory::create();
-        $dbType = config('generator.db_type');
-        $configDefaultValue = config('generator.default_value');
-        if ($field['default_value'] === $configDefaultValue['none']) {
-            $defaultValue = 'NONE';
-        } elseif ($field['default_value'] === $configDefaultValue['null']) {
-            $defaultValue = 'NULL';
-        } else {
-            $defaultValue = $field['as_define'];
-        }
-        if ($propertyJson) {
-            $templateProperty = $this->get_template('propertyJson', 'Swagger/');
-        } else {
-            $templateProperty = $this->get_template('property', 'Swagger/');
-        }
-        $templateProperty = str_replace('{{FIELD}}', $field['field_name'], $templateProperty);
-        $templateProperty = str_replace('{{FIELD_TRANS}}', $field['field_name_trans'], $templateProperty);
-        $templateProperty = str_replace('{{DEFAULT_VALUE}}', $defaultValue, $templateProperty);
-        switch ($field['db_type']) {
-            case $dbType['integer']:
-            case $dbType['bigInteger']:
-                $templateProperty = str_replace('{{DB_TYPE}}', $field['db_type'], $templateProperty);
-                $fieldsGenerate = str_replace('{{EXAMPLE}}', $faker->numberBetween(1000, 9000), $templateProperty);
-                break;
-            case $dbType['float']:
-            case $dbType['double']:
-                $templateProperty = str_replace('{{DB_TYPE}}', $field['db_type'], $templateProperty);
-                $fieldsGenerate = str_replace('{{EXAMPLE}}', $faker->randomFloat(2, 1000, 9000), $templateProperty);
-                break;
-            case $dbType['boolean']:
-                $templateProperty = str_replace('{{DB_TYPE}}', $field['db_type'], $templateProperty);
-                $fieldsGenerate = str_replace('{{EXAMPLE}}', $faker->numberBetween(0, 1), $templateProperty);
-                break;
-            case $dbType['date']:
-                $templateProperty = str_replace('{{DB_TYPE}}', $dbType['date'], $templateProperty);
-                $templateProperty = str_replace('{{EXAMPLE}}', Carbon::now()->toDateString(), $templateProperty);
-                $fieldsGenerate = $templateProperty;
-                break;
-            case $dbType['dateTime']:
-            case $dbType['timestamp']:
-                $templateProperty = str_replace('{{DB_TYPE}}', $field['db_type'], $templateProperty);
-                $templateProperty = str_replace('{{EXAMPLE}}', Carbon::now()->toDateTimeString(), $templateProperty);
-                $fieldsGenerate = $templateProperty;
-                break;
-            case $dbType['time']:
-                $templateProperty = str_replace('{{DB_TYPE}}', $field['db_type'], $templateProperty);
-                $fieldsGenerate = str_replace('{{EXAMPLE}}', Carbon::now()->toTimeString(), $templateProperty);
-                break;
-            case $dbType['year']:
-                $templateProperty = str_replace('{{DB_TYPE}}', $field['db_type'], $templateProperty);
-                $fieldsGenerate = str_replace('{{EXAMPLE}}', Carbon::now()->year, $templateProperty);
-                break;
-            case $dbType['string']:
-                $templateProperty = str_replace('{{DB_TYPE}}', $field['db_type'], $templateProperty);
-                $fieldsGenerate = str_replace('{{EXAMPLE}}', $faker->name, $templateProperty);
-                break;
-            case $dbType['text']:
-            case $dbType['longtext']:
-                $templateProperty = str_replace('{{DB_TYPE}}', $field['db_type'], $templateProperty);
-                $fieldsGenerate = str_replace('{{EXAMPLE}}', $faker->paragraph, $templateProperty);
-                break;
-            case $dbType['enum']:
-                $enum = '';
-                foreach ($field['enum'] as $keyEnum => $value) {
-                    if ($keyEnum === count($field['enum']) - 1) {
-                        $enum .= '"' . $value . '"';
-                    } else {
-                        $enum .= '"' . $value . '",';
-                    }
-                }
-                if ($propertyJson) {
-                    $templateProperty = $this->get_template('propertyEnumJson', 'Swagger/');
-                } else {
-                    $templateProperty = $this->get_template('propertyEnum', 'Swagger/');
-                }
-                $templateProperty = str_replace('{{FIELD}}', $field['field_name'], $templateProperty);
-                $templateProperty = str_replace('{{FIELD_TRANS}}', $field['field_name_trans'], $templateProperty);
-                $templateProperty = str_replace('{{DEFAULT_VALUE}}', $defaultValue, $templateProperty);
-                $templateProperty = str_replace('{{DB_TYPE}}', $field['db_type'], $templateProperty);
-                $templateProperty = str_replace('{{EXAMPLE}}', \Arr::random($field['enum']), $templateProperty);
-                $fieldsGenerate = str_replace('{{ENUM}}', '{' . $enum . '}', $templateProperty);
-                break;
-            case $dbType['json']:
-                $templateProperty = str_replace('{{DB_TYPE}}', $field['db_type'], $templateProperty);
-                $fieldsGenerate = str_replace('{{EXAMPLE}}', '[{}]', $templateProperty);
-                break;
-            default:
-                $fieldsGenerate = '';
-        }
-
-        return $fieldsGenerate;
-    }
-    // END - SWAGGER
-
-    // START - SWAGGER
+    // START - LANG
     public function langTemplate($tableName, $templateDataReal): array|string
     {
         $quoteTable = "'" . $tableName . "' => [";
@@ -1102,7 +1005,7 @@ class GeneratorService
             'template_replace' => $templateReplace,
         ];
     }
-    // END - SWAGGER
+    // END - LANG
 
     // START - VIEW TABLE
     public function viewTableClassColumn($field): string

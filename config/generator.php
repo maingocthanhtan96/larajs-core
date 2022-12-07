@@ -38,7 +38,6 @@ return [
             'api_controller' => app_path('Http/Controllers/Api/' . $API_VERSION),
             'lang' => base_path('lang/'),
             'request' => app_path('Http/Requests/'),
-            'swagger' => app_path('LaraJS/Swagger/'),
             'tests' => [
                 'feature' => base_path('tests/Feature/Controllers/Api/' . $API_VERSION),
             ],
@@ -56,7 +55,6 @@ return [
                 'api_controller' => '/app/Http/Controllers/Api/' . $API_VERSION,
                 'lang' => '/lang/',
                 'request' => '/app/Http/Requests/',
-                'swagger' => '/app/LaraJS/Swagger/',
                 'tests' => [
                     'feature' => '/tests/Feature/Controllers/Api/' . $API_VERSION,
                 ],
@@ -200,12 +198,6 @@ return [
             ],
             'request' => [
                 'rule' => '//{{REQUEST_RULES_NOT_DELETE_THIS_LINE}}',
-            ],
-            'swagger' => [
-                'property' => '//{{SWAGGER_PROPERTY_NOT_DELETE_THIS_LINE}}',
-                'soft_deletes' => '//{{SWAGGER_SOFT_DELETES_NOT_DELETE_THIS_LINE}}',
-                'timestamps' => '//{{SWAGGER_TIMESTAMPS_NOT_DELETE_THIS_LINE}}',
-                'json_content' => ' *                  x="{{SWAGGER_PROPERTY_JSON_CONTENT_NOT_DELETE_THIS_LINE}}"',
             ],
             'repository' => [
                 'use_class' => '//{{USE_CLASS_NOT_DELETE_THIS_LINE}}',

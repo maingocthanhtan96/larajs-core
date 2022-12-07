@@ -102,7 +102,6 @@ class SetupCommand extends Command
             $this->_installMigrateSeed();
             $this->_installPackage();
             $this->_generateFile();
-            $this->_deploySwagger();
             $this->_deployStorage();
             $this->_copyEnvTesting();
 
@@ -141,13 +140,6 @@ class SetupCommand extends Command
         $this->comment('GENERATE LANG');
         $this->_outputArtisan('vue-i18n:generate');
         $this->info('Generate lang successfully.');
-    }
-
-    private function _deploySwagger()
-    {
-        $this->comment('DEPLOY SWAGGER');
-        $this->info('>>> Running: deploy swagger');
-        exec('./swagger.sh');
     }
 
     private function _deployStorage()
