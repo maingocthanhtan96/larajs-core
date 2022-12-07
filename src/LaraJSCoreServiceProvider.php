@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Request;
 use LaraJS\Core\Commands\SetupCommand;
 
-class LaraJSCoreProvider extends ServiceProvider
+class LaraJSCoreServiceProvider extends ServiceProvider
 {
     /**
      * Indicates if loading of the provider is deferred.
@@ -32,17 +32,18 @@ class LaraJSCoreProvider extends ServiceProvider
         );
         $this->publishes([
             __DIR__.'/config/generator.php' => config_path('generator.php'),
-        ], 'larajs-config');
+        ], 'larajs-core-config');
         $this->mergeConfigFrom(
             __DIR__.'/config/generator.php',
             'generator'
         );
         $this->publishes([
             __DIR__.'/../public' => public_path('vendor'),
-        ], 'larajs-public');
+        ], 'larajs-core-public');
         $this->publishes([
             __DIR__.'/../database/migrations' => database_path('migrations'),
-        ], 'larajs-migrations');
+        ], 'larajs-core-migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
     }
 
     public function register()
