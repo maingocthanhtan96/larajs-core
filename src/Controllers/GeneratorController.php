@@ -565,7 +565,6 @@ class GeneratorController extends BaseLaraJSController
         new ModelUpdateGenerator($model, $updateFields);
         new SeederUpdateGenerator($generator, $model, $updateFields);
         new FactoryUpdateGenerator($generator, $model, $updateFields);
-        //        new ControllerUpdateGenerator($model, $updateFields);
         new LangUpdateGenerator($model, $updateFields);
         new RequestUpdateGenerator($generator, $model, $updateFields);
         if ($this->serviceGenerator->getOptions(config('generator.model.options.test_cases'), $model['options'])) {
