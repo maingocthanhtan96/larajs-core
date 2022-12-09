@@ -35,8 +35,8 @@ class {{CONTROLLER_CLASS}}Test extends TestCase
         $response = $this->getJson("/api/{{$API_VERSION$}}/{{RESOURCE}}?$query");
         $response->assertStatus(Response::HTTP_OK)->assertJson(
             fn(AssertableJson $json) => $json
-                ->has('count')
-                ->where('data.0.id', 1)
+                ->has('data.total')
+                ->where('data.items.0.id', 1)
                 ->etc()
         );
     }

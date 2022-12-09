@@ -2,6 +2,7 @@
 
 namespace LaraJS\Core\Controllers;
 
+use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -44,6 +45,7 @@ use Symfony\Component\Process\Process;
 
 class GeneratorController extends BaseLaraJSController
 {
+    use ValidatesRequests;
     /*@var service*/
     private GeneratorService $serviceGenerator;
 
