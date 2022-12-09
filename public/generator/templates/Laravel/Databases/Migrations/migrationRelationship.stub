@@ -19,12 +19,12 @@ return new class extends Migration {
     public function up()
     {
         Schema::table('{{TABLE_NAME}}', function (Blueprint $table) {
-            $table->foreignId('{{FOREIGN_KEY}}')->nullable()->after('id');
+            $table->foreignId('{{FOREIGN_KEY}}')->after('id');
 
-            // $table->index('{{FOREIGN_KEY}}');
-            // $table->foreign('{{FOREIGN_KEY}}')
-            //     ->references('id')->on('{{TABLE_FOREIGN_KEY}}')
-            //    ->onDelete('cascade');
+            $table->index('{{FOREIGN_KEY}}');
+            $table->foreign('{{FOREIGN_KEY}}')
+                ->references('id')->on('{{TABLE_FOREIGN_KEY}}')
+               ->onDelete('cascade');
         });
     }
 
@@ -37,7 +37,7 @@ return new class extends Migration {
     {
         Schema::table('{{TABLE_NAME}}', function (Blueprint $table) {
             $table->dropColumn('{{FOREIGN_KEY}}');
-            // $table->dropForeign('{{FOREIGN_KEY}}');
+            $table->dropForeign('{{FOREIGN_KEY}}');
         });
     }
 };

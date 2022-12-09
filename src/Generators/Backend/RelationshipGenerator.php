@@ -2,9 +2,9 @@
 
 namespace LaraJS\Core\Generators\Backend;
 
+use Illuminate\Support\Str;
 use LaraJS\Core\Generators\BaseGenerator;
 use Carbon\Carbon;
-use Str;
 
 class RelationshipGenerator extends BaseGenerator
 {
@@ -198,6 +198,12 @@ class RelationshipGenerator extends BaseGenerator
         if (!$templateDataReal) {
             return;
         }
+        if (!$isMTM) {
+            $templateRules = $this->_getHandlerTemplate();
+            $templateRules = str_replace('{{$FIELD$}}', Str::snake($model) . self::_ID, $templateRules);
+            $templateRules = str_replace('{{$ATTRIBUTE_FIELD$}}', 't(\'route.' . Str::snake($model) . '\')', $templateRules);
+            $templateDataReal = $this->serviceGenerator->replaceNotDelete($notDelete['rules'], $templateRules, 1, $templateDataReal, 2);
+        }
         $field = $isMTM ? Str::snake($model) . self::_IDS : Str::snake($model) . self::_ID;
         $tableFunctionRelationship = $isMTM
             ? $this->serviceGenerator->tableName($model)
@@ -208,6 +214,7 @@ class RelationshipGenerator extends BaseGenerator
             $columnDidGenerate,
             3,
             $templateDataReal,
+            2,
         );
         $templateDataReal = $this->_generateAddApi(
             $model,
@@ -226,6 +233,7 @@ class RelationshipGenerator extends BaseGenerator
             ),
             3,
             $templateDataReal,
+            2,
         );
         $this->serviceFile->createFileReal("$path/form.tsx", $templateDataReal);
         // create column: table.tsx
@@ -595,7 +603,7 @@ class RelationshipGenerator extends BaseGenerator
             return;
         }
         $isMTM = $relationship === $this->relationship['belongs_to_many'];
-        $rule = $isMTM ? 'array' : 'integer';
+        $rule = $isMTM ? 'array' : 'integer|required';
         $templateDataRealFunc = $this->serviceGenerator->replaceNotDelete(
             $notDelete['rule'],
             "'" . Str::snake($modelRelationship) . ($isMTM ? self::_IDS : self::_ID) . "'" . ' => ' . "'$rule',",
