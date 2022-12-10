@@ -599,7 +599,6 @@ class GeneratorController extends BaseLaraJSController
         Artisan::call('vue-i18n:generate');
         exec("cd $basePath && ./node_modules/pretty-quick/bin/pretty-quick.js");
         exec("cd $basePath && php composer.phar dump-autoload");
-        //        $this->_gitResetHEAD();
     }
 
     private function _exportDataGenerator()
@@ -637,6 +636,9 @@ class GeneratorController extends BaseLaraJSController
      */
     private function _gitCommit($model)
     {
+        if (env('GENERATOR_DEBUG')) {
+            return;
+        }
         $basePath = base_path();
         $now = \Carbon\Carbon::now()->toDateTimeString();
         $commit = '"' . $model . ' - ' . $now . '"';
@@ -645,16 +647,5 @@ class GeneratorController extends BaseLaraJSController
         $gitAdd->run();
         $gitCommit = new Process(['git', 'commit', '-m', $commit, '--no-verify'], $basePath);
         $gitCommit->run();
-    }
-
-    private function _gitResetHEAD()
-    {
-        $basePath = base_path();
-        $gitResetHEAD = new Process(['git', 'reset', 'HEAD^'], $basePath);
-
-        $gitResetHEAD->run();
-        if (!$gitResetHEAD->isSuccessful()) {
-            throw new ProcessFailedException($gitResetHEAD);
-        }
     }
 }
