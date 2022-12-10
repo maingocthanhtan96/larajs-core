@@ -2,7 +2,6 @@
 
 namespace LaraJS\Core\Controllers;
 
-use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -40,12 +39,10 @@ use LaraJS\Core\Models\Generator;
 use LaraJS\Core\Services\FileService;
 use LaraJS\Core\Services\GeneratorService;
 use LaraJS\Core\Services\QueryService;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 class GeneratorController extends BaseLaraJSController
 {
-    use ValidatesRequests;
     /*@var service*/
     private GeneratorService $serviceGenerator;
 
@@ -366,7 +363,7 @@ class GeneratorController extends BaseLaraJSController
      */
     public function generateRelationship(Request $request): JsonResponse
     {
-        $this->validate($request->all(), [
+        $request->validate([
             'relationship' => 'required',
             'model' => 'required',
             'column' => 'required',
