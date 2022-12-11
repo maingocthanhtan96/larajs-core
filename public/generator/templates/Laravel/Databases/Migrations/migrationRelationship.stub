@@ -22,9 +22,11 @@ return new class extends Migration {
             $table->foreignId('{{FOREIGN_KEY}}')->after('id');
 
             $table->index('{{FOREIGN_KEY}}');
-            $table->foreign('{{FOREIGN_KEY}}')
-                ->references('id')->on('{{TABLE_FOREIGN_KEY}}')
-               ->onDelete('cascade');
+            $table
+                ->foreign('{{FOREIGN_KEY}}')
+                ->references('id')
+                ->on('{{TABLE_FOREIGN_KEY}}')
+                ->onDelete('cascade');
         });
     }
 
