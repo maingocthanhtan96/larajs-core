@@ -32,6 +32,45 @@ class BaseGenerator
         $this->dbType = config('generator.db_type');
     }
 
+    public function jsType(string $type = null)
+    {
+        $isJS = config('generator.js_language') === 'js';
+        switch ($type) {
+            case 'form':
+                if ($isJS)  return 'form.jsx';
+                else return 'form.tsx';
+            case 'table':
+                if ($isJS)  return 'table.jsx';
+                else return 'table.tsx';
+            case 'index':
+                if ($isJS)  return 'index.js';
+                else return 'index.ts';
+            case 'ext':
+                return config('generator.js_language');
+            default:
+                return $isJS;
+        }
+    }
+
+    public function jsTemplate(string $type = null)
+    {
+        $isJS = config('generator.js_language') === 'js';
+        switch ($type) {
+            case 'addDataRelationship':
+                if ($isJS) return  'addDataRelationshipJS';
+                else return 'addDataRelationship';
+            case 'form':
+                if ($isJS) return  'formJS';
+                else return 'form';
+            case 'use':
+                if ($isJS) return  'useJS';
+                else return 'use';
+            case 'index':
+                if ($isJS) return  'indexJS';
+                else return 'index';
+        }
+    }
+
     public function rollbackFile($path, $fileName): bool
     {
         if (file_exists($path . $fileName)) {

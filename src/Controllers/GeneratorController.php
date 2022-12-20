@@ -595,7 +595,6 @@ class GeneratorController extends BaseLaraJSController
         $basePath = base_path();
         Artisan::call('vue-i18n:generate');
         exec("cd $basePath && ./node_modules/pretty-quick/bin/pretty-quick.js");
-        exec("cd $basePath && php composer.phar dump-autoload");
     }
 
     private function _exportDataGenerator()

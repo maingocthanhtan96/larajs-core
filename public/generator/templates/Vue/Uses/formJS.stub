@@ -1,0 +1,47 @@
+import { computed, ref, reactive } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useRoute } from 'vue-router';
+import { use{{$NAME_USES$}} } from '@/uses';
+// {{$IMPORT_COMPONENT_NOT_DELETE_THIS_LINE$}}
+
+export function use{{$NAME_MODEL$}}Forms() {
+  const route = useRoute();
+  const { t } = useI18n(); // eslint-disable-line
+  const { id } = route.params;
+  const { store, update } = use{{$NAME_USES$}}();
+  const {{$CONST_NAME_MODEL$}}Ref = ref(null);
+  const form = reactive({
+    // {{$FORM_FIELDS_NOT_DELETE_THIS_LINE$}}
+  });
+  const state = reactive({
+    // {{$DATA_NOT_DELETE_THIS_LINE$}}
+  });
+  const rules = computed(() => ({
+    // {{$RULES_NOT_DELETE_THIS_LINE$}}
+  }));
+
+  const formElement = reactive({
+    name: '{{$NAME_TABLE$}}',
+    form: {
+      model: form,
+      rules: rules,
+      ref: {{$CONST_NAME_MODEL$}}Ref,
+      props: {},
+    },
+    row: {},
+    items: [
+      // {{$FORM_ITEM_NOT_DELETE_THIS_LINE$}}
+    ],
+    actions: {
+      store,
+      update
+    },
+  });
+
+  return {
+    id,
+    form,
+    state,
+    formElement,
+  };
+}

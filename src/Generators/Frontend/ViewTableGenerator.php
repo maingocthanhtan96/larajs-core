@@ -17,7 +17,7 @@ class ViewTableGenerator extends BaseGenerator
 
     private function _generate($model)
     {
-        $templateData = $this->serviceGenerator->get_template('index', 'Views/', 'vue');
+        $templateData = $this->serviceGenerator->get_template($this->jsTemplate('index'), 'Views/', 'vue');
         $templateData = str_replace(
             '{{$NAME_MODEL$}}',
             $this->serviceGenerator->modelNameNotPlural($model['name']),

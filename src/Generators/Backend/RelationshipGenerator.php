@@ -159,8 +159,10 @@ class RelationshipGenerator extends BaseGenerator
             //generate frontend
             $this->_generateFormFe($modelCurrent, $model, $column, $options, $relationship);
             $this->_generateFormFe($model, $modelCurrent, $column2, $options, $relationship);
-            $this->_generateInterfaceCommon($modelCurrent, $model, $relationship);
-            $this->_generateInterfaceCommon($model, $modelCurrent, $relationship);
+            if (!$this->jsType()) {
+                $this->_generateInterfaceCommon($modelCurrent, $model, $relationship);
+                $this->_generateInterfaceCommon($model, $modelCurrent, $relationship);
+            }
         } else {
             //hasOne or hasMany
             $templateData = $this->_replaceTemplateRelationship($model, $modelCurrent, $templateData);
@@ -179,7 +181,9 @@ class RelationshipGenerator extends BaseGenerator
             $this->_generateTests($modelCurrent);
             //generate frontend
             $this->_generateFormFe($modelCurrent, $model, $column, $options, $relationship);
-            $this->_generateInterfaceCommon($modelCurrent, $model, $relationship);
+            if (!$this->jsType()) {
+                $this->_generateInterfaceCommon($modelCurrent, $model, $relationship);
+            }
         }
 
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
@@ -194,7 +198,7 @@ class RelationshipGenerator extends BaseGenerator
         $folderName = $this->serviceGenerator->folderPages($modelRelationship);
         $path = "$path{$folderName}";
         //create form: form.tsx
-        $templateDataReal = $this->serviceGenerator->getFile('uses', 'vue', "/$folderName/form.tsx");
+        $templateDataReal = $this->serviceGenerator->getFile('uses', 'vue', "/$folderName/{$this->jsType('form')}");
         if (!$templateDataReal) {
             return;
         }
@@ -235,11 +239,11 @@ class RelationshipGenerator extends BaseGenerator
             $templateDataReal,
             2,
         );
-        $this->serviceFile->createFileReal("$path/form.tsx", $templateDataReal);
+        $this->serviceFile->createFileReal("$path/{$this->jsType('form')}", $templateDataReal);
         // create column: table.tsx
         $configOptions = config('generator.relationship.options');
         if (in_array($configOptions['show'], $options)) {
-            $templateDataReal = $this->serviceGenerator->getFile('uses', 'vue', "/$folderName/table.tsx");
+            $templateDataReal = $this->serviceGenerator->getFile('uses', 'vue', "/$folderName/{$this->jsType('table')}");
             $templateColumn = $this->serviceGenerator->get_template('column', 'Forms/', 'vue');
             $templateColumn = str_replace(
                 '{{$FIELD_NAME$}}',
@@ -280,7 +284,7 @@ class RelationshipGenerator extends BaseGenerator
                 $columnRelationship,
                 $templateDataReal,
             );
-            $this->serviceFile->createFileReal("$path/table.tsx", $templateDataReal);
+            $this->serviceFile->createFileReal("$path/{$this->jsType('table')}", $templateDataReal);
         }
         //generate api
         $this->_generateApi($model);
@@ -360,9 +364,9 @@ class RelationshipGenerator extends BaseGenerator
     private function _generateFunctionAll($model)
     {
         $notDeleteUses = config('generator.not_delete.vue.uses');
-        $fileName = "{$this->serviceGenerator->folderPages($model)}/index.ts";
+        $fileName = "{$this->serviceGenerator->folderPages($model)}/{$this->jsType('index')}";
         $templateDataRealRelationship = $this->serviceGenerator->getFile('uses', 'vue', $fileName);
-        $stubAddData = $this->serviceGenerator->get_template('addDataRelationship', 'Handler/', 'vue');
+        $stubAddData = $this->serviceGenerator->get_template($this->jsTemplate('addDataRelationship'), 'Handler/', 'vue');
         $nameFunctionAll = "all{$model}";
         $stubAddData = str_replace(
             '{{$USE_MODEL_RELATIONSHIP$}}',
@@ -410,19 +414,21 @@ class RelationshipGenerator extends BaseGenerator
             2,
         );
         // State Root
-        $templateDataReal = $this->_checkImportInterfaceCommon(
-            $model,
-            $templateDataReal,
-            '@larajs/common',
-            $notDelete['import_component'],
-        );
-        $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-            $notDelete['state_root'],
-            "$nameModelRelationship: $model" . '[];',
-            1,
-            $templateDataReal,
-            2,
-        );
+        if (!$this->jsType()) {
+            $templateDataReal = $this->_checkImportInterfaceCommon(
+                $model,
+                $templateDataReal,
+                '@larajs/common',
+                $notDelete['import_component'],
+            );
+            $templateDataReal = $this->serviceGenerator->replaceNotDelete(
+                $notDelete['state_root'],
+                "$nameModelRelationship: $model" . '[];',
+                1,
+                $templateDataReal,
+                2,
+            );
+        }
         // form
         $templateDataRealForm = $this->serviceGenerator->getFile('views', 'vue', $fileName);
         $useModel = "use{$this->serviceGenerator->modelNamePlural($model)}";
@@ -470,7 +476,7 @@ class RelationshipGenerator extends BaseGenerator
     {
         $checkFuncName = 'all() {';
         $notDelete = config('generator.not_delete.vue.form');
-        $fileName = $this->serviceGenerator->folderPages($model) . '.ts';
+        $fileName = $this->serviceGenerator->folderPages($model) . ".{$this->jsType('ext')}";
         $templateDataReal = $this->serviceGenerator->getFile('api', 'vue', $fileName);
         if (strpos($templateDataReal, $checkFuncName)) {
             return;
@@ -1119,7 +1125,7 @@ class RelationshipGenerator extends BaseGenerator
         $notDelete = config('generator.not_delete.package.model');
         $path = config('generator.path.package.model');
         if ($relationship === $this->relationship['belongs_to_many']) {
-            $fileName = "/{$this->serviceGenerator->folderPages($modelCurrent)}.ts";
+            $fileName = "/{$this->serviceGenerator->folderPages($modelCurrent)}.{$this->jsType('ext')}";
             $nameColumnRelationship = Str::snake(Str::plural($model));
             $templateDataReal = $this->serviceGenerator->getFile('model', 'package', $fileName);
             $templateDataReal = $this->_checkImportInterfaceCommon($model, $templateDataReal);
@@ -1139,7 +1145,7 @@ class RelationshipGenerator extends BaseGenerator
             $this->serviceFile->createFileReal($path . $fileName, $templateDataReal);
         } else {
             // hasOne| hasMany
-            $fileName = $this->serviceGenerator->folderPages($modelCurrent) . '.ts';
+            $fileName = $this->serviceGenerator->folderPages($modelCurrent) . ".{$this->jsType('ext')}";
             $templateDataReal = $this->serviceGenerator->getFile('model', 'package', $fileName);
             $templateDataReal = $this->_checkImportInterfaceCommon($model, $templateDataReal);
             if ($relationship === $this->relationship['has_one']) {
@@ -1161,7 +1167,7 @@ class RelationshipGenerator extends BaseGenerator
             }
             $this->serviceFile->createFileReal($path . $fileName, $templateDataReal);
             // belongsTo
-            $fileName = $this->serviceGenerator->folderPages($model) . '.ts';
+            $fileName = $this->serviceGenerator->folderPages($model) . ".{$this->jsType('ext')}";
             $templateDataReal = $this->serviceGenerator->getFile('model', 'package', $fileName);
             $templateDataReal = $this->_checkImportInterfaceCommon($modelCurrent, $templateDataReal);
             $fieldModelCurrent = Str::snake($modelCurrent) . self::_ID;

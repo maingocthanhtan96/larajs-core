@@ -29,7 +29,7 @@ class ApiGenerator extends BaseGenerator
             $templateData,
         );
 
-        $fileName = $this->serviceGenerator->folderPages($model['name']) . '.ts';
+        $fileName = $this->serviceGenerator->folderPages($model['name']) . ".{$this->jsType('ext')}";
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
     }
 }

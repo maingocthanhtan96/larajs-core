@@ -30,10 +30,10 @@ class InterfaceCommonGenerator extends BaseGenerator
             2,
         );
 
-        $fileName = $this->serviceGenerator->folderPages($model['name']) . '.ts';
+        $fileName = $this->serviceGenerator->folderPages($model['name']) . ".{$this->jsType('ext')}";
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
         // import
-        $fileName = '/index.ts';
+        $fileName = "/{$this->jsType('index')}";
         $templateDataReal = $this->serviceGenerator->getFile('model', 'package', $fileName);
         $fileImport = "'./{$this->serviceGenerator->folderPages($model['name'])}'";
         if (!stripos($templateDataReal, $fileImport)) {

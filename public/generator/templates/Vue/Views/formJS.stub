@@ -1,0 +1,39 @@
+<script setup>
+import { onBeforeMount } from 'vue';
+import FormElement from '@/components/FormElement/index.vue';
+import { useCancelToken, use{{$NAME_MODEL$}}Forms, use{{$NAME_USES$}} } from '@/uses';
+import { useAppStore } from '@/stores';
+// {{$IMPORT_COMPONENT_NOT_DELETE_THIS_LINE$}}
+
+const { id, form, state, formElement } = use{{$NAME_MODEL$}}Forms();
+const { show } = use{{$NAME_USES$}}();
+const appStore = useAppStore();
+const cancelToken = useCancelToken();
+// {{$IMPORT_USE_NOT_DELETE_THIS_LINE$}}
+
+onBeforeMount(async () => {
+  try {
+    appStore.setLoading(true);
+    // {{$CREATE_NOT_DELETE_THIS_LINE$}}
+    if (id) {
+      const {
+        data: { data: {{$CONST_MODEL_CLASS$}} },
+      } = await show(id, { cancelToken });
+      Object.assign(form, {{$CONST_MODEL_CLASS$}});
+      // {{$EDIT_NOT_DELETE_THIS_LINE$}}
+    }
+    appStore.setLoading(false);
+  } catch (e) {
+    appStore.setLoading(false);
+  }
+});
+</script>
+
+<template>
+  <el-card>
+    <template #header>
+      <h3>{{ id ? $t('route.{{$LANG_MODEL_CLASS$}}_edit') : $t('route.{{$LANG_MODEL_CLASS$}}_create') }}</h3>
+    </template>
+    <FormElement :form-element="formElement" />
+  </el-card>
+</template>

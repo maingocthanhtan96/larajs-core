@@ -3,6 +3,7 @@
 $API_VERSION = env('API_VERSION_GENERATOR', 'v1') . '/';
 
 return [
+    'js_language' => 'ts',
     'api_version' => env('API_VERSION_GENERATOR', 'v1'),
     'permission' => [
         'view_menu' => 'VIEW_MENU',

@@ -49,7 +49,7 @@ class RouteGenerator extends BaseGenerator
             $templateData,
         );
 
-        $templateDataReal = $this->serviceGenerator->getFile('router', 'vue', 'index.ts');
+        $templateDataReal = $this->serviceGenerator->getFile('router', 'vue', $this->jsType('index'));
         $namePermission = strtoupper(\Str::snake($model['name']));
         $viewMenu = config('generator.permission.view_menu');
         $templateData = str_replace(
@@ -72,9 +72,9 @@ class RouteGenerator extends BaseGenerator
             0,
             $templateDataReal,
         );
-        $fileName = "{$this->serviceGenerator->folderPages($model['name'])}.ts";
+        $fileName = "{$this->serviceGenerator->folderPages($model['name'])}.{$this->jsType('ext')}";
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
-        $pathReal = config('generator.path.vue.router') . 'index.ts';
+        $pathReal = config('generator.path.vue.router') . $this->jsType('index');
         $this->serviceFile->createFileReal($pathReal, $templateDataReal);
     }
 }
