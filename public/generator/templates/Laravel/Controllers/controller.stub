@@ -9,7 +9,6 @@
 
 namespace App\Http\Controllers\Api\v1;
 
-use App\Enums\PermissionEnum;
 use App\Repositories\{{MODAL_CLASS}}\{{MODAL_CLASS}}Interface;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Store{{MODAL_CLASS}}Request;
@@ -25,10 +24,7 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
      */
     public function __construct(private readonly {{MODAL_CLASS}}Interface ${{MODAL_CLASS_PARAM}}Repository)
     {
-        $this->middleware('permission:' . PermissionEnum::VISIT->name, ['only' => ['index']]);
-        $this->middleware('permission:' . PermissionEnum::CREATE->name, ['only' => ['store']]);
-        $this->middleware('permission:' . PermissionEnum::EDIT->name, ['only' => ['show', 'update']]);
-        $this->middleware('permission:' . PermissionEnum::DELETE->name, ['only' => ['destroy']]);
+        permission_handle($this);
     }
 
 	/**
