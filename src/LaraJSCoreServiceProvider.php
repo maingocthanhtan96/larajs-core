@@ -64,7 +64,6 @@ class LaraJSCoreServiceProvider extends ServiceProvider
                             Str::contains($attribute, '.'),
                             function (Builder $query) use ($attribute, $searchTerm) {
                                 [$relationName, $relationAttribute] = explode('.', $attribute);
-
                                 $query->orWhereHas($relationName, function (Builder $query) use (
                                     $relationAttribute,
                                     $searchTerm,
@@ -73,7 +72,8 @@ class LaraJSCoreServiceProvider extends ServiceProvider
                                 });
                             },
                             function (Builder $query) use ($attribute, $searchTerm) {
-                                $query->orWhere($attribute, 'LIKE', "%{$searchTerm}%");
+                                $table = $this->getModel()->getTable();
+                                $query->orWhere("$table.$attribute", 'LIKE', "%{$searchTerm}%");
                             },
                         );
                     }
