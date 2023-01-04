@@ -1,19 +1,20 @@
 <script setup lang="ts">
 import { onBeforeMount } from 'vue';
-import FormElement from '@/components/FormElement/index.vue';
-import { useCancelToken, use{{$NAME_MODEL$}}Forms, use{{$NAME_USES$}} } from '@/uses';
-import { useAppStore } from '@/stores';
+import { FormElement } from '@larajs/components';
+import { use{{$NAME_MODEL$}}Forms, use{{$NAME_USES$}} } from '@/uses';
+import { useCancelToken } from '@larajs/uses';
+import { useCoreStore } from '@larajs/core';
 // {{$IMPORT_COMPONENT_NOT_DELETE_THIS_LINE$}}
 
 const { id, form, state, formElement } = use{{$NAME_MODEL$}}Forms();
 const { show } = use{{$NAME_USES$}}();
-const appStore = useAppStore();
+const coreStore = useCoreStore();
 const cancelToken = useCancelToken();
 // {{$IMPORT_USE_NOT_DELETE_THIS_LINE$}}
 
 onBeforeMount(async () => {
   try {
-    appStore.setLoading(true);
+    coreStore.setLoading(true);
     // {{$CREATE_NOT_DELETE_THIS_LINE$}}
     if (id) {
       const {
@@ -22,9 +23,9 @@ onBeforeMount(async () => {
       Object.assign(form, {{$CONST_MODEL_CLASS$}});
       // {{$EDIT_NOT_DELETE_THIS_LINE$}}
     }
-    appStore.setLoading(false);
+    coreStore.setLoading(false);
   } catch (e) {
-    appStore.setLoading(false);
+    coreStore.setLoading(false);
   }
 });
 </script>

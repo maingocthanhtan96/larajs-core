@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import ManagementTable from '@/components/ManagementTable/index.vue';
-import { use{{$NAME_MODEL$}}Tables } from '@/uses';
 import { PermissionType } from '@larajs/common';
+import { ManagementTable } from '@larajs/components';
+import { use{{$NAME_MODEL$}}Tables } from '@/uses';
 
 const { table } = use{{$NAME_MODEL$}}Tables();
 </script>
