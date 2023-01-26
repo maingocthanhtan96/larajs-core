@@ -129,8 +129,6 @@ class SetupCommand extends Command
         $this->comment('INSTALL PACKAGE');
         $this->info('>>> Running: yarn install');
         exec('cd ../../ && yarn install');
-        $this->info('>>> Running: lerna bootstrap');
-        exec('lerna bootstrap');
     }
 
     private function _generateFile()
