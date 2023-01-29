@@ -11,6 +11,7 @@ class ApiGenerator extends BaseGenerator
     {
         parent::__construct();
         $this->path = config('generator.path.vue.api');
+        $this->notDelete = config('generator.not_delete.vue');
 
         $this->_generate($model);
     }
@@ -31,5 +32,19 @@ class ApiGenerator extends BaseGenerator
 
         $fileName = $this->serviceGenerator->folderPages($model['name']) . ".{$this->jsType('ext')}";
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
+        $fileNameReal = $this->jsType('index');
+        $pathApi = "{$this->path}$fileNameReal";
+        if (!file_exists($pathApi)) {
+            file_put_contents($pathApi, $this->notDelete['api']['export_default_resource']);
+        }
+        $templateDataReal = $this->serviceGenerator->getFile('api', 'vue', $fileNameReal);
+        $templateDataReal = $this->serviceGenerator->replaceNotDelete(
+            $this->notDelete['api']['export_default_resource'],
+            "export { default as {$model['name']}Resource } from './{$this->serviceGenerator->folderPages($model['name'])}';",
+            0,
+            $templateDataReal,
+            2,
+        );
+        $this->serviceFile->createFileReal($pathApi, $templateDataReal);
     }
 }

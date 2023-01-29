@@ -494,7 +494,7 @@ class RelationshipGenerator extends BaseGenerator
         );
         //check import
         $importStub = "import request from '@/services/axios';";
-        $resourceStub = "import Resource from '@/api/resource';";
+        $resourceStub = "import { Resource } from '@/core';";
         $checkImport = strpos($templateDataReal, $importStub);
         if (!$checkImport) {
             $templateDataReal = str_replace(

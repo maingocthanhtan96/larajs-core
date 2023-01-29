@@ -267,6 +267,9 @@ return [
                     'relationship' => '// {{$COLUMN_RELATIONSHIP_NOT_DELETE_THIS_LINE$}}',
                 ],
             ],
+            'api' => [
+                'export_default_resource' => '// {{$EXPORT_DEFAULT_RESOURCE_NOT_DELETE_THIS_LINE$}}'
+            ]
         ],
         'package' => [
             'model' => [

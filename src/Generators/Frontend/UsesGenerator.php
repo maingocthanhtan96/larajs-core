@@ -25,7 +25,7 @@ class UsesGenerator extends BaseGenerator
         $templateData = $this->serviceGenerator->get_template($this->jsTemplate('use'), 'Uses/', 'vue');
         $templateData = str_replace(
             '{{$CONST_NAME_MODEL$}}',
-            $this->serviceGenerator->modelNameNotPluralFe($model['name']),
+            $this->serviceGenerator->modelNameNotPlural($model['name']),
             $templateData,
         );
         $templateData = str_replace(

@@ -1,4 +1,4 @@
-import {{$CONST_NAME_MODEL$}}Resource from '@/api/{{$API_VERSION$}}/{{$NAME_ROUTE_API$}}';
+import { {{$CONST_NAME_MODEL$}}Resource } from '@/api/{{$API_VERSION$}}';
 // {{$IMPORT_API_NOT_DELETE_THIS_LINE$}}
 
 export * from './table';
