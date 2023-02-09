@@ -128,10 +128,9 @@ class SetupCommand extends Command
     {
         $this->comment('INSTALL PACKAGE');
         $this->info('>>> Running: yarn install');
+        exec('yarn install');
         if (config('generator.js_language') === 'js') {
-            exec('yarn install');
-        } else {
-            exec('cd ../../ && yarn install');
+            exec('cd frontend && yarn install');
         }
     }
 
