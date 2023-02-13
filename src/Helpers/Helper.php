@@ -312,3 +312,13 @@ if (!function_exists('mime2ext')) {
         return $mimeMap[$mime] ?? false;
     }
 }
+
+// Print sql binding parameters
+if (!function_exists('to_sql_binding')) {
+    function to_sql_binding($query): string
+    {
+        return vsprintf(str_replace('?', '%s', $query->toSql()), collect($query->getBindings())->map(function ($binding) {
+            return is_numeric($binding) ? $binding : "'$binding'";
+        })->toArray());
+    }
+}
