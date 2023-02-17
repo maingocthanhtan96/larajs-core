@@ -22,7 +22,7 @@ class UsesGenerator extends BaseGenerator
         $folderName = $this->serviceGenerator->folderPages($model['name']);
         $path = "$this->path{$folderName}/";
         // create index.ts
-        $templateData = $this->serviceGenerator->get_template($this->jsTemplate('use'), 'Uses/', 'vue');
+        $templateData = $this->serviceGenerator->get_template('use', 'Uses/', 'vue');
         $templateData = str_replace(
             '{{$CONST_NAME_MODEL$}}',
             $this->serviceGenerator->modelNameNotPlural($model['name']),
@@ -81,7 +81,7 @@ class UsesGenerator extends BaseGenerator
         );
         $this->serviceFile->createFile($path, $this->jsType('table'), $templateData);
         // create form.tsx
-        $templateData = $this->serviceGenerator->get_template($this->jsTemplate('form'), 'Uses/', 'vue');
+        $templateData = $this->serviceGenerator->get_template('form', 'Uses/', 'vue');
         $templateData = str_replace(
             '{{$NAME_USES$}}',
             $this->serviceGenerator->modelNamePlural($model['name']),

@@ -1,0 +1,7 @@
+{
+        prop: '{{$PROP_NAME$}}',
+        col: {
+          span: {{$COLUMNS$}},
+        },
+        component: () => ({{$COMPONENT$}}),
+      },

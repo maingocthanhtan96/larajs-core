@@ -52,23 +52,13 @@ class BaseGenerator
         }
     }
 
-    public function jsTemplate(string $type = null)
+    public function getImportJsOrTs($isMono = false): string
     {
         $isJS = config('generator.js_language') === 'js';
-        switch ($type) {
-            case 'addDataRelationship':
-                if ($isJS) return  'addDataRelationshipJS';
-                else return 'addDataRelationship';
-            case 'form':
-                if ($isJS) return  'formJS';
-                else return 'form';
-            case 'use':
-                if ($isJS) return  'useJS';
-                else return 'use';
-            case 'index':
-                if ($isJS) return  'indexJS';
-                else return 'index';
+        if ($isMono) {
+            return $isJS ? '@' : '@larajs';
         }
+        return $isJS ? '@' : '@larajs/cms';
     }
 
     public function rollbackFile($path, $fileName): bool

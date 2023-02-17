@@ -1,0 +1,1 @@
+<el-input-number v-model={form.{{$FIELD_NAME$}}} controls-position="right" class="tw-w-full" />

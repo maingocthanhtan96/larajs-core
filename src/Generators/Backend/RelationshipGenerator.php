@@ -366,7 +366,7 @@ class RelationshipGenerator extends BaseGenerator
         $notDeleteUses = config('generator.not_delete.vue.uses');
         $fileName = "{$this->serviceGenerator->folderPages($model)}/{$this->jsType('index')}";
         $templateDataRealRelationship = $this->serviceGenerator->getFile('uses', 'vue', $fileName);
-        $stubAddData = $this->serviceGenerator->get_template($this->jsTemplate('addDataRelationship'), 'Handler/', 'vue');
+        $stubAddData = $this->serviceGenerator->get_template('addDataRelationship', 'Handler/', 'vue');
         $nameFunctionAll = "all{$model}";
         $stubAddData = str_replace(
             '{{$USE_MODEL_RELATIONSHIP$}}',
@@ -432,7 +432,7 @@ class RelationshipGenerator extends BaseGenerator
         // form
         $templateDataRealForm = $this->serviceGenerator->getFile('views', 'vue', $fileName);
         $useModel = "use{$this->serviceGenerator->modelNamePlural($model)}";
-        $importStub = "import { $useModel } from '@/uses';";
+        $importStub = "import { $useModel } from '{$this->getImportJsOrTs()}/uses';";
         if (!stripos($templateDataRealForm, $useModel)) {
             $templateDataRealForm = $this->serviceGenerator->replaceNotDelete(
                 $notDelete['import_component'],
@@ -493,8 +493,8 @@ class RelationshipGenerator extends BaseGenerator
             2,
         );
         //check import
-        $importStub = "import request from '@/services/axios';";
-        $resourceStub = "import { Resource } from '@/core';";
+        $importStub = "import request from '{$this->getImportJsOrTs()}/services/axios';";
+        $resourceStub = "import { Resource } from '{$this->getImportJsOrTs(true)}/core';";
         $checkImport = strpos($templateDataReal, $importStub);
         if (!$checkImport) {
             $templateDataReal = str_replace(

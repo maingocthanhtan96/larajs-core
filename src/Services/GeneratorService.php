@@ -107,7 +107,7 @@ class GeneratorService
         } elseif ($typeTemplate === 'package') {
             $templatesPath = config('generator.template.package');
         } else {
-            $templatesPath = config('generator.template.vue');
+            $templatesPath = config('generator.template.vue') . config('generator.js_language') . '/';
         }
         $path = $templatesPath . $templatePath . $templateName . '.stub';
         if (file_exists($path)) {

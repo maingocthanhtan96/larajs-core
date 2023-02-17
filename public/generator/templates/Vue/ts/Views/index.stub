@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { PermissionType } from '@larajs/common';
 import { ManagementTable } from '@larajs/components';
-import { use{{$NAME_MODEL$}}Tables } from '@/uses';
+import { use{{$NAME_MODEL$}}Tables } from '@larajs/cms/uses';
 
 const { table } = use{{$NAME_MODEL$}}Tables();
 </script>

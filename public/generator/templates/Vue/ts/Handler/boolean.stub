@@ -1,0 +1,3 @@
+<template #default="{ row }">
+            <el-tag>{{row.{{$FIELD_NAME$}} === 1}}</el-tag>
+          </template>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onBeforeMount } from 'vue';
 import { FormElement } from '@larajs/components';
-import { use{{$NAME_MODEL$}}Forms, use{{$NAME_USES$}} } from '@/uses';
+import { use{{$NAME_MODEL$}}Forms, use{{$NAME_USES$}} } from '@larajs/cms/uses';
 import { useCancelToken } from '@larajs/uses';
 import { useCoreStore } from '@larajs/core';
 // {{$IMPORT_COMPONENT_NOT_DELETE_THIS_LINE$}}

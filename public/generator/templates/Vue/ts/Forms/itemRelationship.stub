@@ -1,0 +1,10 @@
+{
+        prop: '{{$PROP_NAME$}}',
+        col: {
+          span: {{$COLUMNS$}},
+        },
+        item: {
+          label: {{$LABEL$}},
+        },
+        component: () => ({{$COMPONENT$}}),
+      },

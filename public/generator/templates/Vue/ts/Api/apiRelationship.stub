@@ -1,0 +1,7 @@
+all(props = {}) {
+    return request({
+      url: `${this.uri}/all`,
+      method: 'get',
+      ...props,
+    });
+  }

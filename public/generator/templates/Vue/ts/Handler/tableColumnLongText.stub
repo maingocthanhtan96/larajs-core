@@ -1,0 +1,1 @@
+<div v-sane-html={row.{{$FIELD_NAME$}}} />

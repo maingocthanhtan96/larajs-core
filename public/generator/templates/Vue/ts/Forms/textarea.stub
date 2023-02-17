@@ -1,0 +1,1 @@
+<el-input v-model={form.{{$FIELD_NAME$}}} type="textarea" rows={5} />

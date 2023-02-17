@@ -22,7 +22,7 @@ class FormGenerator extends BaseGenerator
     private function _generate($model)
     {
         $pathTemplate = 'Views/';
-        $templateData = $this->serviceGenerator->get_template($this->jsTemplate('form'), $pathTemplate, 'vue');
+        $templateData = $this->serviceGenerator->get_template('form', $pathTemplate, 'vue');
         $templateData = str_replace(
             '{{$NAME_MODEL$}}',
             $this->serviceGenerator->modelNameNotPlural($model['name']),
