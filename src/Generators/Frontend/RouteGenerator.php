@@ -68,7 +68,7 @@ class RouteGenerator extends BaseGenerator
         $nameModelImport = $this->serviceGenerator->nameAttribute($model['name']);
         $templateDataReal = $this->serviceGenerator->replaceNotDelete(
             $this->notDelete['import'],
-            "import $nameModel from './modules/$nameModelImport';",
+            "import $nameModel from '{$this->getImportJsOrTs()}/router/modules/$nameModelImport';",
             0,
             $templateDataReal,
         );

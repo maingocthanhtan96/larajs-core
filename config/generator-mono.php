@@ -69,7 +69,7 @@ return [
                 'resource_js' => '../cms/src/',
             ],
             'package' => [
-                'model' => '../../packages/common/models/',
+                'model' => '../../packages/common/src/models/',
             ],
         ],
         'vue' => [

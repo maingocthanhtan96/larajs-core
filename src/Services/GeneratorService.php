@@ -148,7 +148,7 @@ class GeneratorService
      * get file.
      *
      * @param  string  $nameConfig
-     * @param  string  $type
+     * @param  string  $type laravel|vue|package
      * @param  string  $fileName
      * @return string
      */

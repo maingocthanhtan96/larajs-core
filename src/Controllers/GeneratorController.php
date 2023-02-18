@@ -27,6 +27,7 @@ use LaraJS\Core\Generators\BackendUpdate\ModelUpdateGenerator;
 use LaraJS\Core\Generators\BackendUpdate\RequestUpdateGenerator;
 use LaraJS\Core\Generators\BackendUpdate\SeederUpdateGenerator;
 use LaraJS\Core\Generators\BackendUpdate\TestsUpdateGenerator;
+use LaraJS\Core\Generators\BaseGenerator;
 use LaraJS\Core\Generators\Frontend\ApiGenerator;
 use LaraJS\Core\Generators\Frontend\FormGenerator;
 use LaraJS\Core\Generators\Frontend\InterfaceCommonGenerator;
@@ -45,10 +46,12 @@ class GeneratorController extends BaseLaraJSController
 {
     /*@var service*/
     private GeneratorService $serviceGenerator;
+    private BaseGenerator $baseGenerator;
 
     public function __construct()
     {
         $this->serviceGenerator = new GeneratorService();
+        $this->baseGenerator = new BaseGenerator();
     }
 
     /**
@@ -299,23 +302,33 @@ class GeneratorController extends BaseLaraJSController
             $path = config('generator.path.laravel.provider');
             $fileService->createFileReal("$path/$fileName", $templateRepositoryProviderDataReal);
             // END - event provider
-            // START - api route VueJS
-            $pathApiRouteVueJSReal = config('generator.path.vue.router') . 'index.ts';
-            $templateDataApiRouteVueJSReal = $this->serviceGenerator->getFile('router', 'vue', 'index.ts');
-            $templateDataApiRouteVueJSReal = str_replace(
+            // START - api VueJS
+            $pathApiVueJSReal = config('generator.path.vue.api') . 'index.ts';
+            $templateDataApiVueJSReal = $this->serviceGenerator->getFile('api', 'vue', 'index.ts');
+            $templateDataApiVueJSReal = str_replace(
+                "export { default as {$model['name']}Resource } from './{$generatorService->nameAttribute($model['name'])}';\n",
+                '',
+                $templateDataApiVueJSReal,
+            );
+            $fileService->createFileReal($pathApiVueJSReal, $templateDataApiVueJSReal);
+            // END - api VueJS
+            // START - route VueJS
+            $pathRouteVueJSReal = config('generator.path.vue.router') . 'index.ts';
+            $templateDataRouteVueJSReal = $this->serviceGenerator->getFile('router', 'vue', 'index.ts');
+            $templateDataRouteVueJSReal = str_replace(
                 "import {$generatorService->modelNameNotPluralFe(
                     $model['name'],
-                )} from './modules/{$generatorService->nameAttribute($model['name'])}';\n",
+                )} from '{$this->baseGenerator->getImportJsOrTs()}/router/modules/{$generatorService->nameAttribute($model['name'])}';\n",
                 '',
-                $templateDataApiRouteVueJSReal,
+                $templateDataRouteVueJSReal,
             );
-            $templateDataApiRouteVueJSReal = str_replace(
+            $templateDataRouteVueJSReal = str_replace(
                 "{$generatorService->modelNameNotPluralFe($model['name'])},\n",
                 '',
-                $templateDataApiRouteVueJSReal,
+                $templateDataRouteVueJSReal,
             );
-            $fileService->createFileReal($pathApiRouteVueJSReal, $templateDataApiRouteVueJSReal);
-            // END - api route VueJS
+            $fileService->createFileReal($pathRouteVueJSReal, $templateDataRouteVueJSReal);
+            // END - route VueJS
             // START - USES
             $templateDataUsesIndex = $this->serviceGenerator->getFile('uses', 'vue', 'index.ts');
             $fileNameUses = $this->serviceGenerator->folderPages($model['name']);
@@ -323,7 +336,20 @@ class GeneratorController extends BaseLaraJSController
             $pathUses = config('generator.path.vue.uses');
             $fileService->createFileReal("{$pathUses}index.ts", $templateDataUsesIndex);
             // END - USES
+            // START - package common
+            if (config('generator.js_language') === 'ts') {
+                $pathPackageModelReal = config('generator.path.package.model') . 'index.ts';
+                $templateDataPackageModelReal = $this->serviceGenerator->getFile('model', 'package', 'index.ts');
+                $templateDataPackageModelReal = str_replace(
+                    "export * from './{$generatorService->nameAttribute($model['name'])}';\n",
+                    '',
+                    $templateDataPackageModelReal,
+                );
+                $fileService->createFileReal($pathPackageModelReal, $templateDataPackageModelReal);
+            }
+            // END - package common
             $generator->delete();
+            $this->__runPrettier();
 
             return $this->jsonMessage(trans('messages.success'));
         } catch (\Exception $e) {
@@ -591,12 +617,17 @@ class GeneratorController extends BaseLaraJSController
         if (!$this->serviceGenerator->getOptions(config('generator.model.options.ignore_migrate'), $model['options'])) {
             Artisan::call('migrate');
         }
+        Artisan::call('vue-i18n:generate');
+        $this->__runPrettier();
+    }
+
+    private function __runPrettier(): void
+    {
         $basePath = apps_path();
         if (config('generator.js_language') === 'js') {
             $basePath = base_path();
         }
-        Artisan::call('vue-i18n:generate');
-        exec("sleep 3 && cd $basePath && node ./node_modules/.bin/pretty-quick");
+        exec_in_background("(sleep 1 && cd $basePath && node ./node_modules/.bin/pretty-quick)");
     }
 
     private function _exportDataGenerator()
