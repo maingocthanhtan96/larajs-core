@@ -25,24 +25,32 @@ class LaraJSCoreServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->app->singleton('larajs.setup', function () {
-            return new SetupCommand;
+            return new SetupCommand();
         });
-        $this->commands(
-            'larajs.setup'
+        $this->commands('larajs.setup');
+        $this->publishes(
+            [
+                __DIR__ . '/../config/generator.php' => config_path('generator.php'),
+            ],
+            'larajs-core-config',
         );
-        $this->publishes([
-            __DIR__.'/../config/generator.php' => config_path('generator.php'),
-        ], 'larajs-core-config');
-        $this->mergeConfigFrom(
-            __DIR__.'/../config/generator.php',
-            'generator'
+        $this->mergeConfigFrom(__DIR__ . '/../config/generator.php', 'generator');
+        $this->publishes(
+            [
+                __DIR__ . '/../public/generator/templates/Laravel' => public_path('vendor/generator/templates/Laravel'),
+                __DIR__ . '/../public/generator/templates/Package' => public_path('vendor/generator/templates/Package'),
+                __DIR__ . '/../public/generator/templates/Vue/' . config('generator.js_language') => public_path(
+                    'vendor/generator/templates/Vue/' . config('generator.js_language'),
+                ),
+            ],
+            'larajs-core-public',
         );
-        $this->publishes([
-            __DIR__.'/../public' => public_path('vendor'),
-        ], 'larajs-core-public');
-        $this->publishes([
-            __DIR__.'/../database/migrations' => database_path('migrations'),
-        ], 'larajs-core-migrations');
+        $this->publishes(
+            [
+                __DIR__ . '/../database/migrations' => database_path('migrations'),
+            ],
+            'larajs-core-migrations',
+        );
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
     }
 
