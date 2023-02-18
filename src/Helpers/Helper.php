@@ -23,9 +23,16 @@ if (!function_exists('package_path')) {
     function package_path(string $type, string $path): string
     {
         return match ($type) {
-            'common' => base_path("../../packages/common/lib/$path"),
+            'common' => base_path("../../packages/common/src/$path"),
             default => base_path("../../packages/$path"),
         };
+    }
+}
+
+if (!function_exists('cms_path')) {
+    function cms_path(string $path = ''): string
+    {
+        return base_path("../cms/src/$path");
     }
 }
 

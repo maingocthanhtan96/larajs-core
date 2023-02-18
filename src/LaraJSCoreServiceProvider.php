@@ -34,17 +34,16 @@ class LaraJSCoreServiceProvider extends ServiceProvider
             ],
             'larajs-core-config',
         );
-        $this->mergeConfigFrom(__DIR__ . '/../config/generator.php', 'generator');
         $this->publishes(
             [
-                __DIR__ . '/../public/generator/templates/Laravel' => public_path('vendor/generator/templates/Laravel'),
-                __DIR__ . '/../public/generator/templates/Package' => public_path('vendor/generator/templates/Package'),
-                __DIR__ . '/../public/generator/templates/Vue/' . config('generator.js_language') => public_path(
-                    'vendor/generator/templates/Vue/' . config('generator.js_language'),
-                ),
+                __DIR__ . '/../config/generator-mono.php' => config_path('generator.php'),
             ],
-            'larajs-core-public',
+            'larajs-core-config-mono',
         );
+        $this->mergeConfigFrom(__DIR__ . '/../config/generator.php', 'generator');
+        $this->publishes([
+            __DIR__.'/../public' => public_path('vendor'),
+        ], 'larajs-core-public');
         $this->publishes(
             [
                 __DIR__ . '/../database/migrations' => database_path('migrations'),
