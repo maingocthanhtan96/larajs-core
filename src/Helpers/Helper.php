@@ -313,6 +313,17 @@ if (!function_exists('to_sql_binding')) {
     }
 }
 
+if (!function_exists('exec_in_background')) {
+    function exec_in_background($cmd): void
+    {
+        if (str_starts_with(php_uname(), "Windows")){
+            pclose(popen("start /B ". $cmd, "r"));
+        }else {
+            exec($cmd . " > /dev/null &");
+        }
+    }
+}
+
 function package_path(string $type, string $path): string
 {
     return match ($type) {

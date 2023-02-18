@@ -119,9 +119,8 @@ class GeneratorController extends BaseLaraJSController
                 'table' => $this->serviceGenerator->tableName($model['name']),
                 'files' => json_encode($files),
             ]);
-
-            $this->_runCommand($model);
             $this->_exportDataGenerator();
+            $this->_runCommand($model);
 
             return $this->jsonMessage(trans('messages.success'));
         } catch (\Exception $e) {
@@ -163,8 +162,8 @@ class GeneratorController extends BaseLaraJSController
             $generator->update([
                 'field' => json_encode($fields),
             ]);
-            $this->_runCommand();
             $this->_exportDataGenerator();
+            $this->_runCommand();
 
             return $this->jsonMessage(trans('messages.success'));
         } catch (\Exception $e) {
@@ -597,7 +596,7 @@ class GeneratorController extends BaseLaraJSController
             $basePath = base_path();
         }
         Artisan::call('vue-i18n:generate');
-        exec("cd $basePath && ./node_modules/pretty-quick/bin/pretty-quick.js");
+        exec("sleep 3 && cd $basePath && node ./node_modules/.bin/pretty-quick");
     }
 
     private function _exportDataGenerator()
