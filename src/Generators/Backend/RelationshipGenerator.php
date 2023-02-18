@@ -375,7 +375,7 @@ class RelationshipGenerator extends BaseGenerator
         );
         $stubAddData = str_replace(
             '{{$MODEL_RELATIONSHIP$}}',
-            $this->serviceGenerator->modelNameNotPluralFe($model),
+            $this->serviceGenerator->modelNameNotPlural($model),
             $stubAddData,
         );
         if (!stripos($templateDataRealRelationship, $nameFunctionAll)) {

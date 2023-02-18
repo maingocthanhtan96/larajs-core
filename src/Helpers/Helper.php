@@ -19,23 +19,6 @@ if(!function_exists('write_log_exception')){
     }
 }
 
-if (!function_exists('package_path')) {
-    function package_path(string $type, string $path): string
-    {
-        return match ($type) {
-            'common' => base_path("../../packages/common/src/$path"),
-            default => base_path("../../packages/$path"),
-        };
-    }
-}
-
-if (!function_exists('cms_path')) {
-    function cms_path(string $path = ''): string
-    {
-        return base_path("../cms/src/$path");
-    }
-}
-
 /**
  * @param  string  $direction
  * @return string
@@ -328,4 +311,22 @@ if (!function_exists('to_sql_binding')) {
             return is_numeric($binding) ? $binding : "'$binding'";
         })->toArray());
     }
+}
+
+function package_path(string $type, string $path): string
+{
+    return match ($type) {
+        'common' => base_path("../../packages/common/src/$path"),
+        default => base_path("../../packages/$path"),
+    };
+}
+
+function cms_path(string $path = ''): string
+{
+    return base_path("../cms/src/$path");
+}
+
+function apps_path(string $path = ''): string
+{
+    return base_path("../../$path");
 }

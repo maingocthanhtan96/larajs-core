@@ -592,7 +592,10 @@ class GeneratorController extends BaseLaraJSController
         if (!$this->serviceGenerator->getOptions(config('generator.model.options.ignore_migrate'), $model['options'])) {
             Artisan::call('migrate');
         }
-        $basePath = base_path();
+        $basePath = apps_path();
+        if (config('generator.js_language') === 'js') {
+            $basePath = base_path();
+        }
         Artisan::call('vue-i18n:generate');
         exec("cd $basePath && ./node_modules/pretty-quick/bin/pretty-quick.js");
     }
