@@ -21,5 +21,9 @@ class LaraJSCore
             },
         );
         Route::apiResource('generators', '\\LaraJS\\Core\Controllers\\GeneratorController');
+        Route::controller('\\LaraJS\\Core\Controllers\\LaraJSController')->group(function () {
+            Route::get('/language/{language}', 'setLanguage');
+            Route::post('/logging', 'logging');
+        });
     }
 }
