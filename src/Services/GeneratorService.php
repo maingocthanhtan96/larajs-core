@@ -1333,6 +1333,7 @@ class GeneratorService
                 $dbType['year'],
                 $dbType['string'],
                 $dbType['text'],
+                $dbType['longtext'],
                 $dbType['enum']
                     => "{$field['field_name']}: string;",
                 $dbType['json'] => "{$field['field_name']}: any;",
