@@ -303,11 +303,11 @@ return [
         ],
         'vue' => [
             'tinymce' => [
-                'file' => "import Tinymce from '@/components/Tinymce/index.vue';",
+                'file' => "import Tinymce from '@larajs/components/Tinymce/index.vue';",
                 'name' => 'Tinymce,',
             ],
             'json_editor' => [
-                'file' => "import JsonEditor from '@/components/JsonEditor/index.vue';",
+                'file' => "import JsonEditor from '@larajs/components/JsonEditor/index.vue';",
                 'name' => 'JsonEditor,',
             ],
         ],
