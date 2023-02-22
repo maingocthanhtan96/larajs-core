@@ -268,8 +268,8 @@ return [
                 ],
             ],
             'api' => [
-                'export_default_resource' => '// {{$EXPORT_DEFAULT_RESOURCE_NOT_DELETE_THIS_LINE$}}'
-            ]
+                'export_default_resource' => '// {{$EXPORT_DEFAULT_RESOURCE_NOT_DELETE_THIS_LINE$}}',
+            ],
         ],
         'package' => [
             'model' => [
@@ -303,11 +303,11 @@ return [
         ],
         'vue' => [
             'tinymce' => [
-                'file' => "import Tinymce from '@larajs/components/Tinymce/index.vue';",
+                'file' => "import { Tinymce } from '@larajs/components';",
                 'name' => 'Tinymce,',
             ],
             'json_editor' => [
-                'file' => "import JsonEditor from '@larajs/components/JsonEditor/index.vue';",
+                'file' => "import { JsonEditor } from '@larajs/components;",
                 'name' => 'JsonEditor,',
             ],
         ],
