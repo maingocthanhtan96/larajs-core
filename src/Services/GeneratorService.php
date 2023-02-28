@@ -1130,8 +1130,14 @@ class GeneratorService
 
     public function replaceField($field, $model, $formTemplate): string
     {
+        $dbType = config('generator.db_type');
         $attribute = "t('table.{$this->tableNameNotPlural($model['name'])}.{$field['field_name']}')";
         $formTemplate = str_replace('{{$ATTRIBUTE_FIELD$}}', $attribute, $formTemplate);
+        if ($field['db_type'] === $dbType['enum']) {
+            $formTemplate = str_replace('{{$TRIGGER$}}', 'change', $formTemplate);
+        } else {
+            $formTemplate = str_replace('{{$TRIGGER$}}', 'blur', $formTemplate);
+        }
 
         return str_replace('{{$FIELD$}}', $field['field_name'], $formTemplate);
     }
