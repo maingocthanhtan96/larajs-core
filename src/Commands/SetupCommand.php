@@ -17,10 +17,10 @@ class SetupCommand extends Command
     protected FileService $serviceFile;
 
     /** @var string */
-    protected string $basePath;
+    protected string $env;
 
     /** @var string */
-    protected string $env;
+    protected string $envTesting;
 
     /** @var string */
     protected string $appUrlStub;
@@ -85,8 +85,8 @@ class SetupCommand extends Command
         parent::__construct();
         $this->serviceGenerator = new GeneratorService();
         $this->serviceFile = new FileService();
-        $this->basePath = base_path();
         $this->env = '.env';
+        $this->envTesting = '.env.testing';
         $this->cacheConfig = base_path('bootstrap/cache/config.php');
     }
 
@@ -153,7 +153,12 @@ class SetupCommand extends Command
     private function _copyEnvTesting()
     {
         $this->comment('COPY ENV TO TESTING');
-        exec('cp .env .env.testing');
+        exec("cp {$this->env} {$this->envTesting}");
+        $templateEnv = File::get(base_path($this->envTesting));
+        $dbName = "DB_DATABASE={$this->database}";
+        $templateEnv = str_replace($dbName, "{$dbName}_testing", $templateEnv);
+        File::put(base_path($this->envTesting), $templateEnv);
+        $this->warn("Created a {$this->envTesting} file. Please create a database name ({$this->database}_testing) if you run command: php artisan test");
     }
 
     private function _createEnv(): void
@@ -192,7 +197,7 @@ class SetupCommand extends Command
         $this->_outputArtisan('config:cache');
     }
 
-    private function _replaceEnvConfig($fileEnvEx)
+    private function _replaceEnvConfig($fileEnvEx): string
     {
         $fileEnvEx = str_replace($this->appUrlStub, $this->appUrl, $fileEnvEx);
         $fileEnvEx = str_replace($this->dbHostStub, $this->host, $fileEnvEx);
@@ -203,9 +208,9 @@ class SetupCommand extends Command
         return str_replace($this->dbPasswordStub, $this->password, $fileEnvEx);
     }
 
-    private function _outputArtisan($command, $params = [])
+    private function _outputArtisan($command)
     {
-        Artisan::call($command, $params, $this->getOutput());
+        Artisan::call($command, [], $this->getOutput());
     }
 
     private function _textSignature(): string

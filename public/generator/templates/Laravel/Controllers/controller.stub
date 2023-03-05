@@ -122,6 +122,4 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
 	    	return $this->jsonError($e);
 	    }
     }
-
-    //{{CONTROLLER_RELATIONSHIP_NOT_DELETE_THIS_LINE}}
 }

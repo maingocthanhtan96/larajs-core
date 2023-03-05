@@ -1,6 +1,6 @@
 {
     "name": "larajs/core",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "autoload": {
         "psr-4": {
             "LaraJS\\Core\\": "src/",
@@ -25,7 +25,8 @@
         "illuminate/routing": "^9.0|^10.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5|^10.0"
+        "phpunit/phpunit": "^9.5|^10.0",
+        "laravel/pint": "^1.6"
     },
     "extra": {
         "laravel": {

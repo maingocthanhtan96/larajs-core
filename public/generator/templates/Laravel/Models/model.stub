@@ -19,6 +19,4 @@ class {{MODEL_CLASS}} extends BaseModel
     protected $fillable = [
     	{{FIELDS}}
     ];
-
-	//{{RELATIONS_NOT_DELETE_THIS_LINE}}
 }

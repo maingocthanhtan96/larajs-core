@@ -71,7 +71,7 @@ class RelationshipGenerator extends BaseGenerator
         $templateInverse = str_replace('{{RELATION_MODEL_CLASS}}', $modelCurrent, $templateInverse);
         if ($relationship === $this->relationship['belongs_to_many']) {
             $templateInverse = str_replace('{{RELATION}}', 'belongsToMany', $templateInverse);
-            $templateModel = str_replace(
+            $templateModel   = str_replace(
                 '{{FIELD_RELATIONSHIP}}',
                 "'" .
                     self::_REF_LOWER .
@@ -152,8 +152,8 @@ class RelationshipGenerator extends BaseGenerator
             $this->_generateController($model, $modelCurrent, $options, $column2, $relationship);
             $this->_generateTests($model);
             $this->_generateTests($modelCurrent);
-            $this->_generateRepository($modelCurrent, $model);
-            $this->_generateRepository($model, $modelCurrent);
+//            $this->_generateRepository($modelCurrent, $model);
+//            $this->_generateRepository($model, $modelCurrent);
             $this->_generateObserver($modelCurrent, $model);
             $this->_generateObserver($model, $modelCurrent);
             //generate frontend
@@ -206,6 +206,7 @@ class RelationshipGenerator extends BaseGenerator
             $templateRules = $this->_getHandlerTemplate();
             $templateRules = str_replace('{{$FIELD$}}', Str::snake($model) . self::_ID, $templateRules);
             $templateRules = str_replace('{{$ATTRIBUTE_FIELD$}}', 't(\'route.' . Str::snake($model) . '\')', $templateRules);
+            $templateRules = str_replace('{{$TRIGGER$}}', 'change', $templateRules);
             $templateDataReal = $this->serviceGenerator->replaceNotDelete($notDelete['rules'], $templateRules, 1, $templateDataReal, 2);
         }
         $field = $isMTM ? Str::snake($model) . self::_IDS : Str::snake($model) . self::_ID;
@@ -650,12 +651,7 @@ class RelationshipGenerator extends BaseGenerator
                 $this->serviceGenerator->modelNameNotPluralFe($modelRelationship),
                 $templateDataFunc,
             );
-            $templateDataRealFunc = $this->serviceGenerator->replaceNotDelete(
-                $notDelete['relationship'],
-                $templateDataFunc,
-                1,
-                $templateDataRealFunc,
-            );
+            $templateDataRealFunc = $this->serviceGenerator->replaceEndFile($templateDataRealFunc, $templateDataFunc, 1);
             $fileNameFunc = $path . $fileNameFunc;
             $this->serviceFile->createFileReal($fileNameFunc, $templateDataRealFunc);
         }
@@ -663,7 +659,6 @@ class RelationshipGenerator extends BaseGenerator
 
     private function _generateTests($modelRelationship)
     {
-        $notDelete = config('generator.not_delete.laravel.tests');
         $fileName = "{$modelRelationship}Test.php";
         $templateDataReal = $this->serviceGenerator->getFile('tests.feature', 'laravel', $fileName);
         if (!$templateDataReal) {
@@ -676,12 +671,7 @@ class RelationshipGenerator extends BaseGenerator
             $this->serviceGenerator->urlResource($modelRelationship),
             $templateDataFunc,
         );
-        $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-            $notDelete['relationship'],
-            $templateDataFunc,
-            1,
-            $templateDataReal,
-        );
+        $templateDataReal = $this->serviceGenerator->replaceEndFile($templateDataReal, $templateDataFunc, 1);
         $fileNameFunc = config('generator.path.laravel.tests.feature') . $fileName;
         $this->serviceFile->createFileReal($fileNameFunc, $templateDataReal);
     }
@@ -912,14 +902,8 @@ class RelationshipGenerator extends BaseGenerator
 
     private function _replaceFile($model, $templateModel, $templateReal)
     {
-        $templateReal = $this->serviceGenerator->replaceNotDelete(
-            $this->notDelete['relationship'],
-            $templateModel,
-            1,
-            $templateReal,
-        );
-        $path = config('generator.path.laravel.model') . $model . '.php';
-        $this->serviceFile->createFileReal($path, $templateReal);
+        $templateReal = $this->serviceGenerator->replaceEndFile($templateReal, $templateModel, 1);
+        $this->serviceFile->createFileReal(config('generator.path.laravel.model') . "$model.php", $templateReal);
     }
 
     private function _replaceTemplateRelationship($model, $modelDif, $templateData): string

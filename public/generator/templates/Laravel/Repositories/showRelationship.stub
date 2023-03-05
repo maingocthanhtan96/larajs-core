@@ -1,1 +1,0 @@
-${{MODEL}}->{{SNAKE_MODEL_RELATIONSHIP_ID}} = \Arr::pluck(${{MODEL}}->{{MODEL_RELATIONSHIP}}()->get(), 'pivot.{{SNAKE_MODEL_RELATIONSHIP_ID}}');

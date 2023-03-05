@@ -24,7 +24,7 @@ onBeforeMount(async () => {
       // {{$EDIT_NOT_DELETE_THIS_LINE$}}
     }
     coreStore.setLoading(false);
-  } catch (e) {
+  } catch {
     coreStore.setLoading(false);
   }
 });

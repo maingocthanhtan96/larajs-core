@@ -28,8 +28,6 @@ class ModelGenerator extends BaseGenerator
             $this->serviceGenerator->tableName($model['name']),
             $templateData,
         );
-        //        $templateData = str_replace('{{CATS}}', $this->_generateYear($fields), $templateData);
-
         //create sort delete
         $importLaravel = config('generator.import.laravel.use');
         $importLaravelModel = config('generator.import.laravel.model');

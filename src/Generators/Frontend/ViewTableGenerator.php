@@ -10,7 +10,6 @@ class ViewTableGenerator extends BaseGenerator
     {
         parent::__construct();
         $this->path = config('generator.path.vue.views');
-        $this->notDelete = config('generator.not_delete.vue.views');
 
         $this->_generate($model);
     }

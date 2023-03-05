@@ -23,7 +23,7 @@ onBeforeMount(async () => {
       // {{$EDIT_NOT_DELETE_THIS_LINE$}}
     }
     appStore.setLoading(false);
-  } catch (e) {
+  } catch {
     appStore.setLoading(false);
   }
 });

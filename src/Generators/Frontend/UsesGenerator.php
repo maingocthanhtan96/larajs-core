@@ -122,13 +122,7 @@ class UsesGenerator extends BaseGenerator
         // import uses/index.ts
         $fileNameReal = $this->jsType('index');
         $templateDataReal = $this->serviceGenerator->getFile('uses', 'vue', $fileNameReal);
-        $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-            $this->notDelete['uses']['use'],
-            "export * from './$folderName';",
-            0,
-            $templateDataReal,
-            2,
-        );
+        $templateDataReal .= "export * from './$folderName';";
         $this->serviceFile->createFileReal("{$this->path}$fileNameReal", $templateDataReal);
     }
 }

@@ -3,7 +3,7 @@
 $API_VERSION = env('API_VERSION_GENERATOR', 'v1') . '/';
 
 return [
-    'js_language' => 'ts',
+    'js_language' => 'js',
     'api_version' => env('API_VERSION_GENERATOR', 'v1'),
     'permission' => [
         'view_menu' => 'VIEW_MENU',
@@ -17,7 +17,6 @@ return [
     'template' => [
         'laravel' => public_path('vendor/generator/templates/Laravel/'),
         'vue' => public_path('vendor/generator/templates/Vue/'),
-        'package' => public_path('vendor/generator/templates/Package/'),
     ],
 
     /*
@@ -164,16 +163,10 @@ return [
     */
     'not_delete' => [
         'laravel' => [
-            'controller' => [
-                'relationship' => '//{{CONTROLLER_RELATIONSHIP_NOT_DELETE_THIS_LINE}}',
-            ],
             'model' => [
                 'use_class' => '//{{USE_CLASS_NOT_DELETE_THIS_LINE}}',
                 'use' => '//{{USE_NOT_DELETE_THIS_LINE}}',
                 'timestamps' => '//{{TIMESTAMPS_NOT_DELETE_THIS_LINE}}',
-                'relationship' => '//{{RELATIONS_NOT_DELETE_THIS_LINE}}',
-                'cats' => '//{{CATS_NOT_DELETE_THIS_LINE}}',
-                'fill_able' => '//{{FILL_ABLE_NOT_DELETE_THIS_LINE}}',
             ],
             'route' => [
                 'api' => [
@@ -202,11 +195,6 @@ return [
             ],
             'repository' => [
                 'use_class' => '//{{USE_CLASS_NOT_DELETE_THIS_LINE}}',
-                'relationship_mtm' => '//{{REPOSITORY_RELATIONSHIP_MTM_NOT_DELETE_THIS_LINE}}',
-                'relationship_mtm_create' => '//{{REPOSITORY_RELATIONSHIP_MTM_CREATE_NOT_DELETE_THIS_LINE}}',
-                'relationship_mtm_show' => '//{{REPOSITORY_RELATIONSHIP_MTM_SHOW_NOT_DELETE_THIS_LINE}}',
-                'relationship_mtm_update' => '//{{REPOSITORY_RELATIONSHIP_MTM_UPDATE_NOT_DELETE_THIS_LINE}}',
-                'relationship_mtm_delete' => '//{{REPOSITORY_RELATIONSHIP_MTM_DELETE_NOT_DELETE_THIS_LINE}}',
                 'provider' => [
                     'use_class' => '//{{USE_CLASS_SERVICE_PROVIDER_NOT_DELETE_THIS_LINE}}',
                     'register' => '//{{REGISTER_SERVICE_PROVIDER_NOT_DELETE_THIS_LINE}}',
@@ -221,7 +209,6 @@ return [
                 ],
             ],
             'tests' => [
-                'relationship' => '//{{TESTS_RELATIONSHIP_NOT_DELETE_THIS_LINE}}',
             ],
         ],
         'vue' => [
@@ -230,32 +217,20 @@ return [
                 'async' => '// {{$ROUTE_ASYNC_NOT_DELETE_THIS_LINE$}}',
             ],
             'form' => [
-                'item' => '<!--{{$FROM_ITEM_NOT_DELETE_THIS_LINE$}}-->',
                 'fields' => '// {{$FORM_FIELDS_NOT_DELETE_THIS_LINE$}}',
                 'rules' => '// {{$RULES_NOT_DELETE_THIS_LINE$}}',
                 'import_component' => '// {{$IMPORT_COMPONENT_NOT_DELETE_THIS_LINE$}}',
-                'import_component_name' => '// {{$IMPORT_COMPONENT_NAME_NOT_DELETE_THIS_LINE$}}',
                 'create' => '// {{$CREATE_NOT_DELETE_THIS_LINE$}}',
                 'edit' => '// {{$EDIT_NOT_DELETE_THIS_LINE$}}',
-                'methods' => '// {{$METHODS_NOT_DELETE_THIS_LINE$}}',
                 'data' => '// {{$DATA_NOT_DELETE_THIS_LINE$}}',
-                'stringify' => '// {{$FILE_JSON_STRINGIFY_NOT_DELETE_THIS_LINE$}}',
-                'reset_field' => '// {{$RESET_FIELD_NOT_DELETE_THIS_LINE$}}', // reset file
                 'api' => '// {{$API_NOT_DELETE_THIS_LINE$}}',
-                'this_check' => '// {{$NOT_DELETE$}}',
                 'column' => '// {{$COLUMN_NOT_DELETE_THIS_LINE$}}',
                 'state_root' => '// {{$STATE_ROOT_NOT_DELETE_THIS_LINE$}}',
-            ],
-            'views' => [
-                'templates' => '<!--{{$TEMPLATES_NOT_DELETE_THIS_LINE$}}-->',
-                'headings' => '// {{$HEADING_FIELDS_NOT_DELETE_THIS_LINE$}}',
-                'column_classes' => '// {{$COLUMN_CLASSES_FIELDS_NOT_DELETE_THIS_LINE$}}',
             ],
             'uses' => [
                 'use' => '// {{$IMPORT_USE_NOT_DELETE_THIS_LINE$}}',
                 'form' => [
                     'item' => '// {{$FORM_ITEM_NOT_DELETE_THIS_LINE$}}',
-                    'import' => '// {{$IMPORT_NOT_DELETE_THIS_LINE$}}',
                 ],
                 'api' => '// {{$IMPORT_API_NOT_DELETE_THIS_LINE$}}',
                 'function' => [
@@ -268,13 +243,6 @@ return [
                 ],
             ],
             'api' => [
-                'export_default_resource' => '// {{$EXPORT_DEFAULT_RESOURCE_NOT_DELETE_THIS_LINE$}}',
-            ],
-        ],
-        'package' => [
-            'model' => [
-                'index' => '// {{$MODEL_NOT_DELETE_THIS_LINE$}}',
-                'import' => '// {{$IMPORT_COMMON_NOT_DELETE_THIS_LINE$}}',
             ],
         ],
     ],

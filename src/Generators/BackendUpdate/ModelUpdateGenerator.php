@@ -19,10 +19,6 @@ class ModelUpdateGenerator extends BaseGenerator
     {
         $templateDataReal = $this->serviceGenerator->getFile('model', 'laravel', $model['name'] . '.php');
         $templateDataReal = $this->_generateUpdateFields($updateFields['updateFields'], $templateDataReal);
-        //        $checkGenerateYear = $this->_generateYear($updateFields);
-        //        if ($checkGenerateYear) {
-        //            $templateDataReal = $this->serviceGenerator->replaceNotDelete($this->notDelete['cats'], $checkGenerateYear, 2, $templateDataReal);
-        //        }
         $templateDataReal = $this->_generateFieldsRename($updateFields['renameFields'], $templateDataReal);
         $templateDataReal = $this->_generateFieldsDrop($updateFields['dropFields'], $templateDataReal);
 

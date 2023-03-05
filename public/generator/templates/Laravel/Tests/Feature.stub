@@ -12,17 +12,11 @@ class {{CONTROLLER_CLASS}}Test extends TestCase
 {
     use WithFaker;
 
-    /**
-     * Run a specific seeder before each test.
-     *
-     * @var string
-     */
-    protected $seeder = {{CONTROLLER_CLASS}}Seeder::class;
-
     protected function setUp(): void
     {
         parent::setUp();
         $faker = $this->faker;
+        $this->seed({{CONTROLLER_CLASS}}Seeder::class);
         $this->data = [
             {{FIELDS}}
             //{{SEEDER_NOT_DELETE_THIS_LINE}}
@@ -48,8 +42,6 @@ class {{CONTROLLER_CLASS}}Test extends TestCase
         $response = $this->update{{CONTROLLER_CLASS}}($response);
         $this->delete{{CONTROLLER_CLASS}}($response);
     }
-
-    //{{TESTS_RELATIONSHIP_NOT_DELETE_THIS_LINE}}
 
     protected function create{{CONTROLLER_CLASS}}()
     {

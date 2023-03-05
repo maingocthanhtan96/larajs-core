@@ -37,13 +37,7 @@ class InterfaceCommonGenerator extends BaseGenerator
         $templateDataReal = $this->serviceGenerator->getFile('model', 'package', $fileName);
         $fileImport = "'./{$this->serviceGenerator->folderPages($model['name'])}'";
         if (!stripos($templateDataReal, $fileImport)) {
-            $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-                $this->notDelete['import'],
-                "export * from $fileImport;",
-                0,
-                $templateDataReal,
-                0,
-            );
+            $templateDataReal .= "export * from $fileImport;";
             $this->serviceFile->createFileReal($this->path . $fileName, $templateDataReal);
         }
     }

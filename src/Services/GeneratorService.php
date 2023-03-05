@@ -1349,4 +1349,15 @@ class GeneratorService
 
         return $data;
     }
+
+    public function replaceEndFile($templateDataReal, $content, $tab, $spaces = 4): array|string|null
+    {
+        return preg_replace('/\}\s*$/', "\n{$this->infy_nl_tab(1, $tab, $spaces)}$content\n}", $templateDataReal);
+    }
+
+    public function replaceArray($templateDataReal, $key, $content, $tab, $spaces = 4): array|string|null
+    {
+        $regex = '/' . $key . '\s*\[([^\]]*)\]/m';
+        return preg_replace($regex, "\n{$this->infy_nl_tab(1, $tab, $spaces)}$content\n}", $templateDataReal);
+    }
 }

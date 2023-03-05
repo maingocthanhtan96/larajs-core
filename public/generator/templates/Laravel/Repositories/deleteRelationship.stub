@@ -1,1 +1,0 @@
-${{MODEL}}->{{MODEL_RELATIONSHIP}}()->detach();

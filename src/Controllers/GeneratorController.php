@@ -532,7 +532,9 @@ class GeneratorController extends BaseLaraJSController
         new UsesGenerator($fields, $model);
         new ViewTableGenerator($model);
         new FormGenerator($model);
-        new InterfaceCommonGenerator($fields, $model);
+        if (config('generator.js_language') === 'ts') {
+            new InterfaceCommonGenerator($fields, $model);
+        }
     }
 
     /**
