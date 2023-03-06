@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router';
 import { FormRules } from 'element-plus';
 import { use{{$NAME_USES$}} } from '@larajs/cms/uses';
 import { {{$NAME_MODEL$}} } from '@larajs/common';
+import { FormElementType } from '@larajs/components/FormElement/type';
 // {{$IMPORT_COMPONENT_NOT_DELETE_THIS_LINE$}}
 
 export interface {{$NAME_MODEL$}}Root {
@@ -26,13 +27,12 @@ export function use{{$NAME_MODEL$}}Forms() {
     // {{$RULES_NOT_DELETE_THIS_LINE$}}
   }));
 
-  const formElement = reactive({
+  const formElement = reactive<FormElementType>({
     name: '{{$NAME_TABLE$}}',
+    ref: {{$CONST_NAME_MODEL$}}Ref,
     form: {
       model: form,
       rules: rules,
-      ref: {{$CONST_NAME_MODEL$}}Ref,
-      props: {},
     },
     row: {},
     items: [
