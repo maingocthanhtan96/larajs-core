@@ -2,15 +2,13 @@
 
 namespace LaraJS\Core\Generators\Backend;
 
-use LaraJS\Core\Generators\BaseGenerator;
 use Carbon\Carbon;
+use LaraJS\Core\Generators\BaseGenerator;
 
 class ControllerGenerator extends BaseGenerator
 {
     /**
      * ControllerGenerator constructor.
-     *
-     * @param $model
      */
     public function __construct($model)
     {
@@ -20,9 +18,6 @@ class ControllerGenerator extends BaseGenerator
         $this->_generate($model);
     }
 
-    /**
-     * @param $model
-     */
     private function _generate($model): void
     {
         $now = Carbon::now();
@@ -41,7 +36,7 @@ class ControllerGenerator extends BaseGenerator
             $templateData,
         );
 
-        $fileName = $model['name'] . 'Controller.php';
+        $fileName = $model['name'].'Controller.php';
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
     }
 }

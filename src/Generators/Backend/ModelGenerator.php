@@ -2,8 +2,8 @@
 
 namespace LaraJS\Core\Generators\Backend;
 
-use LaraJS\Core\Generators\BaseGenerator;
 use Carbon\Carbon;
+use LaraJS\Core\Generators\BaseGenerator;
 
 class ModelGenerator extends BaseGenerator
 {
@@ -53,10 +53,10 @@ class ModelGenerator extends BaseGenerator
             $templateData = str_replace($notDelete['use_class'], '', $templateData);
             $templateData = str_replace($notDelete['use'], '', $templateData);
         }
-        if (!$this->serviceGenerator->getOptions(config('generator.model.options.timestamps'), $model['options'])) {
+        if (! $this->serviceGenerator->getOptions(config('generator.model.options.timestamps'), $model['options'])) {
             $templateData = str_replace($notDelete['timestamps'], $importLaravelModel['timestamps'], $templateData);
         }
-        $fileName = $model['name'] . '.php';
+        $fileName = $model['name'].'.php';
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
     }
 
@@ -65,7 +65,7 @@ class ModelGenerator extends BaseGenerator
         $fieldsGenerate = [];
         foreach ($fields as $index => $field) {
             if ($index > 0) {
-                $fieldsGenerate[] = "'" . $field['field_name'] . "',";
+                $fieldsGenerate[] = "'".$field['field_name']."',";
             }
         }
 

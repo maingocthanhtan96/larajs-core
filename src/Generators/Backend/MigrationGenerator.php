@@ -2,12 +2,11 @@
 
 namespace LaraJS\Core\Generators\Backend;
 
-use LaraJS\Core\Generators\BaseGenerator;
 use Carbon\Carbon;
+use LaraJS\Core\Generators\BaseGenerator;
 
 class MigrationGenerator extends BaseGenerator
 {
-    /** @var string */
     public string $file;
 
     public function __construct($fields, $model)
@@ -30,7 +29,7 @@ class MigrationGenerator extends BaseGenerator
             $this->serviceGenerator->tableName($model['name']),
             $templateData,
         );
-        $fileName = date('Y_m_d_His') . "_create_{$this->serviceGenerator->tableName($model['name'])}_table.php";
+        $fileName = date('Y_m_d_His')."_create_{$this->serviceGenerator->tableName($model['name'])}_table.php";
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
 
         return $fileName;
@@ -47,7 +46,7 @@ class MigrationGenerator extends BaseGenerator
             $table = '';
             foreach ($configDBType as $typeLaravel => $typeDB) {
                 if ($field['db_type'] === $configDBType['string']) {
-                    $table = '$table->string("' . trim($field['field_name']) . '", ' . $field['length_varchar'] . ')';
+                    $table = '$table->string("'.trim($field['field_name']).'", '.$field['length_varchar'].')';
                     break;
                 }
                 $migrationField = $this->serviceGenerator->migrationFields(

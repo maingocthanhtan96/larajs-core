@@ -38,6 +38,6 @@ class TestsGenerator extends BaseGenerator
             $templateData,
         );
         $templateData = str_replace('{{FIELDS}}', $this->generateFields($fields), $templateData);
-        $this->serviceFile->createFile($this->path, $model['name'] . 'Test.php', $templateData);
+        $this->serviceFile->createFile($this->path, $model['name'].'Test.php', $templateData);
     }
 }

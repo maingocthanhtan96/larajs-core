@@ -2,8 +2,8 @@
 
 namespace LaraJS\Core\Generators\Backend;
 
-use LaraJS\Core\Generators\BaseGenerator;
 use Carbon\Carbon;
+use LaraJS\Core\Generators\BaseGenerator;
 
 class RepositoryGenerator extends BaseGenerator
 {
@@ -18,7 +18,7 @@ class RepositoryGenerator extends BaseGenerator
     private function _generate($model)
     {
         $now = Carbon::now();
-        $createFolderModel = '/' . $model['name'] . '/';
+        $createFolderModel = '/'.$model['name'].'/';
         $pathTemplate = 'Repositories/';
         //template Repository
         $templateDataRepository = $this->serviceGenerator->get_template('Repository', $pathTemplate);
@@ -29,14 +29,14 @@ class RepositoryGenerator extends BaseGenerator
             $this->serviceGenerator->modelNameNotPluralFe($model['name']),
             $templateDataRepository,
         );
-        $fileNameRepository = $model['name'] . 'Repository.php';
-        $this->serviceFile->createFile($this->path . $createFolderModel, $fileNameRepository, $templateDataRepository);
+        $fileNameRepository = $model['name'].'Repository.php';
+        $this->serviceFile->createFile($this->path.$createFolderModel, $fileNameRepository, $templateDataRepository);
         //template Interface
         $templateDataInterface = $this->serviceGenerator->get_template('Interface', $pathTemplate);
         $templateDataInterface = str_replace('{{DATE}}', $now->toDateTimeString(), $templateDataInterface);
         $templateDataInterface = str_replace('{{MODEL_CLASS}}', $model['name'], $templateDataInterface);
-        $fileNameInterFace = $model['name'] . 'Interface.php';
-        $this->serviceFile->createFile($this->path . $createFolderModel, $fileNameInterFace, $templateDataInterface);
+        $fileNameInterFace = $model['name'].'Interface.php';
+        $this->serviceFile->createFile($this->path.$createFolderModel, $fileNameInterFace, $templateDataInterface);
         // add bind to RepositoryServiceProvider
         $fileName = 'RepositoryServiceProvider.php';
         $notDelete = config('generator.not_delete.laravel.repository.provider');

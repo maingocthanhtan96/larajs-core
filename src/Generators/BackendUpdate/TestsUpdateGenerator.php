@@ -17,7 +17,7 @@ class TestsUpdateGenerator extends BaseGenerator
 
     private function _generate($generator, $model, $updateFields)
     {
-        $fileName = $model['name'] . 'Test.php';
+        $fileName = $model['name'].'Test.php';
         $templateDataReal = $this->serviceGenerator->getFile('tests.feature', 'laravel', $fileName);
         $templateDataReal = $this->_generateRenameFields($updateFields['renameFields'], $templateDataReal);
         $templateDataReal = $this->_generateChangeFields($updateFields['changeFields'], $generator, $templateDataReal);
@@ -30,7 +30,7 @@ class TestsUpdateGenerator extends BaseGenerator
                 $templateDataReal,
             );
         }
-        $this->serviceFile->createFileReal($this->path . $fileName, $templateDataReal);
+        $this->serviceFile->createFileReal($this->path.$fileName, $templateDataReal);
     }
 
     private function _generateRenameFields($renameFields, $templateDataReal)

@@ -2,8 +2,8 @@
 
 namespace LaraJS\Core\Generators\Backend;
 
-use LaraJS\Core\Generators\BaseGenerator;
 use Carbon\Carbon;
+use LaraJS\Core\Generators\BaseGenerator;
 
 class SeederGenerator extends BaseGenerator
 {
@@ -15,10 +15,6 @@ class SeederGenerator extends BaseGenerator
         $this->_generate($fields, $model);
     }
 
-    /**
-     * @param $fields
-     * @return string
-     */
     public function generateFields($fields): string
     {
         $fieldsGenerate = [];
@@ -31,11 +27,6 @@ class SeederGenerator extends BaseGenerator
         return implode($this->serviceGenerator->infy_nl_tab(1, 4), $fieldsGenerate);
     }
 
-    /**
-     * @param $fields
-     * @param $model
-     * @return void
-     */
     private function _generate($fields, $model): void
     {
         $now = Carbon::now();
@@ -52,10 +43,6 @@ class SeederGenerator extends BaseGenerator
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
     }
 
-    /**
-     * @param $templateData
-     * @return string
-     */
     private function _generateUserSignature($templateData): string
     {
         $userSignature = ['created_by', 'updated_by'];
@@ -63,16 +50,16 @@ class SeederGenerator extends BaseGenerator
 
         $fakerCreate = '$faker = \Faker\Factory::create();';
         $param = '$users';
-        $fieldRelationship = $param . " = \App\Models\User::all()->pluck('id')->toArray();";
+        $fieldRelationship = $param." = \App\Models\User::all()->pluck('id')->toArray();";
         $templateData = str_replace(
             $fakerCreate,
-            $fakerCreate . $this->serviceGenerator->infy_nl_tab(1, 2) . $fieldRelationship,
+            $fakerCreate.$this->serviceGenerator->infy_nl_tab(1, 2).$fieldRelationship,
             $templateData,
         );
         foreach ($userSignature as $signature) {
             $templateData = $this->serviceGenerator->replaceNotDelete(
                 $notDelete['seeder'],
-                "'$signature'" . ' => $faker->randomElement(' . $param . '),',
+                "'$signature'".' => $faker->randomElement('.$param.'),',
                 4,
                 $templateData,
             );

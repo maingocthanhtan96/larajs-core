@@ -2,63 +2,46 @@
 
 namespace LaraJS\Core\Commands;
 
-use LaraJS\Core\Services\FileService;
-use LaraJS\Core\Services\GeneratorService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
+use LaraJS\Core\Services\FileService;
+use LaraJS\Core\Services\GeneratorService;
 
 class SetupCommand extends Command
 {
-    /** @var GeneratorService */
     protected GeneratorService $serviceGenerator;
 
-    /** @var FileService */
     protected FileService $serviceFile;
 
-    /** @var string */
     protected string $env;
 
-    /** @var string */
     protected string $envTesting;
 
-    /** @var string */
     protected string $appUrlStub;
 
-    /** @var string */
     protected string $dbHostStub;
 
-    /** @var string */
     protected string $dbPortStub;
 
-    /** @var string */
     protected string $dbDatabaseStub;
 
-    /** @var string */
     protected string $dbUsernameStub;
 
-    /** @var string */
     protected string $dbPasswordStub;
 
-    /** @var string */
     protected string $appUrl;
 
-    /** @var string */
     protected string $host;
 
-    /** @var string */
     protected string $port;
 
-    /** @var string */
     protected string $database;
 
-    /** @var string */
     protected string $username;
 
-    /** @var string */
     protected string $password;
 
-    /** @var string */
     protected string $cacheConfig;
 
     /**

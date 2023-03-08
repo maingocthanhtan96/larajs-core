@@ -23,7 +23,7 @@ class LangUpdateGenerator extends BaseGenerator
         $lang = config('generator.not_delete.laravel.lang');
         foreach ($lang as $key => $langComment) {
             foreach ($nameLang as $lang) {
-                $templateDataReal = $this->serviceGenerator->getFile('lang', 'laravel', $key . '/table.php');
+                $templateDataReal = $this->serviceGenerator->getFile('lang', 'laravel', $key.'/table.php');
                 $templateDataReal = $this->_generateFieldsRename(
                     $tableName,
                     $updateFields['renameFields'],
@@ -46,14 +46,14 @@ class LangUpdateGenerator extends BaseGenerator
 
     private function _generateFieldsRename($tableName, $renameFields, $templateDataReal): string
     {
-        if (!$renameFields) {
+        if (! $renameFields) {
             return $templateDataReal;
         }
 
         $langTemplate = $this->serviceGenerator->langTemplate($tableName, $templateDataReal);
         $template = $langTemplate['template'];
         $templateReplace = $langTemplate['template_replace'];
-        if (!$template || !$templateReplace) {
+        if (! $template || ! $templateReplace) {
             return $templateDataReal;
         }
 
@@ -72,13 +72,13 @@ class LangUpdateGenerator extends BaseGenerator
                     $fieldNameTrans = $this->serviceGenerator->trimQuotes($fieldNameTrans);
                     if ($rename['field_name_old']['field_name'] === $fieldName) {
                         $fieldsGenerate[] =
-                            "'" . $rename['field_name_new']['field_name'] . "'" . ' => ' . "'" . $fieldNameTrans . "',";
+                            "'".$rename['field_name_new']['field_name']."'".' => '."'".$fieldNameTrans."',";
                     } else {
                         $name = "'$fieldName' => '$fieldNameTrans',";
                         if (
-                            !in_array($name, $fieldsGenerate) &&
-                            !in_array($fieldName, $arRename) &&
-                            !in_array($fieldName, $arRenameOld)
+                            ! in_array($name, $fieldsGenerate) &&
+                            ! in_array($fieldName, $arRename) &&
+                            ! in_array($fieldName, $arRenameOld)
                         ) {
                             $fieldsGenerate[] = $name;
                         }
@@ -94,13 +94,13 @@ class LangUpdateGenerator extends BaseGenerator
 
     private function _generateFieldsUpdate($tableName, $updateFields, $templateDataReal): string
     {
-        if (!$updateFields) {
+        if (! $updateFields) {
             return $templateDataReal;
         }
         $langTemplate = $this->serviceGenerator->langTemplate($tableName, $templateDataReal);
         $template = $langTemplate['template'];
         $templateReplace = $langTemplate['template_replace'];
-        if (!$template || !$templateReplace) {
+        if (! $template || ! $templateReplace) {
             return $templateDataReal;
         }
         $arTemplate = explode(',', trim($template));
@@ -126,14 +126,14 @@ class LangUpdateGenerator extends BaseGenerator
 
     private function _generateFieldsDrop($tableName, $dropUpdate, $templateDataReal): string
     {
-        if (!$dropUpdate) {
+        if (! $dropUpdate) {
             return $templateDataReal;
         }
 
         $langTemplate = $this->serviceGenerator->langTemplate($tableName, $templateDataReal);
         $template = $langTemplate['template'];
         $templateReplace = $langTemplate['template_replace'];
-        if (!$template || !$templateReplace) {
+        if (! $template || ! $templateReplace) {
             return $templateDataReal;
         }
         $arTemplate = explode(',', trim($template));
@@ -148,7 +148,7 @@ class LangUpdateGenerator extends BaseGenerator
                 $fieldName = $this->serviceGenerator->trimQuotes($fieldName);
                 $fieldNameTrans = $this->serviceGenerator->trimQuotes($fieldNameTrans);
                 $name = "'$fieldName' => '$fieldNameTrans',";
-                if (!in_array($fieldName, $dropUpdate) && !in_array($name, $fieldsGenerate)) {
+                if (! in_array($fieldName, $dropUpdate) && ! in_array($name, $fieldsGenerate)) {
                     $fieldsGenerate[] = $name;
                 }
             }

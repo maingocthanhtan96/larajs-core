@@ -30,15 +30,15 @@ class InterfaceCommonGenerator extends BaseGenerator
             2,
         );
 
-        $fileName = $this->serviceGenerator->folderPages($model['name']) . ".{$this->jsType('ext')}";
+        $fileName = $this->serviceGenerator->folderPages($model['name']).".{$this->jsType('ext')}";
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
         // import
         $fileName = "/{$this->jsType('index')}";
         $templateDataReal = $this->serviceGenerator->getFile('model', 'package', $fileName);
         $fileImport = "'./{$this->serviceGenerator->folderPages($model['name'])}'";
-        if (!stripos($templateDataReal, $fileImport)) {
+        if (! stripos($templateDataReal, $fileImport)) {
             $templateDataReal .= "export * from $fileImport;";
-            $this->serviceFile->createFileReal($this->path . $fileName, $templateDataReal);
+            $this->serviceFile->createFileReal($this->path.$fileName, $templateDataReal);
         }
     }
 }

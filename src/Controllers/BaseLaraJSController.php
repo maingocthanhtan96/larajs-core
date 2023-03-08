@@ -1,6 +1,5 @@
 <?php
 
-
 namespace LaraJS\Core\Controllers;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -11,12 +10,6 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class BaseLaraJSController extends BaseController
 {
-    /**
-     * @param $data
-     * @param string $message
-     * @param int $status
-     * @return JsonResponse
-     */
     public function jsonData($data, string $message = '', int $status = Response::HTTP_OK): JsonResponse
     {
         return response()->json(
@@ -30,10 +23,6 @@ class BaseLaraJSController extends BaseController
     }
 
     /**
-     * @param LengthAwarePaginator $paginator
-     * @param int $status
-     * @return JsonResponse
-     *
      * @author tanmnt
      */
     public function jsonTable(LengthAwarePaginator $paginator, int $status = Response::HTTP_OK): JsonResponse
@@ -51,10 +40,6 @@ class BaseLaraJSController extends BaseController
     }
 
     /**
-     * @param $error
-     * @param int $status
-     * @return JsonResponse
-     *
      * @author tanmnt
      */
     public function jsonError($error, int $status = Response::HTTP_INTERNAL_SERVER_ERROR): JsonResponse
@@ -87,12 +72,6 @@ class BaseLaraJSController extends BaseController
     }
 
     /**
-     * @param $message
-     * @param bool $success
-     * @param bool $showMessage
-     * @param int $status
-     * @return JsonResponse
-     *
      * @author tanmnt
      */
     public function jsonMessage(
@@ -100,8 +79,7 @@ class BaseLaraJSController extends BaseController
         bool $success = true,
         bool $showMessage = true,
         int $status = Response::HTTP_OK,
-    ): JsonResponse
-    {
+    ): JsonResponse {
         return response()->json(
             [
                 'success' => $success,
@@ -112,10 +90,6 @@ class BaseLaraJSController extends BaseController
         );
     }
 
-    /**
-     * @param $errors
-     * @return JsonResponse
-     */
     public function jsonValidate($errors): JsonResponse
     {
         return response()->json(
@@ -127,13 +101,6 @@ class BaseLaraJSController extends BaseController
         );
     }
 
-    /**
-     * @param $data
-     * @param $meta
-     * @param bool $success
-     * @param int $status
-     * @return JsonResponse
-     */
     public function jsonMetadata($data, $meta, bool $success = true, int $status = Response::HTTP_OK): JsonResponse
     {
         return response()->json(

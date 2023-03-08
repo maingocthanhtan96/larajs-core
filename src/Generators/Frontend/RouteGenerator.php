@@ -2,8 +2,8 @@
 
 namespace LaraJS\Core\Generators\Frontend;
 
-use LaraJS\Core\Generators\BaseGenerator;
 use Carbon\Carbon;
+use LaraJS\Core\Generators\BaseGenerator;
 
 class RouteGenerator extends BaseGenerator
 {
@@ -74,7 +74,7 @@ class RouteGenerator extends BaseGenerator
         );
         $fileName = "{$this->serviceGenerator->folderPages($model['name'])}.{$this->jsType('ext')}";
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
-        $pathReal = config('generator.path.vue.router') . $this->jsType('index');
+        $pathReal = config('generator.path.vue.router').$this->jsType('index');
         $this->serviceFile->createFileReal($pathReal, $templateDataReal);
     }
 }

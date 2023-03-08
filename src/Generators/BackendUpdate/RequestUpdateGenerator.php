@@ -14,10 +14,8 @@ class RequestUpdateGenerator extends BaseGenerator
 
     public const NULLABLE = 'nullable';
 
-    /** @var array */
     protected array $dbType;
 
-    /** @var array */
     protected array $configDefaultValue;
 
     public function __construct($generator, $model, $updateFields)
@@ -33,7 +31,7 @@ class RequestUpdateGenerator extends BaseGenerator
 
     public function _generateFieldsUpdate($updateFields, $templateDataReal): string
     {
-        if (!$updateFields) {
+        if (! $updateFields) {
             return $templateDataReal;
         }
 
@@ -47,13 +45,13 @@ class RequestUpdateGenerator extends BaseGenerator
 
     private function _generate($generator, $model, $updateFields)
     {
-        $fileName = 'Store' . $model['name'] . 'Request.php';
+        $fileName = 'Store'.$model['name'].'Request.php';
         $templateDataReal = $this->serviceGenerator->getFile('request', 'laravel', $fileName);
         $templateDataReal = $this->_generateFieldsDrop($updateFields['dropFields'], $templateDataReal);
         $templateDataReal = $this->_generateFieldsRename($updateFields['renameFields'], $templateDataReal);
         $templateDataReal = $this->_generateFieldsChange($generator, $updateFields['changeFields'], $templateDataReal);
         $templateDataReal = $this->_generateFieldsUpdate($updateFields['updateFields'], $templateDataReal);
-        $fileName = $this->path . $fileName;
+        $fileName = $this->path.$fileName;
         $this->serviceFile->createFileReal($fileName, $templateDataReal);
     }
 
@@ -61,8 +59,8 @@ class RequestUpdateGenerator extends BaseGenerator
     {
         foreach ($renameFields as $rename) {
             $templateDataReal = str_replace(
-                "'" . $rename['field_name_old']['field_name'] . "'",
-                "'" . $rename['field_name_new']['field_name'] . "'",
+                "'".$rename['field_name_old']['field_name']."'",
+                "'".$rename['field_name_new']['field_name']."'",
                 $templateDataReal,
             );
         }
@@ -72,7 +70,7 @@ class RequestUpdateGenerator extends BaseGenerator
 
     private function _generateFieldsChange($generator, $changeFields, $templateDataReal): string
     {
-        if (!$changeFields) {
+        if (! $changeFields) {
             return $templateDataReal;
         }
 
@@ -84,7 +82,7 @@ class RequestUpdateGenerator extends BaseGenerator
             -4 - strlen(self::COLUMNS),
             $templateDataReal,
         );
-        if (!$templateColumns) {
+        if (! $templateColumns) {
             return $templateDataReal;
         }
 
@@ -141,22 +139,22 @@ class RequestUpdateGenerator extends BaseGenerator
                                 }
                             }
                         }
-                        $fieldsGenerator[] = "'" . $keyField . "' => $valField";
+                        $fieldsGenerator[] = "'".$keyField."' => $valField";
                     } else {
-                        $value = "'" . $keyField . "' => $valField";
-                        if (!in_array($value, $fieldsGenerator) && !in_array($keyField, $arrayChange)) {
+                        $value = "'".$keyField."' => $valField";
+                        if (! in_array($value, $fieldsGenerator) && ! in_array($keyField, $arrayChange)) {
                             $fieldsGenerator[] = $value;
                         }
                     }
                 }
             }
         }
-        $fieldsGenerator[] = $this->notDelete['rule'] . $this->serviceGenerator->infy_nl_tab(1, 2);
+        $fieldsGenerator[] = $this->notDelete['rule'].$this->serviceGenerator->infy_nl_tab(1, 2);
 
         return str_replace(
             $templateColumns,
-            $this->serviceGenerator->infy_nl_tab(0, 2) .
-                ' ' .
+            $this->serviceGenerator->infy_nl_tab(0, 2).
+                ' '.
                 implode($this->serviceGenerator->infy_nl_tab(1, 3), $fieldsGenerator),
             $templateDataReal,
         );
@@ -164,7 +162,7 @@ class RequestUpdateGenerator extends BaseGenerator
 
     private function _generateFieldsDrop($dropFields, $templateDataReal): string
     {
-        if (!$dropFields) {
+        if (! $dropFields) {
             return $templateDataReal;
         }
 
@@ -176,7 +174,7 @@ class RequestUpdateGenerator extends BaseGenerator
             -4 - strlen(self::COLUMNS),
             $templateDataReal,
         );
-        if (!$templateColumns) {
+        if (! $templateColumns) {
             return $templateDataReal;
         }
 
@@ -191,19 +189,19 @@ class RequestUpdateGenerator extends BaseGenerator
                     $keyField = $this->serviceGenerator->trimQuotes($keyField);
                     $value = "'$keyField' => $valField";
                     if ($keyField !== $drop['field_name']) {
-                        if (!in_array($value, $fieldsGenerator) && !in_array($keyField, $arrayChange)) {
+                        if (! in_array($value, $fieldsGenerator) && ! in_array($keyField, $arrayChange)) {
                             $fieldsGenerator[] = $value;
                         }
                     }
                 }
             }
         }
-        $fieldsGenerator[] = $this->notDelete['rule'] . $this->serviceGenerator->infy_nl_tab(1, 2);
+        $fieldsGenerator[] = $this->notDelete['rule'].$this->serviceGenerator->infy_nl_tab(1, 2);
 
         return str_replace(
             $templateColumns,
-            $this->serviceGenerator->infy_nl_tab(0, 2) .
-                ' ' .
+            $this->serviceGenerator->infy_nl_tab(0, 2).
+                ' '.
                 implode($this->serviceGenerator->infy_nl_tab(1, 3), $fieldsGenerator),
             $templateDataReal,
         );
