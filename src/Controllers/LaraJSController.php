@@ -14,8 +14,7 @@ class LaraJSController extends BaseLaraJSController
      */
     public function setLanguage($language): Response
     {
-        $week = 10080; // a week
-        $cookie = cookie('language', $language, $week);
+        $cookie = cookie('language', $language);
 
         return response('success')->cookie($cookie);
     }
