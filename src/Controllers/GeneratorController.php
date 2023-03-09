@@ -46,6 +46,7 @@ class GeneratorController extends BaseLaraJSController
 {
     /*@var service*/
     private GeneratorService $serviceGenerator;
+
     private BaseGenerator $baseGenerator;
 
     public function __construct()
@@ -54,10 +55,6 @@ class GeneratorController extends BaseLaraJSController
         $this->baseGenerator = new BaseGenerator();
     }
 
-    /**
-     * @param  Request  $request
-     * @return JsonResponse
-     */
     public function index(Request $request): JsonResponse
     {
         try {
@@ -81,10 +78,6 @@ class GeneratorController extends BaseLaraJSController
         }
     }
 
-    /**
-     * @param  Generator  $generator
-     * @return JsonResponse
-     */
     public function show(Generator $generator): JsonResponse
     {
         try {
@@ -94,10 +87,6 @@ class GeneratorController extends BaseLaraJSController
         }
     }
 
-    /**
-     * @param  Request  $request
-     * @return JsonResponse
-     */
     public function store(Request $request): JsonResponse
     {
         try {
@@ -131,11 +120,6 @@ class GeneratorController extends BaseLaraJSController
         }
     }
 
-    /**
-     * @param  Request  $request
-     * @param  Generator  $generator
-     * @return JsonResponse
-     */
     public function update(Request $request, Generator $generator): JsonResponse
     {
         try {
@@ -174,10 +158,6 @@ class GeneratorController extends BaseLaraJSController
         }
     }
 
-    /**
-     * @param  Generator  $generator
-     * @return JsonResponse
-     */
     public function destroy(Generator $generator): JsonResponse
     {
         try {
@@ -225,7 +205,7 @@ class GeneratorController extends BaseLaraJSController
                     $templateDataLangReal = $this->serviceGenerator->getFile(
                         'lang',
                         'laravel',
-                        $key . '/' . $nameLang . '.php',
+                        $key.'/'.$nameLang.'.php',
                     );
                     if ($nameLang === 'route') {
                         $startRouteTable = "// START - {$generatorService->tableNameNotPlural($model['name'])}\n";
@@ -241,7 +221,7 @@ class GeneratorController extends BaseLaraJSController
                     }
 
                     if ($nameLang === 'table') {
-                        $quoteTable = "'" . $tableName . "' => [";
+                        $quoteTable = "'".$tableName."' => [";
                         $templateDataLangTable = $this->serviceGenerator->searchTemplate(
                             $quoteTable,
                             '],',
@@ -252,7 +232,7 @@ class GeneratorController extends BaseLaraJSController
                         $templateDataLangReal = str_replace($templateDataLangTable, '', $templateDataLangReal);
                     }
                     $fileService->createFileReal(
-                        config('generator.path.laravel.lang') . $key . '/' . $nameLang . '.php',
+                        config('generator.path.laravel.lang').$key.'/'.$nameLang.'.php',
                         $templateDataLangReal,
                     );
                 }
@@ -303,7 +283,7 @@ class GeneratorController extends BaseLaraJSController
             $fileService->createFileReal("$path/$fileName", $templateRepositoryProviderDataReal);
             // END - event provider
             // START - api VueJS
-            $pathApiVueJSReal = config('generator.path.vue.api') . 'index.ts';
+            $pathApiVueJSReal = config('generator.path.vue.api').'index.ts';
             $templateDataApiVueJSReal = $this->serviceGenerator->getFile('api', 'vue', 'index.ts');
             $templateDataApiVueJSReal = str_replace(
                 "export { default as {$model['name']}Resource } from './{$generatorService->nameAttribute($model['name'])}';\n",
@@ -313,7 +293,7 @@ class GeneratorController extends BaseLaraJSController
             $fileService->createFileReal($pathApiVueJSReal, $templateDataApiVueJSReal);
             // END - api VueJS
             // START - route VueJS
-            $pathRouteVueJSReal = config('generator.path.vue.router') . 'index.ts';
+            $pathRouteVueJSReal = config('generator.path.vue.router').'index.ts';
             $templateDataRouteVueJSReal = $this->serviceGenerator->getFile('router', 'vue', 'index.ts');
             $templateDataRouteVueJSReal = str_replace(
                 "import {$generatorService->modelNameNotPluralFe(
@@ -338,7 +318,7 @@ class GeneratorController extends BaseLaraJSController
             // END - USES
             // START - package common
             if (config('generator.js_language') === 'ts') {
-                $pathPackageModelReal = config('generator.path.package.model') . 'index.ts';
+                $pathPackageModelReal = config('generator.path.package.model').'index.ts';
                 $templateDataPackageModelReal = $this->serviceGenerator->getFile('model', 'package', 'index.ts');
                 $templateDataPackageModelReal = str_replace(
                     "export * from './{$generatorService->nameAttribute($model['name'])}';\n",
@@ -357,10 +337,6 @@ class GeneratorController extends BaseLaraJSController
         }
     }
 
-    /**
-     * @param  Request  $request
-     * @return JsonResponse
-     */
     public function checkModel(Request $request): JsonResponse
     {
         $serviceGenerator = new GeneratorService();
@@ -382,10 +358,6 @@ class GeneratorController extends BaseLaraJSController
         }
     }
 
-    /**
-     * @param  Request  $request
-     * @return JsonResponse
-     */
     public function generateRelationship(Request $request): JsonResponse
     {
         $request->validate([
@@ -412,10 +384,6 @@ class GeneratorController extends BaseLaraJSController
         }
     }
 
-    /**
-     * @param  Request  $request
-     * @return JsonResponse
-     */
     public function generateDiagram(Request $request): JsonResponse
     {
         try {
@@ -428,10 +396,6 @@ class GeneratorController extends BaseLaraJSController
         }
     }
 
-    /**
-     * @param  Request  $request
-     * @return JsonResponse
-     */
     public function getModels(Request $request): JsonResponse
     {
         try {
@@ -445,7 +409,7 @@ class GeneratorController extends BaseLaraJSController
             foreach ($models as $model) {
                 $modelName = $model->getBasename('.php');
                 if ($modelName !== $modelTable) {
-                    if (!in_array($modelName, $ignoreModel)) {
+                    if (! in_array($modelName, $ignoreModel)) {
                         $modelData[] = $modelName;
                     }
                 }
@@ -457,9 +421,6 @@ class GeneratorController extends BaseLaraJSController
         }
     }
 
-    /**
-     * @return JsonResponse
-     */
     public function getAllModels(): JsonResponse
     {
         try {
@@ -468,7 +429,7 @@ class GeneratorController extends BaseLaraJSController
             $files = [];
             foreach ($allFiles as $file) {
                 $model = basename($file->getFilename(), '.php');
-                !in_array($model, $whiteList) && ($files[] = $model);
+                ! in_array($model, $whiteList) && ($files[] = $model);
             }
 
             return $this->jsonData($files);
@@ -477,10 +438,6 @@ class GeneratorController extends BaseLaraJSController
         }
     }
 
-    /**
-     * @param  Request  $request
-     * @return JsonResponse
-     */
     public function getColumns(Request $request): JsonResponse
     {
         try {
@@ -494,11 +451,6 @@ class GeneratorController extends BaseLaraJSController
         }
     }
 
-    /**
-     * @param $fields
-     * @param $model
-     * @return array
-     */
     private function _generateBackend($fields, $model): array
     {
         $migrationGenerator = new MigrationGenerator($fields, $model);
@@ -521,10 +473,6 @@ class GeneratorController extends BaseLaraJSController
         ];
     }
 
-    /**
-     * @param $fields
-     * @param $model
-     */
     private function _generateFrontend($fields, $model)
     {
         new RouteGeneratorFe($model);
@@ -537,11 +485,6 @@ class GeneratorController extends BaseLaraJSController
         }
     }
 
-    /**
-     * @param $model
-     * @param $generateBackend
-     * @return array
-     */
     private function _generateFile($model, $generateBackend): array
     {
         $files = [];
@@ -549,42 +492,37 @@ class GeneratorController extends BaseLaraJSController
         $configGeneratorVueJS = config('generator')['path']['delete_files']['vue'];
         $configGeneratorPackage = config('generator')['path']['delete_files']['package'];
 
-        $files['api_controller'] = $configGeneratorLaravel['api_controller'] . $model['name'] . 'Controller.php';
-        $files['request'] = $configGeneratorLaravel['request'] . 'Store' . $model['name'] . 'Request.php';
-        $files['model'] = $configGeneratorLaravel['model'] . $model['name'] . '.php';
+        $files['api_controller'] = $configGeneratorLaravel['api_controller'].$model['name'].'Controller.php';
+        $files['request'] = $configGeneratorLaravel['request'].'Store'.$model['name'].'Request.php';
+        $files['model'] = $configGeneratorLaravel['model'].$model['name'].'.php';
         $files['repositories']['interface'] =
-            $configGeneratorLaravel['repository'] . $model['name'] . '/' . $model['name'] . 'Interface.php';
+            $configGeneratorLaravel['repository'].$model['name'].'/'.$model['name'].'Interface.php';
         $files['repositories']['repository'] =
-            $configGeneratorLaravel['repository'] . $model['name'] . '/' . $model['name'] . 'Repository.php';
-        $files['observer'] = $configGeneratorLaravel['observer'] . $model['name'] . 'Observer.php';
-        $files['migration'] = $configGeneratorLaravel['migration'] . $generateBackend['migration']['file'];
-        $files['seeder'] = $configGeneratorLaravel['seeder'] . $model['name'] . 'Seeder.php';
-        $files['factory'] = $configGeneratorLaravel['factory'] . $model['name'] . 'Factory.php';
-        $files['tests'] = $configGeneratorLaravel['tests']['feature'] . $model['name'] . 'Test.php';
+            $configGeneratorLaravel['repository'].$model['name'].'/'.$model['name'].'Repository.php';
+        $files['observer'] = $configGeneratorLaravel['observer'].$model['name'].'Observer.php';
+        $files['migration'] = $configGeneratorLaravel['migration'].$generateBackend['migration']['file'];
+        $files['seeder'] = $configGeneratorLaravel['seeder'].$model['name'].'Seeder.php';
+        $files['factory'] = $configGeneratorLaravel['factory'].$model['name'].'Factory.php';
+        $files['tests'] = $configGeneratorLaravel['tests']['feature'].$model['name'].'Test.php';
 
-        $files['api'] = $configGeneratorVueJS['api'] . $this->serviceGenerator->folderPages($model['name']) . '.ts';
+        $files['api'] = $configGeneratorVueJS['api'].$this->serviceGenerator->folderPages($model['name']).'.ts';
         $files['router_modules'] =
-            $configGeneratorVueJS['router_modules'] . $this->serviceGenerator->folderPages($model['name']) . '.ts';
-        $files['views']['form'] = $configGeneratorVueJS['views'] . lcfirst(Str::kebab($model['name'])) . '/Form.vue';
-        $files['views']['index'] = $configGeneratorVueJS['views'] . lcfirst(Str::kebab($model['name'])) . '/index.vue';
+            $configGeneratorVueJS['router_modules'].$this->serviceGenerator->folderPages($model['name']).'.ts';
+        $files['views']['form'] = $configGeneratorVueJS['views'].lcfirst(Str::kebab($model['name'])).'/Form.vue';
+        $files['views']['index'] = $configGeneratorVueJS['views'].lcfirst(Str::kebab($model['name'])).'/index.vue';
         $files['uses']['index'] =
-            $configGeneratorVueJS['uses'] . $this->serviceGenerator->folderPages($model['name']) . '/index.ts';
+            $configGeneratorVueJS['uses'].$this->serviceGenerator->folderPages($model['name']).'/index.ts';
         $files['uses']['table'] =
-            $configGeneratorVueJS['uses'] . $this->serviceGenerator->folderPages($model['name']) . '/table.tsx';
+            $configGeneratorVueJS['uses'].$this->serviceGenerator->folderPages($model['name']).'/table.tsx';
         $files['uses']['form'] =
-            $configGeneratorVueJS['uses'] . $this->serviceGenerator->folderPages($model['name']) . '/form.tsx';
+            $configGeneratorVueJS['uses'].$this->serviceGenerator->folderPages($model['name']).'/form.tsx';
 
         $files['common']['model'] =
-            $configGeneratorPackage['model'] . $this->serviceGenerator->folderPages($model['name']) . '.ts';
+            $configGeneratorPackage['model'].$this->serviceGenerator->folderPages($model['name']).'.ts';
 
         return $files;
     }
 
-    /**
-     * @param $generator
-     * @param $model
-     * @param $updateFields
-     */
     private function _generateBackendUpdate($generator, $model, $updateFields)
     {
         new MigrationUpdateGenerator($generator, $model, $updateFields);
@@ -598,25 +536,18 @@ class GeneratorController extends BaseLaraJSController
         }
     }
 
-    /**
-     * @param $model
-     * @param $updateFields
-     */
     private function _generateFrontendUpdate($model, $updateFields)
     {
         new UsesUpdateGenerator($model, $updateFields);
         new InterfaceCommonUpdateGenerator($updateFields, $model);
     }
 
-    /**
-     * @param  array  $model
-     */
     private function _runCommand(array $model = [])
     {
-        if (!isset($model['options'])) {
+        if (! isset($model['options'])) {
             $model['options'] = [];
         }
-        if (!$this->serviceGenerator->getOptions(config('generator.model.options.ignore_migrate'), $model['options'])) {
+        if (! $this->serviceGenerator->getOptions(config('generator.model.options.ignore_migrate'), $model['options'])) {
             Artisan::call('migrate');
         }
         Artisan::call('vue-i18n:generate');
@@ -645,13 +576,13 @@ class GeneratorController extends BaseLaraJSController
                     return $value === null ? 'NULL' : "'$value'";
                 }, $generator),
             );
-            $template .= '(' . $sql . ')';
+            $template .= '('.$sql.')';
             if ($index !== count($generators) - 1) {
                 $template .= ',';
             }
         }
         $disk = Storage::disk('local');
-        $fileName = env('DB_DATABASE') . '-' . date('YmdHis') . '.sql';
+        $fileName = env('DB_DATABASE').'-'.date('YmdHis').'.sql';
         $disk->put("/backup/generators/$fileName", $template);
         $files = $disk->files('/backup/generators');
         $numberFileDeletes = count($files) - Generator::NUMBER_FILE_DELETES;
@@ -662,9 +593,6 @@ class GeneratorController extends BaseLaraJSController
         }
     }
 
-    /**
-     * @param $model
-     */
     private function _gitCommit($model)
     {
         if (env('GENERATOR_DEBUG')) {
@@ -672,7 +600,7 @@ class GeneratorController extends BaseLaraJSController
         }
         $basePath = base_path();
         $now = \Carbon\Carbon::now()->toDateTimeString();
-        $commit = '"' . $model . ' - ' . $now . '"';
+        $commit = '"'.$model.' - '.$now.'"';
 
         $gitAdd = new Process(['git', 'add', '.'], $basePath);
         $gitAdd->run();

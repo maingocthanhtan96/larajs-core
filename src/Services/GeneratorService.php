@@ -13,10 +13,7 @@ class GeneratorService
     /**
      * Find the position of the Xth occurrence of a substring in a string
      *
-     * @param $haystack
-     * @param $needle
      * @param $number integer > 0
-     * @return int
      */
     public function strpos_x($haystack, $needle, int $number): int
     {
@@ -78,24 +75,14 @@ class GeneratorService
 
     /**
      * Generates new line char.
-     *
-     * @param  int  $lns
-     * @param  int  $tabs
-     * @param  int  $spaces
-     * @return string
      */
     public function infy_nl_tab(int $lns = 1, int $tabs = 1, int $spaces = 4): string
     {
-        return $this->infy_nls($lns) . $this->infy_tabs($tabs, $spaces);
+        return $this->infy_nls($lns).$this->infy_tabs($tabs, $spaces);
     }
 
     /**
      * get path for template file.
-     *
-     * @param  string  $templateName
-     * @param  string  $templatePath
-     * @param  string  $typeTemplate
-     * @return bool|string
      */
     public function get_template_file_path(
         string $templateName,
@@ -107,9 +94,9 @@ class GeneratorService
         } elseif ($typeTemplate === 'package') {
             $templatesPath = config('generator.template.package');
         } else {
-            $templatesPath = config('generator.template.vue') . config('generator.js_language') . '/';
+            $templatesPath = config('generator.template.vue').config('generator.js_language').'/';
         }
-        $path = $templatesPath . $templatePath . $templateName . '.stub';
+        $path = $templatesPath.$templatePath.$templateName.'.stub';
         if (file_exists($path)) {
             return $path;
         }
@@ -128,11 +115,11 @@ class GeneratorService
     public function getFilePath($nameConfig, $type = 'laravel', $fileName = '')
     {
         if ($type === 'laravel') {
-            $path = config('generator.path.laravel.' . $nameConfig);
+            $path = config('generator.path.laravel.'.$nameConfig);
         } elseif ($type === 'package') {
-            $path = config('generator.path.package.' . $nameConfig);
+            $path = config('generator.path.package.'.$nameConfig);
         } else {
-            $path = config('generator.path.vue.' . $nameConfig);
+            $path = config('generator.path.vue.'.$nameConfig);
         }
         if ($fileName) {
             $path .= $fileName;
@@ -147,9 +134,7 @@ class GeneratorService
     /**
      * get file.
      *
-     * @param  string  $nameConfig
      * @param  string  $type laravel|vue|package
-     * @param  string  $fileName
      * @return string
      */
     public function getFile(string $nameConfig, string $type = 'laravel', string $fileName = '')
@@ -161,10 +146,6 @@ class GeneratorService
 
     /**
      * get path for file.
-     *
-     * @param  string  $fileName
-     * @param  string  $type
-     * @return bool|string
      */
     public function getFilePathReal(string $fileName = '', string $type = 'laravel'): bool|string
     {
@@ -185,10 +166,6 @@ class GeneratorService
 
     /**
      * get file.
-     *
-     * @param  string  $fileName
-     * @param  string  $type
-     * @return string
      */
     public function getFileReal(string $fileName = '', string $type = 'laravel'): string
     {
@@ -199,11 +176,6 @@ class GeneratorService
 
     /**
      * get template contents.
-     *
-     * @param  string  $templateName
-     * @param  string  $templatePath
-     * @param  string  $typeTemplate
-     * @return string
      */
     public function get_template(string $templateName, string $templatePath, string $typeTemplate = 'laravel'): string
     {
@@ -300,9 +272,6 @@ class GeneratorService
 
     /**
      * generates model name from table name frontend.
-     *
-     * @param  string  $tableName
-     * @return string
      */
     public function modelNameNotPluralFe(string $tableName): string
     {
@@ -355,9 +324,6 @@ class GeneratorService
 
     /**
      * generates model name from table name.
-     *
-     * @param  string  $name
-     * @return string
      */
     public function tableName(string $name): string
     {
@@ -368,9 +334,6 @@ class GeneratorService
 
     /**
      * generates model name from table name.
-     *
-     * @param  string  $name
-     * @return string
      */
     public function tableNameNotPlural(string $name): string
     {
@@ -380,7 +343,6 @@ class GeneratorService
     }
 
     /**
-     * @param $name
      * @return array|string|array<string>|null
      */
     public function tableNameHandle($name)
@@ -416,14 +378,12 @@ class GeneratorService
         }
         $params['filter_column'][$key][$type] = $value;
 
-        return \Request::url() . '?' . http_build_query($params);
+        return \Request::url().'?'.http_build_query($params);
     }
 
     /**
      * check options.
      *
-     * @param  array  $options
-     * @param  string  $name
      * @return string
      */
     public function getOptions(string $name, array $options)
@@ -445,7 +405,7 @@ class GeneratorService
     {
         return str_replace(
             $noteDelete,
-            $replace . $this->infy_nl_tab(1, $tab, $spaces) . $noteDelete,
+            $replace.$this->infy_nl_tab(1, $tab, $spaces).$noteDelete,
             $templateDataReal,
         );
     }
@@ -453,13 +413,8 @@ class GeneratorService
     /**
      * search string template.
      *
-     * @param  string  $search
-     * @param  string  $char
      * @param  number  $plusStart
      * @param  number  $plusEnd
-     * @param  string  $templateDataReal
-     * @param  string  $searchOther
-     * @return bool|string
      */
     public function searchTemplate(
         string $search,
@@ -469,7 +424,7 @@ class GeneratorService
         string $templateDataReal,
         string $searchOther = '',
     ): bool|string {
-        if (!$searchOther) {
+        if (! $searchOther) {
             $searchOther = $search;
         }
         if (strpos($templateDataReal, $searchOther)) {
@@ -512,15 +467,12 @@ class GeneratorService
 
     /**
      * Get relationship on model
-     *
-     * @param  string|null  $model
-     * @return array
      */
     public function getDiagram(?string $model): array
     {
         $modelData = [];
         if ($model) {
-            if (!in_array($model, config('generator.relationship.ignore_model'))) {
+            if (! in_array($model, config('generator.relationship.ignore_model'))) {
                 $modelData[] = [
                     'model' => $model,
                     'relationships' => $this->getRelationships(app("\\App\\Models\\$model")),
@@ -530,7 +482,7 @@ class GeneratorService
             $modelNames = $this->getModelsNames(app_path('Models'));
             foreach ($modelNames as $modelName) {
                 $model = class_basename($modelName);
-                if (!in_array($model, config('generator.relationship.ignore_model'))) {
+                if (! in_array($model, config('generator.relationship.ignore_model'))) {
                     $modelData[] = [
                         'model' => $model,
                         'relationships' => $this->getRelationships(app($modelName)),
@@ -544,9 +496,6 @@ class GeneratorService
 
     /**
      * search relationship
-     *
-     * @param  array  $data
-     * @return array
      */
     public function extractRelations(array $data): array
     {
@@ -554,7 +503,7 @@ class GeneratorService
         $relationshipData = [];
         foreach ($data as $line) {
             foreach ($relationshipIdentifiers as $relationship) {
-                $nameRelationship = $relationship . '(';
+                $nameRelationship = $relationship.'(';
                 $searchRelationship = $this->searchTemplateX(
                     $nameRelationship,
                     1,
@@ -574,10 +523,10 @@ class GeneratorService
                             'model' => $modelName,
                             'table' => $tableName,
                             'foreign_key' => $this->stripString(
-                                $modelData[2] ?? $this->tableNameNotPlural($subModel) . '_id',
+                                $modelData[2] ?? $this->tableNameNotPlural($subModel).'_id',
                             ),
                             'local_key' => $this->stripString(
-                                $modelData[3] ?? $this->tableNameNotPlural($modelName) . '_id',
+                                $modelData[3] ?? $this->tableNameNotPlural($modelName).'_id',
                             ),
                         ];
                     } else {
@@ -585,7 +534,7 @@ class GeneratorService
                             'type' => $relationship,
                             'model' => $modelName,
                             'foreign_key' => $this->stripString(
-                                $modelData[1] ?? $this->tableNameNotPlural($modelName) . '_id',
+                                $modelData[1] ?? $this->tableNameNotPlural($modelName).'_id',
                             ),
                             'local_key' => $this->stripString($modelData[2] ?? 'id'),
                         ];
@@ -597,16 +546,12 @@ class GeneratorService
         return $relationshipData;
     }
 
-    /**
-     * @param  string  $modelsPath
-     * @return Collection
-     */
     public function getModelsNames(string $modelsPath): Collection
     {
         return collect(\File::allFiles($modelsPath))
             ->map(function ($item) {
                 $path = $item->getRelativePathName();
-                $namespace = $this->extractNamespace($item->getRealPath()) . '\\';
+                $namespace = $this->extractNamespace($item->getRealPath()).'\\';
 
                 return sprintf('\%s%s', $namespace, strtr(substr($path, 0, strrpos($path, '.')), '/', '\\'));
             })
@@ -615,7 +560,7 @@ class GeneratorService
 
                 if (class_exists($class)) {
                     $reflection = new ReflectionClass($class);
-                    $valid = $reflection->isSubclassOf(Model::class) && !$reflection->isAbstract();
+                    $valid = $reflection->isSubclassOf(Model::class) && ! $reflection->isAbstract();
                 }
 
                 return $valid;
@@ -647,7 +592,6 @@ class GeneratorService
     /**
      * Trim quotes
      *
-     * @param $string
      * @return string
      */
     public function trimQuotes($string)
@@ -678,7 +622,6 @@ class GeneratorService
     /**
      * Relationships
      *
-     * @param  Model  $model
      * @return array of relationships
      */
     private function getRelationships(Model $model): array
@@ -689,7 +632,7 @@ class GeneratorService
         foreach ((new ReflectionClass($model))->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
             if (
                 $method->class != get_class($model) ||
-                !empty($method->getParameters()) ||
+                ! empty($method->getParameters()) ||
                 $method->getName() == __FUNCTION__
             ) {
                 continue;
@@ -698,7 +641,7 @@ class GeneratorService
             try {
                 $return = $method->invoke($model);
                 // check if not instance of Relation
-                if (!($return instanceof Relation)) {
+                if (! ($return instanceof Relation)) {
                     continue;
                 }
                 $relationType = (new ReflectionClass($return))->getShortName();
@@ -712,7 +655,7 @@ class GeneratorService
                     'foreign_key' => $foreignKey,
                     'parent_key' => $parentKey,
                 ];
-            } catch (QueryException | \TypeError | \Throwable $e) {
+            } catch (QueryException|\TypeError|\Throwable $e) {
                 // ignore
             }
         }
@@ -733,10 +676,10 @@ class GeneratorService
                     $enum .= "'$value',";
                 }
             }
-            $table = '$table->enum("' . trim($field['field_name']) . '", [' . $enum . '])';
+            $table = '$table->enum("'.trim($field['field_name']).'", ['.$enum.'])';
         }
         if ($field['db_type'] === $typeDB) {
-            $table = '$table->' . $typeLaravel . '("' . trim($field['field_name']) . '")';
+            $table = '$table->'.$typeLaravel.'("'.trim($field['field_name']).'")';
         }
 
         return $table;
@@ -748,7 +691,7 @@ class GeneratorService
         if ($field['default_value'] === $configDefaultValue['null']) {
             $table = '->nullable()';
         } elseif ($field['default_value'] === $configDefaultValue['as_define']) {
-            $table = '->nullable()->default("' . $field['as_define'] . '")';
+            $table = '->nullable()->default("'.$field['as_define'].'")';
         } elseif ($field['default_value'] === $configDefaultValue['current_timestamps']) {
             $table = '->nullable()->useCurrent()';
         }
@@ -760,7 +703,7 @@ class GeneratorService
     {
         $table = '';
         if ($field['options']['comment']) {
-            $table .= '->comment("' . $field['options']['comment'] . '")';
+            $table .= '->comment("'.$field['options']['comment'].'")';
         }
         if ($field['options']['unique']) {
             $table .= '->unique()';
@@ -782,7 +725,7 @@ class GeneratorService
             if (strlen($form) > 0) {
                 $form = trim($form);
                 [$keyForm, $valForm] = array_pad(explode(':', $form, 2), 2, '');
-                $name = $keyForm . ":$valForm,";
+                $name = $keyForm.":$valForm,";
                 $fieldsGenerateDataForm[] = $name;
             }
         }
@@ -792,7 +735,8 @@ class GeneratorService
 
     public function formFeGenerateField(): object
     {
-        return new class extends GeneratorService {
+        return new class extends GeneratorService
+        {
             public function generateBoolean($tableName, $field): string
             {
                 $formTemplate = $this->_getFormTemplate('switch');
@@ -843,7 +787,7 @@ class GeneratorService
                 $formTemplate = $this->_replaceFormField($field, $formTemplate);
                 $formTemplate = str_replace(
                     '{{$LIST_SELECT$}}',
-                    $this->modelNameNotPluralFe($field['field_name']) . 'Options',
+                    $this->modelNameNotPluralFe($field['field_name']).'Options',
                     $formTemplate,
                 );
                 $formTemplate = str_replace('{{$LABEL_OPTION$}}', 'item', $formTemplate);
@@ -868,14 +812,14 @@ class GeneratorService
 
             private function _checkRequired($field, $formTemplate): string
             {
-                return str_replace('{{$PROP_NAME$}}', 'prop="' . $field['field_name'] . '"', $formTemplate);
+                return str_replace('{{$PROP_NAME$}}', 'prop="'.$field['field_name'].'"', $formTemplate);
             }
 
             private function _replaceLabelForm($tableName, $field, $formTemplate): string
             {
                 return str_replace(
                     '{{$LABEL_NAME_INPUT$}}',
-                    '$t(\'table.' . "$tableName.{$field['field_name']}')",
+                    '$t(\'table.'."$tableName.{$field['field_name']}')",
                     $formTemplate,
                 );
             }
@@ -915,32 +859,32 @@ class GeneratorService
                 }
             }
 
-            return "'" . $field['field_name'] . "'" . ' => ' . "'$required|$enum',";
+            return "'".$field['field_name']."'".' => '."'$required|$enum',";
         };
 
         return match ($field['db_type']) {
-            $dbType['integer'], $dbType['bigInteger'], $dbType['float'], $dbType['double'] => "'" .
-                $field['field_name'] .
-                "'" .
-                ' => ' .
+            $dbType['integer'], $dbType['bigInteger'], $dbType['float'], $dbType['double'] => "'".
+                $field['field_name'].
+                "'".
+                ' => '.
                 "'$required|numeric',",
-            $dbType['boolean'] => "'" . $field['field_name'] . "'" . ' => ' . "'$required|boolean',",
-            $dbType['date'] => "'" . $field['field_name'] . "'" . ' => ' . "'$required|date_format:Y-m-d',",
-            $dbType['dateTime'], $dbType['timestamp'] => "'" .
-                $field['field_name'] .
-                "'" .
-                ' => ' .
+            $dbType['boolean'] => "'".$field['field_name']."'".' => '."'$required|boolean',",
+            $dbType['date'] => "'".$field['field_name']."'".' => '."'$required|date_format:Y-m-d',",
+            $dbType['dateTime'], $dbType['timestamp'] => "'".
+                $field['field_name'].
+                "'".
+                ' => '.
                 "'$required|date_format:Y-m-d H:i:s',",
-            $dbType['time'] => "'" . $field['field_name'] . "'" . ' => ' . "'$required|date_format:H:i:s',",
-            $dbType['year'] => "'" . $field['field_name'] . "'" . ' => ' . "'$required|date_format:Y',",
-            $dbType['string'] => "'" .
-                $field['field_name'] .
-                "'" .
-                ' => ' .
+            $dbType['time'] => "'".$field['field_name']."'".' => '."'$required|date_format:H:i:s',",
+            $dbType['year'] => "'".$field['field_name']."'".' => '."'$required|date_format:Y',",
+            $dbType['string'] => "'".
+                $field['field_name'].
+                "'".
+                ' => '.
                 "'$required|string|max:{$field['length_varchar']}',",
-            $dbType['text'], $dbType['longtext'] => "'" . $field['field_name'] . "'" . ' => ' . "'$required|string',",
+            $dbType['text'], $dbType['longtext'] => "'".$field['field_name']."'".' => '."'$required|string',",
             $dbType['enum'] => $enumFunc($field, $required),
-            $dbType['json'] => "'" . $field['field_name'] . "'" . ' => ' . "'$required|json',",
+            $dbType['json'] => "'".$field['field_name']."'".' => '."'$required|json',",
             default => '',
         };
     }
@@ -952,34 +896,34 @@ class GeneratorService
         $dbType = config('generator.db_type');
 
         return match ($field['db_type']) {
-            $dbType['integer'], $dbType['bigInteger'] => "'" .
-                $field['field_name'] .
-                "'" .
+            $dbType['integer'], $dbType['bigInteger'] => "'".
+                $field['field_name'].
+                "'".
                 ' => $faker->numberBetween(1000, 9000),',
-            $dbType['float'], $dbType['double'] => "'" .
-                $field['field_name'] .
-                "'" .
+            $dbType['float'], $dbType['double'] => "'".
+                $field['field_name'].
+                "'".
                 ' => $faker->randomFloat(2, 1000, 9000),',
-            $dbType['boolean'] => "'" . $field['field_name'] . "'" . ' => $faker->numberBetween(0, 1),',
-            $dbType['date'] => "'" . $field['field_name'] . "'" . ' => $faker->date,',
-            $dbType['dateTime'], $dbType['timestamp'] => "'" .
-                $field['field_name'] .
-                "'" .
+            $dbType['boolean'] => "'".$field['field_name']."'".' => $faker->numberBetween(0, 1),',
+            $dbType['date'] => "'".$field['field_name']."'".' => $faker->date,',
+            $dbType['dateTime'], $dbType['timestamp'] => "'".
+                $field['field_name'].
+                "'".
                 ' => $faker->dateTime->format(\'Y-m-d H:i:s\'),',
-            $dbType['time'] => "'" . $field['field_name'] . "'" . ' => $faker->date(\'H:i:s\'),',
-            $dbType['year'] => "'" . $field['field_name'] . "'" . ' => $faker->year,',
-            $dbType['string'] => "'" . $field['field_name'] . "'" . ' => $faker->name,',
-            $dbType['text'], $dbType['longtext'] => "'" . $field['field_name'] . "'" . ' => $faker->paragraph,',
-            $dbType['enum'] => "'" .
-                $field['field_name'] .
-                "'" .
-                ' => $faker->randomElement(' .
-                json_encode($field['enum']) .
+            $dbType['time'] => "'".$field['field_name']."'".' => $faker->date(\'H:i:s\'),',
+            $dbType['year'] => "'".$field['field_name']."'".' => $faker->year,',
+            $dbType['string'] => "'".$field['field_name']."'".' => $faker->name,',
+            $dbType['text'], $dbType['longtext'] => "'".$field['field_name']."'".' => $faker->paragraph,',
+            $dbType['enum'] => "'".
+                $field['field_name'].
+                "'".
+                ' => $faker->randomElement('.
+                json_encode($field['enum']).
                 '),',
-            $dbType['json'] => "'" . $field['field_name'] . "'" . " => '[{}]',",
-            $dbType['file'] => "'" .
-                $field['field_name'] .
-                "'" .
+            $dbType['json'] => "'".$field['field_name']."'"." => '[{}]',",
+            $dbType['file'] => "'".
+                $field['field_name'].
+                "'".
                 " => json_encode(['https://via.placeholder.com/350']),",
             default => '',
         };
@@ -989,7 +933,7 @@ class GeneratorService
     // START - LANG
     public function langTemplate($tableName, $templateDataReal): array|string
     {
-        $quoteTable = "'" . $tableName . "' => [";
+        $quoteTable = "'".$tableName."' => [";
         $template = $this->searchTemplate(
             $quoteTable,
             '],',
@@ -1023,8 +967,7 @@ class GeneratorService
             $dbType['timestamp'],
             $dbType['time'],
             $dbType['year'],
-            $dbType['enum']
-                => 'center',
+            $dbType['enum'] => 'center',
             default => 'left',
         };
     }
@@ -1061,10 +1004,10 @@ class GeneratorService
     {
         return match ($case) {
             'use_class' => "use App\Repositories\\{$model['name']}\\{$model['name']}{$model['class']};",
-            'register' => '$this->app->bind(' .
-                $model['name'] .
-                'Interface::class, ' .
-                $model['name'] .
+            'register' => '$this->app->bind('.
+                $model['name'].
+                'Interface::class, '.
+                $model['name'].
                 'Repository::class);',
         };
     }
@@ -1144,8 +1087,8 @@ class GeneratorService
 
     public function replaceTemplate($fieldsGenerate, int $space = 2, int $start = 1): string
     {
-        return $this->infy_nl_tab($start, 2) .
-            implode($this->infy_nl_tab(1, 2), $fieldsGenerate) .
+        return $this->infy_nl_tab($start, 2).
+            implode($this->infy_nl_tab(1, 2), $fieldsGenerate).
             $this->infy_nl_tab(1, 3, $space);
     }
 
@@ -1154,7 +1097,7 @@ class GeneratorService
         $columns = [];
         $template = $this->get_template('column', 'Forms/', 'vue');
         foreach ($fields as $field) {
-            if ($field['field_name'] === 'id' || !$field['show']) {
+            if ($field['field_name'] === 'id' || ! $field['show']) {
                 continue;
             }
             $templateClone = $template;
@@ -1166,7 +1109,7 @@ class GeneratorService
             $templateClone = str_replace('{{$FORM_TEMPLATE$}}', $templateColumn, $templateClone);
             $columns[] = $templateClone;
         }
-        if (!$ignoreOptions && $this->getOptions(config('generator.model.options.timestamps'), $model['options'])) {
+        if (! $ignoreOptions && $this->getOptions(config('generator.model.options.timestamps'), $model['options'])) {
             $template = str_replace('{{$FIELD_NAME$}}', 'updated_at', $template);
             $template = str_replace('{{$FORM_SORTABLE$}}', "'custom'", $template);
             $template = str_replace('{{$FORM_ALIGN$}}', 'center', $template);
@@ -1196,7 +1139,7 @@ class GeneratorService
             default:
                 $template = '';
         }
-        if (!$template) {
+        if (! $template) {
             return '';
         }
 
@@ -1207,25 +1150,19 @@ class GeneratorService
         TEMPLATE;
     }
 
-    /**
-     * @param $fields
-     * @return string
-     */
     public function generateColumnSearch($fields): string
     {
         $column = [];
         foreach ($fields as $field) {
             if ($field['search']) {
-                $column[] = "'" . $field['field_name'] . "'";
+                $column[] = "'".$field['field_name']."'";
             }
         }
 
-        return implode($this->infy_nl_tab(0, 0) . ', ', $column);
+        return implode($this->infy_nl_tab(0, 0).', ', $column);
     }
 
     /**
-     * @param $fields
-     * @param $templateDataReal
      * @return mixed|string
      */
     public function importComponent($fields, $templateDataReal): mixed
@@ -1238,13 +1175,13 @@ class GeneratorService
         ];
         $importVueJS = config('generator.import.vue');
         foreach ($fields as $field) {
-            if (!$flags['long_text'] && !$flags['json']) {
+            if (! $flags['long_text'] && ! $flags['json']) {
                 return $templateDataReal;
             }
             if (
                 $field['db_type'] === $dbType['longtext'] &&
                 $flags['long_text'] &&
-                !strpos($templateDataReal, $importVueJS['tinymce']['file'])
+                ! strpos($templateDataReal, $importVueJS['tinymce']['file'])
             ) {
                 $templateDataReal = $this->replaceNotDelete(
                     $notDelete['import_component'],
@@ -1257,7 +1194,7 @@ class GeneratorService
             } elseif (
                 $field['db_type'] === $dbType['json'] &&
                 $flags['json'] &&
-                !strpos($templateDataReal, $importVueJS['json_editor']['file'])
+                ! strpos($templateDataReal, $importVueJS['json_editor']['file'])
             ) {
                 $templateDataReal = $this->replaceNotDelete(
                     $notDelete['import_component'],
@@ -1274,9 +1211,6 @@ class GeneratorService
     }
 
     /**
-     * @param $fields
-     * @param $model
-     * @param $templateData
      * @return mixed|string
      */
     public function generateRules($fields, $model, $templateData): mixed
@@ -1317,10 +1251,6 @@ class GeneratorService
         return $templateData;
     }
 
-    /**
-     * @param $fields
-     * @return array
-     */
     public function generateModel($fields): array
     {
         $data = [];
@@ -1331,8 +1261,7 @@ class GeneratorService
                 $dbType['integer'],
                 $dbType['bigInteger'],
                 $dbType['float'],
-                $dbType['double']
-                    => "{$field['field_name']}: number;",
+                $dbType['double'] => "{$field['field_name']}: number;",
                 $dbType['boolean'] => "{$field['field_name']}: boolean;",
                 $dbType['date'], $dbType['dateTime'], $dbType['timestamp'] => "{$field['field_name']}: Date;",
                 $dbType['time'],
@@ -1340,8 +1269,7 @@ class GeneratorService
                 $dbType['string'],
                 $dbType['text'],
                 $dbType['longtext'],
-                $dbType['enum']
-                    => "{$field['field_name']}: string;",
+                $dbType['enum'] => "{$field['field_name']}: string;",
                 $dbType['json'] => "{$field['field_name']}: any;",
                 default => '',
             };
@@ -1357,7 +1285,8 @@ class GeneratorService
 
     public function replaceArray($templateDataReal, $key, $content, $tab, $spaces = 4): array|string|null
     {
-        $regex = '/' . $key . '\s*\[([^\]]*)\]/m';
+        $regex = '/'.$key.'\s*\[([^\]]*)\]/m';
+
         return preg_replace($regex, "\n{$this->infy_nl_tab(1, $tab, $spaces)}$content\n}", $templateDataReal);
     }
 }

@@ -8,10 +8,6 @@ use Illuminate\Http\Response;
 
 class LaraJSController extends BaseLaraJSController
 {
-    /**
-     * @param $language
-     * @return Response
-     */
     public function setLanguage($language): Response
     {
         $cookie = cookie('language', $language);
@@ -19,10 +15,6 @@ class LaraJSController extends BaseLaraJSController
         return response('success')->cookie($cookie);
     }
 
-    /**
-     * @param  Request  $request
-     * @return JsonResponse
-     */
     public function logging(Request $request): JsonResponse
     {
         try {

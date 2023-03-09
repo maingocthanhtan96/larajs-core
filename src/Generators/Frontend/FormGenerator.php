@@ -6,7 +6,6 @@ use LaraJS\Core\Generators\BaseGenerator;
 
 class FormGenerator extends BaseGenerator
 {
-    /** @var array */
     protected array $dbType;
 
     public function __construct($model)
@@ -43,12 +42,12 @@ class FormGenerator extends BaseGenerator
             $this->serviceGenerator->modelNameNotPluralFe($model['name']),
             $templateData,
         );
-        $folderName = $this->path . $this->serviceGenerator->folderPages($model['name']);
-        if (!is_dir($folderName)) {
+        $folderName = $this->path.$this->serviceGenerator->folderPages($model['name']);
+        if (! is_dir($folderName)) {
             mkdir($folderName, 0755, true);
         }
 
-        $fileName = $this->serviceGenerator->folderPages($model['name']) . '/Form.vue';
+        $fileName = $this->serviceGenerator->folderPages($model['name']).'/Form.vue';
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
     }
 }

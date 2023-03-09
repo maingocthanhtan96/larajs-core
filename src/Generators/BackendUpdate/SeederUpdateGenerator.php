@@ -6,7 +6,6 @@ use LaraJS\Core\Generators\BaseGenerator;
 
 class SeederUpdateGenerator extends BaseGenerator
 {
-    /** @var array */
     protected array $dbType;
 
     public function __construct($generator, $model, $updateFields)
@@ -21,7 +20,7 @@ class SeederUpdateGenerator extends BaseGenerator
 
     private function _generate($generator, $model, $updateFields)
     {
-        $fileName = $model['name'] . 'Seeder.php';
+        $fileName = $model['name'].'Seeder.php';
         $templateDataReal = $this->serviceGenerator->getFile('seeder', 'laravel', $fileName);
         $templateDataReal = $this->_generateRenameFields($updateFields['renameFields'], $templateDataReal);
         $templateDataReal = $this->_generateChangeFields($updateFields['changeFields'], $generator, $templateDataReal);
@@ -34,7 +33,7 @@ class SeederUpdateGenerator extends BaseGenerator
                 $templateDataReal,
             );
         }
-        $this->serviceFile->createFileReal($this->path . $fileName, $templateDataReal);
+        $this->serviceFile->createFileReal($this->path.$fileName, $templateDataReal);
     }
 
     private function _generateRenameFields($renameFields, $templateDataReal)

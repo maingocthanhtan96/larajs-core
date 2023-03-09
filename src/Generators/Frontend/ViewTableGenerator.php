@@ -32,8 +32,8 @@ class ViewTableGenerator extends BaseGenerator
             $this->serviceGenerator->modelNameNotPlural($model['name']),
             $templateData,
         );
-        $folderName = $this->path . $this->serviceGenerator->folderPages($model['name']);
-        if (!is_dir($folderName)) {
+        $folderName = $this->path.$this->serviceGenerator->folderPages($model['name']);
+        if (! is_dir($folderName)) {
             mkdir($folderName, 0755, true);
         }
         $fileName = "{$this->serviceGenerator->folderPages($model['name'])}/index.vue";

@@ -7,22 +7,16 @@ use LaraJS\Core\Services\GeneratorService;
 
 class BaseGenerator
 {
-    /** @var GeneratorService */
     protected GeneratorService $serviceGenerator;
 
-    /** @var FileService */
     protected FileService $serviceFile;
 
-    /** @var string */
     protected string $path;
 
-    /** @var array */
     protected array $notDelete;
 
-    /** @var array */
     protected array $defaultValue;
 
-    /** @var array */
     protected array $dbType;
 
     public function __construct()
@@ -37,14 +31,23 @@ class BaseGenerator
         $isJS = config('generator.js_language') === 'js';
         switch ($type) {
             case 'form':
-                if ($isJS)  return 'form.jsx';
-                else return 'form.tsx';
+                if ($isJS) {
+                    return 'form.jsx';
+                } else {
+                    return 'form.tsx';
+                }
             case 'table':
-                if ($isJS)  return 'table.jsx';
-                else return 'table.tsx';
+                if ($isJS) {
+                    return 'table.jsx';
+                } else {
+                    return 'table.tsx';
+                }
             case 'index':
-                if ($isJS)  return 'index.js';
-                else return 'index.ts';
+                if ($isJS) {
+                    return 'index.js';
+                } else {
+                    return 'index.ts';
+                }
             case 'ext':
                 return config('generator.js_language');
             default:
@@ -58,12 +61,13 @@ class BaseGenerator
         if ($isMono) {
             return $isJS ? '@' : '@larajs';
         }
+
         return $isJS ? '@' : '@larajs/cms';
     }
 
     public function rollbackFile($path, $fileName): bool
     {
-        if (file_exists($path . $fileName)) {
+        if (file_exists($path.$fileName)) {
             return FileService::deleteFile($path, $fileName);
         }
 
@@ -84,12 +88,11 @@ class BaseGenerator
                 $this->dbType['integer'],
                 $this->dbType['bigInteger'],
                 $this->dbType['float'],
-                $this->dbType['double']
-                    => str_replace(
-                    '{{$COMPONENT$}}',
-                    $formFeGenerateField->generateInput('inputNumber', $tableName, $field, $index),
-                    $templateFormItemClone,
-                ),
+                $this->dbType['double'] => str_replace(
+                        '{{$COMPONENT$}}',
+                        $formFeGenerateField->generateInput('inputNumber', $tableName, $field, $index),
+                        $templateFormItemClone,
+                    ),
                 $this->dbType['boolean'] => str_replace(
                     '{{$COMPONENT$}}',
                     $formFeGenerateField->generateBoolean($tableName, $field),

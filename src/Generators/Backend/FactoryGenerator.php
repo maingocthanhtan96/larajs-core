@@ -2,8 +2,8 @@
 
 namespace LaraJS\Core\Generators\Backend;
 
-use LaraJS\Core\Generators\BaseGenerator;
 use Carbon\Carbon;
+use LaraJS\Core\Generators\BaseGenerator;
 
 class FactoryGenerator extends BaseGenerator
 {
@@ -15,10 +15,6 @@ class FactoryGenerator extends BaseGenerator
         $this->_generate($fields, $model);
     }
 
-    /**
-     * @param $fields
-     * @return string
-     */
     public function generateFields($fields): string
     {
         $fieldsGenerate = [];
@@ -31,11 +27,6 @@ class FactoryGenerator extends BaseGenerator
         return implode($this->serviceGenerator->infy_nl_tab(1, 3), $fieldsGenerate);
     }
 
-    /**
-     * @param $fields
-     * @param $model
-     * @return void
-     */
     private function _generate($fields, $model): void
     {
         $now = Carbon::now();
@@ -51,10 +42,6 @@ class FactoryGenerator extends BaseGenerator
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
     }
 
-    /**
-     * @param $templateData
-     * @return string
-     */
     private function _generateUserSignature($templateData): string
     {
         $userSignature = ['created_by', 'updated_by'];
@@ -63,7 +50,7 @@ class FactoryGenerator extends BaseGenerator
         foreach ($userSignature as $signature) {
             $templateData = $this->serviceGenerator->replaceNotDelete(
                 $notDelete['seeder'],
-                "'$signature'" . ' => \App\Models\User::all()->random()->id,',
+                "'$signature'".' => \App\Models\User::all()->random()->id,',
                 3,
                 $templateData,
             );

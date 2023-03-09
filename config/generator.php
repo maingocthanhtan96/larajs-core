@@ -1,6 +1,6 @@
 <?php
 
-$API_VERSION = env('API_VERSION_GENERATOR', 'v1') . '/';
+$API_VERSION = env('API_VERSION_GENERATOR', 'v1').'/';
 
 return [
     'js_language' => 'js',
@@ -35,11 +35,11 @@ return [
             'observer' => app_path('Observers/'),
             'provider' => app_path('Providers/'),
             'api_routes' => base_path('routes/api-v1.php'),
-            'api_controller' => app_path('Http/Controllers/Api/' . $API_VERSION),
+            'api_controller' => app_path('Http/Controllers/Api/'.$API_VERSION),
             'lang' => base_path('lang/'),
             'request' => app_path('Http/Requests/'),
             'tests' => [
-                'feature' => base_path('tests/Feature/Controllers/Api/' . $API_VERSION),
+                'feature' => base_path('tests/Feature/Controllers/Api/'.$API_VERSION),
             ],
         ],
         'delete_files' => [
@@ -52,15 +52,15 @@ return [
                 'observer' => '/app/Observers/',
                 'provider' => '/app/Providers/',
                 'api_routes' => '/routes/api-v1.php',
-                'api_controller' => '/app/Http/Controllers/Api/' . $API_VERSION,
+                'api_controller' => '/app/Http/Controllers/Api/'.$API_VERSION,
                 'lang' => '/lang/',
                 'request' => '/app/Http/Requests/',
                 'tests' => [
-                    'feature' => '/tests/Feature/Controllers/Api/' . $API_VERSION,
+                    'feature' => '/tests/Feature/Controllers/Api/'.$API_VERSION,
                 ],
             ],
             'vue' => [
-                'api' => '/resources/scripts/api/' . $API_VERSION,
+                'api' => '/resources/scripts/api/'.$API_VERSION,
                 'uses' => '/resources/scripts/uses/',
                 'views' => '/resources/scripts/views/',
                 'router_modules' => '/resources/scripts/router/modules/',
@@ -72,7 +72,7 @@ return [
             ],
         ],
         'vue' => [
-            'api' => base_path('resources/scripts/api/' . $API_VERSION),
+            'api' => base_path('resources/scripts/api/'.$API_VERSION),
             'views' => base_path('resources/scripts/views/'),
             'router_modules' => base_path('resources/scripts/router/modules/'),
             'router' => base_path('resources/scripts/router/'),
@@ -152,7 +152,7 @@ return [
     'namespace' => [
         'model' => 'App\Models',
         'repository' => 'App\Repositories',
-        'api_controller' => 'App\Http\Controllers\Api\\' . env('API_VERSION_GENERATOR', 'v1'),
+        'api_controller' => 'App\Http\Controllers\Api\\'.env('API_VERSION_GENERATOR', 'v1'),
     ],
 
     /*

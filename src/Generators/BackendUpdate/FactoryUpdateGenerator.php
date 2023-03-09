@@ -6,7 +6,6 @@ use LaraJS\Core\Generators\BaseGenerator;
 
 class FactoryUpdateGenerator extends BaseGenerator
 {
-    /** @var array */
     protected array $dbType;
 
     public function __construct($generator, $model, $updateFields)
@@ -21,7 +20,7 @@ class FactoryUpdateGenerator extends BaseGenerator
 
     private function _generate($generator, $model, $updateFields)
     {
-        $fileName = $model['name'] . 'Factory.php';
+        $fileName = $model['name'].'Factory.php';
         $templateDataReal = $this->serviceGenerator->getFile('factory', 'laravel', $fileName);
         $templateDataReal = $this->_generateRenameFields($updateFields['renameFields'], $templateDataReal);
         $templateDataReal = $this->_generateChangeFields($updateFields['changeFields'], $generator, $templateDataReal);
@@ -34,7 +33,7 @@ class FactoryUpdateGenerator extends BaseGenerator
                 $templateDataReal,
             );
         }
-        $this->serviceFile->createFileReal($this->path . $fileName, $templateDataReal);
+        $this->serviceFile->createFileReal($this->path.$fileName, $templateDataReal);
     }
 
     private function _generateRenameFields($renameFields, $templateDataReal)

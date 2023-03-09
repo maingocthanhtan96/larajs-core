@@ -16,10 +16,10 @@ class InterfaceCommonUpdateGenerator extends BaseGenerator
 
     private function _generate($fields, $model)
     {
-        $fileName = $this->serviceGenerator->folderPages($model['name']) . '.ts';
+        $fileName = $this->serviceGenerator->folderPages($model['name']).'.ts';
         $templateDataReal = $this->serviceGenerator->getFile('model', 'package', $fileName);
         $templateDataReal = $this->_generateFieldsUpdate($fields['updateFields'], $templateDataReal);
-        $this->serviceFile->createFileReal($this->path . $fileName, $templateDataReal);
+        $this->serviceFile->createFileReal($this->path.$fileName, $templateDataReal);
     }
 
     private function _generateFieldsUpdate($fields, $templateDataReal): string

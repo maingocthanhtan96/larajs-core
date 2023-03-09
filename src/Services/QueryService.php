@@ -1,6 +1,7 @@
 <?php
 
 namespace LaraJS\Core\Services;
+
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -12,22 +13,16 @@ class QueryService
 
     /**
      * Select column owner
-     *
-     * @var array
      */
     public array $select = [];
 
     /**
      * Column to search using whereLike
-     *
-     * @var array
      */
     public array $columnSearch = [];
 
     /**
      * Relationship with other tables
-     *
-     * @var array
      */
     public array $withRelationship = [];
 
@@ -40,8 +35,6 @@ class QueryService
 
     /**
      * Start date - End date
-     *
-     * @var array
      */
     public array $betweenDate = [];
 
@@ -54,22 +47,16 @@ class QueryService
 
     /**
      * Column to order
-     *
-     * @var string
      */
     public string $orderBy = '';
 
     /**
      * Always order this column
-     *
-     * @var string
      */
     public string $columnDate = 'updated_at';
 
     /**
      * Limit records
-     *
-     * @var int
      */
     public int $limit = self::LIMIT;
 
@@ -83,7 +70,6 @@ class QueryService
     /**
      * QueryService constructor.
      *
-     * @param  Model  $model
      *
      * @author tanmnt
      */
@@ -95,14 +81,12 @@ class QueryService
      * Query table
      *
      * @author tanmnt
-     *
-     * @return Builder
      */
     public function query(): Builder
     {
         $query = $this->model::query();
-        $query->when($this->select, fn(Builder $q) => $q->select($this->select));
-        $query->when($this->search, fn(Builder $q) => $q->whereLike($this->columnSearch, $this->search));
+        $query->when($this->select, fn (Builder $q) => $q->select($this->select));
+        $query->when($this->search, fn (Builder $q) => $q->whereLike($this->columnSearch, $this->search));
         $query->with(Arr::wrap($this->withRelationship));
         $query->when(is_callable($this->customQuery), $this->customQuery);
         $query->when(isset($this->betweenDate[0]) && isset($this->betweenDate[1]), function (Builder $q) {
@@ -112,15 +96,13 @@ class QueryService
         });
         $query->when(
             $this->orderBy && $this->direction,
-            fn(Builder $q) => $q->orderByRelationship($this->orderBy, convert_direction($this->direction)),
+            fn (Builder $q) => $q->orderByRelationship($this->orderBy, convert_direction($this->direction)),
         );
 
         return $query;
     }
 
     /**
-     * @param  array  $filters
-     *
      * @property string $select
      * @property array $columnSearch
      * @property string $search

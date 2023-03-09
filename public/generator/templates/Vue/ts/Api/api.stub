@@ -5,7 +5,7 @@
  * File: {{$MODEL_CLASS$}}.js
  */
 
-import { Resource } from '@larajs/core';
+import { Resource } from '@larajs/cms/api';
 
 class {{$MODEL_CLASS$}}Resource extends Resource {
   constructor() {
