@@ -9,8 +9,6 @@ use Illuminate\Support\Arr;
 
 class QueryService
 {
-    public const LIMIT = 25;
-
     /**
      * Select column owner
      */
@@ -54,11 +52,6 @@ class QueryService
      * Always order this column
      */
     public string $columnDate = 'updated_at';
-
-    /**
-     * Limit records
-     */
-    public int $limit = self::LIMIT;
 
     /**
      * Add dynamic query
@@ -109,13 +102,14 @@ class QueryService
      * @property array $betweenDate
      * @property string $direction
      * @property string $orderBy
-     * @property int $limit
      * @property callable $customQuery
      */
-    public function filters(array $filters)
+    public function filters(array $filters): static
     {
         foreach ($filters as $field => $filter) {
             $filter && ($this->{$field} = $filter);
         }
+
+        return $this;
     }
 }
