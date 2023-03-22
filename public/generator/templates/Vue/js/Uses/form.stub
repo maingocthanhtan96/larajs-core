@@ -22,11 +22,10 @@ export function use{{$NAME_MODEL$}}Forms() {
 
   const formElement = reactive({
     name: '{{$NAME_TABLE$}}',
+    ref: {{$CONST_NAME_MODEL$}}Ref,
     form: {
       model: form,
       rules: rules,
-      ref: {{$CONST_NAME_MODEL$}}Ref,
-      props: {},
     },
     row: {},
     items: [

@@ -94,6 +94,7 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
 
         return $this->model->with(\Arr::wrap($relationship))->get();
     }
+
     public function queryBuilder(Request $request, array $options): Builder
     {
         $queryService = new QueryService($this->model);
