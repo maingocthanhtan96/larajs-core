@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router';
 import { FormRules } from 'element-plus';
 import { use{{$NAME_USES$}} } from '@larajs/cms/uses';
 import { {{$NAME_MODEL$}} } from '@larajs/common';
-import { FormElementType } from '@larajs/components/FormElement/type';
+import { FormElementType } from '@larajs/components';
 // {{$IMPORT_COMPONENT_NOT_DELETE_THIS_LINE$}}
 
 export interface {{$NAME_MODEL$}}Root {
