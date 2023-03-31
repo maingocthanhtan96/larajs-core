@@ -1,7 +1,7 @@
 <el-table-column prop="{{$FIELD_NAME$}}" {{$SORT$}} :label="$t('route.{{$TABLE_MODEL_CLASS$}}')" align="{{$ALIGN$}}" header-align="center">
                   <template #default="{ row }">
                     <template v-for="item in row.{{$MODEL_RELATIONSHIP$}}" :key="item.id">
-                      <el-tag class="tw-mr-2">
+                      <el-tag class="mr-2">
                         {{item.{{$COLUMN_DISPLAY$}}}}
                       </el-tag>
                     </template>
