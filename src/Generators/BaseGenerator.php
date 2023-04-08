@@ -4,12 +4,15 @@ namespace LaraJS\Core\Generators;
 
 use LaraJS\Core\Services\FileService;
 use LaraJS\Core\Services\GeneratorService;
+use LaraJS\Core\Services\PhpParserService;
 
 class BaseGenerator
 {
     protected GeneratorService $serviceGenerator;
 
     protected FileService $serviceFile;
+
+    protected PhpParserService $phpParserService;
 
     protected string $path;
 
@@ -23,6 +26,7 @@ class BaseGenerator
     {
         $this->serviceGenerator = new GeneratorService();
         $this->serviceFile = new FileService();
+        $this->phpParserService = new PhpParserService();
         $this->dbType = config('generator.db_type');
     }
 

@@ -24,16 +24,16 @@ class LangUpdateGenerator extends BaseGenerator
         foreach ($lang as $key => $langComment) {
             foreach ($nameLang as $lang) {
                 $templateDataReal = $this->serviceGenerator->getFile('lang', 'laravel', $key.'/table.php');
-                $templateDataReal = $this->_generateFieldsRename(
-                    $tableName,
-                    $updateFields['renameFields'],
-                    $templateDataReal,
-                );
-                $templateDataReal = $this->_generateFieldsDrop(
-                    $tableName,
-                    $updateFields['dropFields'],
-                    $templateDataReal,
-                );
+//                $templateDataReal = $this->_generateFieldsRename(
+//                    $tableName,
+//                    $updateFields['renameFields'],
+//                    $templateDataReal,
+//                );
+//                $templateDataReal = $this->_generateFieldsDrop(
+//                    $tableName,
+//                    $updateFields['dropFields'],
+//                    $templateDataReal,
+//                );
                 $templateDataReal = $this->_generateFieldsUpdate(
                     $tableName,
                     $updateFields['updateFields'],
@@ -97,31 +97,11 @@ class LangUpdateGenerator extends BaseGenerator
         if (! $updateFields) {
             return $templateDataReal;
         }
-        $langTemplate = $this->serviceGenerator->langTemplate($tableName, $templateDataReal);
-        $template = $langTemplate['template'];
-        $templateReplace = $langTemplate['template_replace'];
-        if (! $template || ! $templateReplace) {
-            return $templateDataReal;
-        }
-        $arTemplate = explode(',', trim($template));
-        $fieldsGenerate = [];
-        $fieldsGenerate[] = " '$tableName' => [";
-        foreach ($arTemplate as $tpl) {
-            if (strlen($tpl) > 0) {
-                [$fieldName, $fieldNameTrans] = explode('=>', $tpl);
-                $fieldName = trim($fieldName);
-                $fieldNameTrans = trim($fieldNameTrans);
-                $fieldsGenerate[] = "$fieldName => $fieldNameTrans,";
-            }
-        }
         foreach ($updateFields as $update) {
-            $name = "'{$update['field_name']}' => '{$update['field_name_trans']}',";
-            $fieldsGenerate[] = $name;
+            $templateDataReal = $this->phpParserService->addItemToArray($templateDataReal, $tableName, $update['field_name'], $update['field_name_trans']);
         }
-        $replace = implode($this->serviceGenerator->infy_nl_tab(1, 2), $fieldsGenerate);
-        $replace .= "\n\t],\n ";
 
-        return $this->_replaceTemplate($templateReplace, $replace, $templateDataReal);
+        return $templateDataReal;
     }
 
     private function _generateFieldsDrop($tableName, $dropUpdate, $templateDataReal): string

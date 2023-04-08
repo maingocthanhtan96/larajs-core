@@ -2,6 +2,7 @@
 
 namespace LaraJS\Core\Generators\BackendUpdate;
 
+use Exception;
 use LaraJS\Core\Generators\BaseGenerator;
 
 class ModelUpdateGenerator extends BaseGenerator
@@ -19,8 +20,8 @@ class ModelUpdateGenerator extends BaseGenerator
     {
         $templateDataReal = $this->serviceGenerator->getFile('model', 'laravel', $model['name'].'.php');
         $templateDataReal = $this->_generateUpdateFields($updateFields['updateFields'], $templateDataReal);
-        $templateDataReal = $this->_generateFieldsRename($updateFields['renameFields'], $templateDataReal);
-        $templateDataReal = $this->_generateFieldsDrop($updateFields['dropFields'], $templateDataReal);
+//        $templateDataReal = $this->_generateFieldsRename($updateFields['renameFields'], $templateDataReal);
+//        $templateDataReal = $this->_generateFieldsDrop($updateFields['dropFields'], $templateDataReal);
 
         $fileName = $this->path.$model['name'].'.php';
         $this->serviceFile->createFileReal($fileName, $templateDataReal);
@@ -28,39 +29,14 @@ class ModelUpdateGenerator extends BaseGenerator
 
     private function _generateUpdateFields($updateFields, $templateDataReal): string
     {
-        if (! $updateFields) {
+        if (!$updateFields) {
             return $templateDataReal;
         }
 
-        $fieldsGenerate = [];
-        $fieldAble = 'protected $fillable = [';
-        $template = $this->serviceGenerator->searchTemplate(
-            $fieldAble,
-            '];',
-            strlen($fieldAble),
-            -strlen($fieldAble),
-            $templateDataReal,
-        );
-        if (! $template) {
-            return $templateDataReal;
-        }
-
-        $arTemplate = explode(',', trim($template));
-        foreach ($arTemplate as $tpl) {
-            if (strlen($tpl) > 0) {
-                $fieldsGenerate[] = trim($tpl).',';
-            }
-        }
         foreach ($updateFields as $field) {
-            $fieldsGenerate[] = "'".$field['field_name']."',";
+            $templateDataReal = $this->phpParserService->addStringToArray($templateDataReal, $field['field_name'], 'fillable');
         }
-        $implodeString = implode($this->serviceGenerator->infy_nl_tab(1, 2), $fieldsGenerate);
-
-        return str_replace(
-            $template,
-            $this->serviceGenerator->infy_nl_tab(1, 2).$implodeString.$this->serviceGenerator->infy_nl_tab(),
-            $templateDataReal,
-        );
+        return $templateDataReal;
     }
 
     private function _generateFieldsRename($renameFields, $templateDataReal)
