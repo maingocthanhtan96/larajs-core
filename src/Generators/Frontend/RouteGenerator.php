@@ -48,33 +48,31 @@ class RouteGenerator extends BaseGenerator
             $this->serviceGenerator->tableNameNotPlural($model['name']),
             $templateData,
         );
-
-        $templateDataReal = $this->serviceGenerator->getFile('router', 'vue', $this->jsType('index'));
-        $namePermission = strtoupper(\Str::snake($model['name']));
-        $viewMenu = config('generator.permission.view_menu');
-        $templateData = str_replace(
-            '{{$ADMIN_ROLE$}}',
-            "permissions: ['{$viewMenu}_$namePermission'],",
-            $templateData,
-        );
-        $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-            $this->notDelete['async'],
-            "{$this->serviceGenerator->modelNameNotPluralFe($model['name'])},",
-            3,
-            $templateDataReal,
-            2,
-        );
-        $nameModel = $this->serviceGenerator->modelNameNotPluralFe($model['name']);
-        $nameModelImport = $this->serviceGenerator->nameAttribute($model['name']);
-        $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-            $this->notDelete['import'],
-            "import $nameModel from '{$this->getImportJsOrTs()}/router/modules/$nameModelImport';",
-            0,
-            $templateDataReal,
-        );
         $fileName = "{$this->serviceGenerator->folderPages($model['name'])}.{$this->jsType('ext')}";
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
+
+//        $templateDataReal = $this->serviceGenerator->getFile('router', 'vue', $this->jsType('index'));
+//        $templateDataReal = $this->serviceGenerator->replaceNotDelete(
+//            $this->notDelete['async'],
+//            "{$this->serviceGenerator->modelNameNotPluralFe($model['name'])},",
+//            3,
+//            $templateDataReal,
+//            2,
+//        );
+//        $nameModel = $this->serviceGenerator->modelNameNotPluralFe($model['name']);
+//        $nameModelImport = $this->serviceGenerator->nameAttribute($model['name']);
+//        $templateDataReal = $this->serviceGenerator->replaceNotDelete(
+//            $this->notDelete['import'],
+//            "import $nameModel from '{$this->getImportJsOrTs()}/router/modules/$nameModelImport';",
+//            0,
+//            $templateDataReal,
+//        );
         $pathReal = config('generator.path.vue.router').$this->jsType('index');
+        $templateDataReal = $this->phpParserService->addItemToArrayJS($pathReal, [
+            'key' => 'router.import',
+            'name' => $this->serviceGenerator->modelNameNotPluralFe($model['name']),
+            'path' => "{$this->getImportJsOrTs()}/router/modules/{$this->serviceGenerator->nameAttribute($model['name'])}"
+        ]);
         $this->serviceFile->createFileReal($pathReal, $templateDataReal);
     }
 }

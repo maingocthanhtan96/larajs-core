@@ -12,7 +12,6 @@ const {{$NAME_CONST$}} = {
   meta: {
     title: '{{$TITLE_ROUTE_MODEL_CLASS$}}',
     icon: 'menu',
-    {{$ADMIN_ROLE$}}
   },
   redirect: { name: '{{$NAME_ROUTE_MODEL_CLASS$}}Overview' },
   children: [
