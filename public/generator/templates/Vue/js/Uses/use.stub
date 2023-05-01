@@ -1,5 +1,4 @@
 import { {{$CONST_NAME_MODEL$}}Resource } from '@/api/{{$API_VERSION$}}';
-// {{$IMPORT_API_NOT_DELETE_THIS_LINE$}}
 
 export * from './table';
 export * from './form';
@@ -9,7 +8,6 @@ export function use{{$NAME_USES$}}() {
   const show = (id, props) => {{$CONST_NAME_MODEL$}}Resource.show(id, props);
   const update = (id, data, props) => {{$CONST_NAME_MODEL$}}Resource.update(id, data, props);
   const destroy = (id, props) => {{$CONST_NAME_MODEL$}}Resource.destroy(id, props);
-  // {{$IMPORT_FUNCTION_NOT_DELETE_THIS_LINE$}}
 
   return {
     list,
@@ -17,6 +15,5 @@ export function use{{$NAME_USES$}}() {
     show,
     update,
     destroy,
-    // {{$EXPORT_FUNCTION_NOT_DELETE_THIS_LINE$}}
   };
 }

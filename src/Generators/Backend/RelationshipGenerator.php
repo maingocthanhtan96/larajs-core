@@ -362,7 +362,6 @@ class RelationshipGenerator extends BaseGenerator
     // crate function "all" in file use
     private function _generateFunctionAll($model)
     {
-        $notDeleteUses = config('generator.not_delete.vue.uses');
         $fileName = "{$this->serviceGenerator->folderPages($model)}/{$this->jsType('index')}";
         $templateDataRealRelationship = $this->serviceGenerator->getFile('uses', 'vue', $fileName);
         $stubAddData = $this->serviceGenerator->get_template('addDataRelationship', 'Handler/', 'vue');
@@ -377,23 +376,13 @@ class RelationshipGenerator extends BaseGenerator
             $this->serviceGenerator->modelNameNotPlural($model),
             $stubAddData,
         );
-        if (! stripos($templateDataRealRelationship, $nameFunctionAll)) {
-            $templateDataRealRelationship = $this->serviceGenerator->replaceNotDelete(
-                $notDeleteUses['function']['import'],
-                $stubAddData,
-                0,
-                $templateDataRealRelationship,
-                2,
-            );
-            $templateDataRealRelationship = $this->serviceGenerator->replaceNotDelete(
-                $notDeleteUses['function']['export'],
-                $this->serviceGenerator->modelNamePluralFe($nameFunctionAll),
-                0,
-                $templateDataRealRelationship,
-                2,
-            );
-        }
         $fileName = config('generator.path.vue.uses').$fileName;
+        $templateDataRealRelationship = $this->phpParserService->runParserJS($fileName, [
+            'name' => "use{$this->serviceGenerator->modelNamePlural($model)}",
+            'key' => 'uses.import',
+            'value' => $stubAddData,
+            'property' => $this->serviceGenerator->modelNamePluralFe($nameFunctionAll),
+        ], $templateDataRealRelationship);
         $this->serviceFile->createFileReal($fileName, $templateDataRealRelationship);
     }
 
@@ -1104,67 +1093,72 @@ class RelationshipGenerator extends BaseGenerator
 
     private function _generateInterfaceCommon($modelCurrent, $model, $relationship)
     {
-        $notDelete = config('generator.not_delete.package.model');
         $path = config('generator.path.package.model');
         if ($relationship === $this->relationship['belongs_to_many']) {
             $fileName = "/{$this->serviceGenerator->folderPages($modelCurrent)}.{$this->jsType('ext')}";
             $nameColumnRelationship = Str::snake(Str::plural($model));
             $templateDataReal = $this->serviceGenerator->getFile('model', 'package', $fileName);
-            $templateDataReal = $this->_checkImportInterfaceCommon($model, $templateDataReal);
             $modelIds = Str::snake($model).self::_IDS;
-            $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-                $notDelete['index'],
-                "$modelIds?: number[];",
-                1,
-                $templateDataReal,
-            );
-            $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-                $notDelete['index'],
-                "$nameColumnRelationship?: $model".'[];',
-                1,
-                $templateDataReal,
+            $templateDataReal = $this->phpParserService->runParserJS(
+                $path.$fileName,
+                [
+                    'key' => 'common.import',
+                    'name' => $model,
+                    'path' =>  './index',
+                    'interface' => $this->serviceGenerator->modelNameNotPlural($modelCurrent),
+                    'items' => [
+                        "$modelIds?" => 'number[];',
+                        "$nameColumnRelationship?" => "{$model}[];"
+                    ],
+                ],
+                $templateDataReal
             );
             $this->serviceFile->createFileReal($path.$fileName, $templateDataReal);
         } else {
             // hasOne| hasMany
             $fileName = $this->serviceGenerator->folderPages($modelCurrent).".{$this->jsType('ext')}";
             $templateDataReal = $this->serviceGenerator->getFile('model', 'package', $fileName);
-            $templateDataReal = $this->_checkImportInterfaceCommon($model, $templateDataReal);
             if ($relationship === $this->relationship['has_one']) {
                 $nameColumnRelationship = Str::snake($model);
-                $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-                    $notDelete['index'],
-                    "$nameColumnRelationship?: $model;",
-                    1,
-                    $templateDataReal,
-                );
+                $items = [
+                    "$nameColumnRelationship?" => "$model;"
+                ];
             } else {
                 $nameColumnRelationship = Str::snake(Str::plural($model));
-                $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-                    $notDelete['index'],
-                    "$nameColumnRelationship?: $model".'[];',
-                    1,
-                    $templateDataReal,
-                );
+                $items = [
+                    "$nameColumnRelationship?" => "{$model}[];"
+                ];
             }
+            $templateDataReal = $this->phpParserService->runParserJS(
+                $path.$fileName,
+                [
+                    'key' => 'common.import',
+                    'name' => $model,
+                    'path' =>  './index',
+                    'interface' => $this->serviceGenerator->modelNameNotPlural($modelCurrent),
+                    'items' => $items
+                ],
+                $templateDataReal
+            );
             $this->serviceFile->createFileReal($path.$fileName, $templateDataReal);
             // belongsTo
             $fileName = $this->serviceGenerator->folderPages($model).".{$this->jsType('ext')}";
             $templateDataReal = $this->serviceGenerator->getFile('model', 'package', $fileName);
-            $templateDataReal = $this->_checkImportInterfaceCommon($modelCurrent, $templateDataReal);
             $fieldModelCurrent = Str::snake($modelCurrent).self::_ID;
             $nameColumnRelationship = Str::snake($modelCurrent);
-            $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-                $notDelete['index'],
-                "$fieldModelCurrent?: number | null;",
-                1,
-                $templateDataReal,
-            );
-            $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-                $notDelete['index'],
-                "$nameColumnRelationship?: $modelCurrent;",
-                1,
-                $templateDataReal,
+            $templateDataReal = $this->phpParserService->runParserJS(
+                $path.$fileName,
+                [
+                    'key' => 'common.import',
+                    'name' => $modelCurrent,
+                    'path' =>  './index',
+                    'interface' => $this->serviceGenerator->modelNameNotPlural($model),
+                    'items' => [
+                        "$fieldModelCurrent?" => "number | null;",
+                        "$nameColumnRelationship?" => "$modelCurrent;"
+                    ]
+                ],
+                $templateDataReal
             );
             $this->serviceFile->createFileReal($path.$fileName, $templateDataReal);
         }

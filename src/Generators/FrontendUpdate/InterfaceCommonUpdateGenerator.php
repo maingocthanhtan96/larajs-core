@@ -18,18 +18,20 @@ class InterfaceCommonUpdateGenerator extends BaseGenerator
     {
         $fileName = $this->serviceGenerator->folderPages($model['name']).'.ts';
         $templateDataReal = $this->serviceGenerator->getFile('model', 'package', $fileName);
-        $templateDataReal = $this->_generateFieldsUpdate($fields['updateFields'], $templateDataReal);
+        $templateDataReal = $this->_generateFieldsUpdate($fields['updateFields'], $fileName, $model, $templateDataReal);
         $this->serviceFile->createFileReal($this->path.$fileName, $templateDataReal);
     }
 
-    private function _generateFieldsUpdate($fields, $templateDataReal): string
+    private function _generateFieldsUpdate($fields, $fileName, $model, $templateDataReal): string
     {
-        return $this->serviceGenerator->replaceNotDelete(
-            $this->notDelete['index'],
-            implode($this->serviceGenerator->infy_nl_tab(1, 1, 2), $this->serviceGenerator->generateModel($fields)),
-            1,
-            $templateDataReal,
-            2,
+        return $this->phpParserService->runParserJS(
+            $this->path.$fileName,
+            [
+                'key' => 'common.import',
+                'interface' => $this->serviceGenerator->modelNameNotPlural($model['name']),
+                'items' => $this->serviceGenerator->generateModel($fields),
+            ],
+            $templateDataReal
         );
     }
 }

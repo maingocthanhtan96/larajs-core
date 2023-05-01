@@ -16,21 +16,22 @@ class InterfaceCommonGenerator extends BaseGenerator
 
     private function _generate($fields, $model)
     {
+        $fileName = $this->serviceGenerator->folderPages($model['name']).".{$this->jsType('ext')}";
         $templateData = $this->serviceGenerator->get_template('model', 'Common/', 'package');
         $templateData = str_replace(
             '{{$MODEL$}}',
             $this->serviceGenerator->modelNameNotPlural($model['name']),
             $templateData,
         );
-        $templateData = $this->serviceGenerator->replaceNotDelete(
-            $this->notDelete['index'],
-            implode($this->serviceGenerator->infy_nl_tab(1, 1, 2), $this->serviceGenerator->generateModel($fields)),
-            1,
-            $templateData,
-            2,
+        $templateData = $this->phpParserService->runParserJS(
+            $this->path . $fileName,
+            [
+                'key' => 'common.import',
+                'interface' => $this->serviceGenerator->modelNameNotPlural($model['name']),
+                'items' => $this->serviceGenerator->generateModel($fields),
+            ],
+            $templateData
         );
-
-        $fileName = $this->serviceGenerator->folderPages($model['name']).".{$this->jsType('ext')}";
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
         // import
         $fileName = "/{$this->jsType('index')}";

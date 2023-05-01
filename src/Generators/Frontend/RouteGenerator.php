@@ -68,7 +68,7 @@ class RouteGenerator extends BaseGenerator
 //            $templateDataReal,
 //        );
         $pathReal = config('generator.path.vue.router').$this->jsType('index');
-        $templateDataReal = $this->phpParserService->addItemToArrayJS($pathReal, [
+        $templateDataReal = $this->phpParserService->runParserJS($pathReal, [
             'key' => 'router.import',
             'name' => $this->serviceGenerator->modelNameNotPluralFe($model['name']),
             'path' => "{$this->getImportJsOrTs()}/router/modules/{$this->serviceGenerator->nameAttribute($model['name'])}"

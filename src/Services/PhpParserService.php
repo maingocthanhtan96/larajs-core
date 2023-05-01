@@ -53,17 +53,21 @@ class PhpParserService
         return $prettyPrinter->prettyPrintFile($ast);
     }
 
-    public function addItemToArrayJS($file, $data, $templateDataReal = null): string
+    public function runParserJS($file, $data, $templateDataReal = null): string
     {
         if ($templateDataReal) {
-            $serviceFile = new FileService();
-            $serviceFile->createFileReal($file, $templateDataReal);
+            if (! file_exists(dirname($file))) {
+                mkdir(dirname($file), 0755, true);
+            }
+            file_put_contents($file, $templateDataReal);
         }
         $node = __DIR__ . '/../server-parser.js';
         $cmd = "node $node $file " . "'" . json_encode($data) . "'";
         exec($cmd, $output);
         abort_if(!$output, 'Node parser output empty!');
-
-        return implode(PHP_EOL, $output);
+        if ($output) {
+            return implode(PHP_EOL, $output);
+        }
+        return $templateDataReal;
     }
 }

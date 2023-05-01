@@ -1,5 +1,2 @@
-// {{$IMPORT_COMMON_NOT_DELETE_THIS_LINE$}}
-
 export interface {{$MODEL$}} {
-  // {{$MODEL_NOT_DELETE_THIS_LINE$}}
 }

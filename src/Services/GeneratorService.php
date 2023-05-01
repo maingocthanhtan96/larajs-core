@@ -1256,23 +1256,37 @@ class GeneratorService
         $data = [];
         foreach ($fields as $field) {
             $dbType = config('generator.db_type');
-            $data[] = match ($field['db_type']) {
-                $dbType['increments'],
-                $dbType['integer'],
-                $dbType['bigInteger'],
-                $dbType['float'],
-                $dbType['double'] => "{$field['field_name']}: number;",
-                $dbType['boolean'] => "{$field['field_name']}: boolean;",
-                $dbType['date'], $dbType['dateTime'], $dbType['timestamp'] => "{$field['field_name']}: Date;",
-                $dbType['time'],
-                $dbType['year'],
-                $dbType['string'],
-                $dbType['text'],
-                $dbType['longtext'],
-                $dbType['enum'] => "{$field['field_name']}: string;",
-                $dbType['json'] => "{$field['field_name']}: any;",
-                default => '',
-            };
+            $defaultValue = config('generator.default_value');
+            $isRequired = $defaultValue['null'] === $field['default_value'] ? '?' : '';
+            switch ($field['db_type']) {
+                case $dbType['increments']:
+                case $dbType['integer']:
+                case $dbType['bigInteger']:
+                case $dbType['float']:
+                case $dbType['double']:
+                    $data["{$field['field_name']}$isRequired"] = 'number;';
+                    break;
+                case $dbType['boolean']:
+                    $data["{$field['field_name']}$isRequired"] = 'boolean;';
+                    break;
+                case $dbType['date']:
+                case $dbType['dateTime']:
+                case $dbType['timestamp']:
+                    $data["{$field['field_name']}$isRequired"] = 'Date;';
+                    break;
+                case $dbType['time']:
+                case $dbType['year']:
+                case $dbType['string']:
+                case $dbType['text']:
+                    $data["{$field['field_name']}$isRequired"] = 'string;';
+                    break;
+                case $dbType['enum']:
+                    $data["{$field['field_name']}$isRequired"] = 'number | string;';
+                    break;
+                case $dbType['json']:
+                    $data["{$field['field_name']}$isRequired"] = 'any;';
+                    break;
+            }
         }
 
         return $data;
