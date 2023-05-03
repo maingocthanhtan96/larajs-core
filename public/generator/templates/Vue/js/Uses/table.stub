@@ -8,7 +8,7 @@ export function use{{$NAME_MODEL$}}Tables() {
   const table = reactive({
     name: '{{$NAME_TABLE$}}',
     ref: null,
-    list: [],
+    data: [],
     actions: {
       list,
       destroy,

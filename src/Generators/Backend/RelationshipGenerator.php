@@ -379,7 +379,7 @@ class RelationshipGenerator extends BaseGenerator
         $fileName = config('generator.path.vue.uses').$fileName;
         $templateDataRealRelationship = $this->phpParserService->runParserJS($fileName, [
             'name' => "use{$this->serviceGenerator->modelNamePlural($model)}",
-            'key' => 'uses.import',
+            'key' => 'uses.index',
             'value' => $stubAddData,
             'property' => $this->serviceGenerator->modelNamePluralFe($nameFunctionAll),
         ], $templateDataRealRelationship);
@@ -388,6 +388,7 @@ class RelationshipGenerator extends BaseGenerator
 
     private function _generateAddApi($model, $modelRelationship, $templateDataReal, $notDelete, $relationship): string
     {
+        $path = config('generator.path.vue.uses');
         $notDeleteUses = config('generator.not_delete.vue.uses');
         $fileName = "{$this->serviceGenerator->folderPages($modelRelationship)}/Form.vue";
         $nameModelRelationship =
@@ -403,19 +404,16 @@ class RelationshipGenerator extends BaseGenerator
         );
         // State Root
         if (! $this->jsType()) {
-            $templateDataReal = $this->_checkImportInterfaceCommon(
-                $model,
-                $templateDataReal,
-                '@larajs/common',
-                $notDelete['import_component'],
-            );
-            $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-                $notDelete['state_root'],
-                "$nameModelRelationship: $model".'[];',
-                1,
-                $templateDataReal,
-                2,
-            );
+            $folderName = $this->serviceGenerator->folderPages($modelRelationship);
+            $templateDataReal = $this->phpParserService->runParserJS("$path{$folderName}/{$this->jsType('form')}", [
+                'key' => 'uses.form',
+                'name' => $model,
+                'path' => '@larajs/common',
+                'interface' => "{$modelRelationship}Root",
+                'items' => [
+                    "$nameModelRelationship" => "{$model}[];",
+                ],
+            ], $templateDataReal);
         }
         // form
         $templateDataRealForm = $this->serviceGenerator->getFile('views', 'vue', $fileName);

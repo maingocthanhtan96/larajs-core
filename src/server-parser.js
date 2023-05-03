@@ -12,6 +12,19 @@ const astParser = (code) =>
     sourceType: "module",
     plugins: ["jsx", "typescript"],
   });
+const addImport = (hasImportExist, data, lastImport, ast) => {
+  if (!hasImportExist && data.name && data.path) {
+    const newImport = t.importDeclaration(
+      [t.importSpecifier(t.identifier(data.name), t.identifier(data.name))],
+      t.stringLiteral(data.path)
+    );
+    if (lastImport) {
+      lastImport.insertAfter(newImport);
+    } else {
+      ast.program.body.unshift(newImport);
+    }
+  }
+};
 
 try {
   const codeContent = readFileSync(process.argv[2], "utf8");
@@ -84,21 +97,10 @@ try {
           }
         },
       });
-      if (!hasImportExist && data.name && data.path) {
-        const newImport = t.importDeclaration(
-          [t.importSpecifier(t.identifier(data.name), t.identifier(data.name))],
-          t.stringLiteral(data.path)
-        );
-        if (lastImport) {
-          lastImport.insertAfter(newImport);
-        } else {
-          ast.program.body.unshift(newImport);
-        }
-      }
-
+      addImport(hasImportExist, data, lastImport, ast);
       break;
     }
-    case "uses.import": {
+    case "uses.index": {
       traverse(ast, {
         FunctionDeclaration(path) {
           if (path.node.id.name === data.name) {
@@ -118,10 +120,35 @@ try {
       });
       break;
     }
+    case "uses.form": {
+      traverse(ast, {
+        ImportDeclaration(path) {
+          lastImport = path;
+          const importSpecifiers = path.node.specifiers;
+          hasImportExist = importSpecifiers.some(
+            (specifier) => specifier.local.name === data.name
+          );
+        },
+        TSInterfaceDeclaration(path) {
+          if (path.node.id.name === data.interface) {
+            Object.keys(data.items).forEach((field) => {
+              const newProperty = t.objectTypeProperty(
+                t.identifier(field),
+                t.genericTypeAnnotation(t.identifier(data.items[field]))
+              );
+              path.node.body.body.push(newProperty);
+            });
+          }
+        },
+      });
+      addImport(hasImportExist, data, lastImport, ast);
+      break;
+    }
   }
   const { code } = generate(ast);
   const formattedCode = prettier.format(code, {
-    parser: "babel",
+    parser: "typescript",
+    semi: true,
     singleQuote: true,
     arrowParens: "avoid",
     htmlWhitespaceSensitivity: "ignore",
