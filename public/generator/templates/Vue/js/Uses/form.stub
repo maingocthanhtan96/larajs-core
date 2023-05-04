@@ -2,7 +2,6 @@ import { computed, ref, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import { use{{$NAME_USES$}} } from '@/uses';
-// {{$IMPORT_COMPONENT_NOT_DELETE_THIS_LINE$}}
 
 export function use{{$NAME_MODEL$}}Forms() {
   const route = useRoute();
@@ -27,7 +26,6 @@ export function use{{$NAME_MODEL$}}Forms() {
       model: form,
       rules: rules,
     },
-    row: {},
     items: [
       // {{$FORM_ITEM_NOT_DELETE_THIS_LINE$}}
     ],

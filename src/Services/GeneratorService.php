@@ -1150,16 +1150,16 @@ class GeneratorService
         TEMPLATE;
     }
 
-    public function generateColumnSearch($fields): string
+    public function generateColumnSearch($fields): array
     {
         $column = [];
         foreach ($fields as $field) {
             if ($field['search']) {
-                $column[] = "'".$field['field_name']."'";
+                $column[] = $field['field_name'];
             }
         }
 
-        return implode($this->infy_nl_tab(0, 0).', ', $column);
+        return $column;
     }
 
     /**

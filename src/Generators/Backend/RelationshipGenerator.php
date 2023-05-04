@@ -278,6 +278,7 @@ class RelationshipGenerator extends BaseGenerator
             );
             $templateDataReal = $this->_generateQuery(
                 $model,
+                $modelRelationship,
                 $relationship,
                 $options,
                 $columnRelationship,
@@ -292,32 +293,28 @@ class RelationshipGenerator extends BaseGenerator
         $this->_generateFormItem($model, $modelRelationship, $notDelete, $isMTM);
     }
 
-    private function _generateQuery($model, $relationship, $options, $columnRelationship, $templateDataReal)
+    private function _generateQuery($model, $modelRelationship, $relationship, $options, $columnRelationship, $templateDataReal)
     {
-        $notDelete = config('generator.not_delete.vue.uses.query');
         $configOptions = config('generator.relationship.options');
+        $path = config('generator.path.vue.uses');
+        $folderName = $this->serviceGenerator->folderPages($modelRelationship);
+        $path = "$path{$folderName}";
         if (in_array($configOptions['show'], $options)) {
             $withRelationship =
                 $relationship === $this->relationship['belongs_to_many']
-                    ? "'{$this->serviceGenerator->modelNamePluralFe($model)}',"
-                    : "'{$this->serviceGenerator->modelNameNotPluralFe($model)}',";
-            $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-                $notDelete['relationship'],
-                $withRelationship,
-                3,
-                $templateDataReal,
-                2,
-            );
+                    ? $this->serviceGenerator->modelNamePluralFe($model)
+                    : $this->serviceGenerator->modelNameNotPluralFe($model);
+            $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->jsType('table')}", [
+                'key' => 'query.relationship',
+                'items' => [$withRelationship]
+            ], $templateDataReal);
         }
         if (in_array($configOptions['search'], $options)) {
-            $columnDidGenerate = "'".Str::camel($model).".$columnRelationship',";
-            $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-                $notDelete['column_search'],
-                $columnDidGenerate,
-                3,
-                $templateDataReal,
-                2,
-            );
+            $columnDidGenerate = Str::camel($model).".$columnRelationship";
+            $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->jsType('table')}", [
+                'key' => 'query.column_search',
+                'items' => [$columnDidGenerate]
+            ], $templateDataReal);
         }
 
         return $templateDataReal;

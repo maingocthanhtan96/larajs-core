@@ -33,13 +33,10 @@ class UsesUpdateGenerator extends BaseGenerator
             $templateDataReal,
             2,
         );
-        $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-            $this->notDelete['uses']['query']['column_search'],
-            $this->serviceGenerator->generateColumnSearch($updateFields['updateFields']),
-            4,
-            $templateDataReal,
-            2,
-        );
+        $templateDataReal = $this->phpParserService->runParserJS("$path/table.tsx", [
+            'key' => 'query.column_search',
+            'items' => $this->serviceGenerator->generateColumnSearch($updateFields['updateFields'])
+        ], $templateDataReal);
         $this->serviceFile->createFileReal("$path/table.tsx", $templateDataReal);
         // create form.tsx
         $templateDataReal = $this->serviceGenerator->getFile('uses', 'vue', "/$folderName/form.tsx");

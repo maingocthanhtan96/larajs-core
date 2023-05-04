@@ -8,6 +8,7 @@ use PhpParser\NodeFinder;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter;
 use PhpParser\PrettyPrinter\Standard;
+use Symfony\Component\HttpFoundation\Response;
 
 class PhpParserService
 {
@@ -32,23 +33,44 @@ class PhpParserService
         return $prettyPrinter->prettyPrintFile($ast);
     }
 
-    public function addItemToArray(string $template, string $arrayParent, string $key, string $value): string
+    public function addItemToArray(string $template, string $arrayParent, array $items): string
     {
         $parserFactory = new ParserFactory();
         $parser = $parserFactory->create(ParserFactory::PREFER_PHP7);
         $ast = $parser->parse($template);
         $nodeFinder = new NodeFinder();
-        $loginNode = $nodeFinder->findFirst($ast, function (Node $node) use ($arrayParent) {
+        $node = $nodeFinder->findFirst($ast, function (Node $node) use ($arrayParent) {
             return $node instanceof Node\Expr\ArrayItem &&
                 $node->key instanceof Node\Scalar\String_ &&
                 $node->key->value === $arrayParent;
         });
-        if ($loginNode !== null && $loginNode->value instanceof Node\Expr\Array_) {
-            $loginNode->value->items[] = new Node\Expr\ArrayItem(
+        if ($node !== null && $node->value instanceof Node\Expr\Array_) {
+            foreach ($items as $key => $value) {
+                $node->value->items[] = new Node\Expr\ArrayItem(
+                    new Node\Scalar\String_($value),
+                    new Node\Scalar\String_($key),
+                );
+            }
+        }
+        $prettyPrinter = new Standard();
+        return $prettyPrinter->prettyPrintFile($ast);
+    }
+
+    public function addItemToArrayWithReturn(string $template, array $items): string
+    {
+        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+        $ast = $parser->parse($template);
+        $nodeFinder = new NodeFinder();
+        $returnStmt = $nodeFinder->findFirstInstanceOf($ast, Node\Stmt\Return_::class);
+        $arrayExpr = $returnStmt->expr;
+        $newArrayItems = [];
+        foreach ($items as $key => $value) {
+            $newArrayItems[] = new Node\Expr\ArrayItem(
                 new Node\Scalar\String_($value),
                 new Node\Scalar\String_($key),
             );
         }
+        $arrayExpr->items = array_merge($arrayExpr->items, $newArrayItems);
         $prettyPrinter = new Standard();
         return $prettyPrinter->prettyPrintFile($ast);
     }
@@ -62,12 +84,10 @@ class PhpParserService
             file_put_contents($file, $templateDataReal);
         }
         $node = __DIR__ . '/../server-parser.js';
-        $cmd = "node $node $file " . "'" . json_encode($data) . "'";
+        $cmd = "node '$node' '$file' " . "'" . json_encode($data) . "'";
         exec($cmd, $output);
-        abort_if(!$output, 'Node parser output empty!');
-        if ($output) {
-            return implode(PHP_EOL, $output);
-        }
-        return $templateDataReal;
+        abort_if(!$output, Response::HTTP_FORBIDDEN, 'Node parser output empty!');
+
+        return implode(PHP_EOL, $output);
     }
 }

@@ -24,16 +24,6 @@ class LangUpdateGenerator extends BaseGenerator
         foreach ($lang as $key => $langComment) {
             foreach ($nameLang as $lang) {
                 $templateDataReal = $this->serviceGenerator->getFile('lang', 'laravel', $key.'/table.php');
-//                $templateDataReal = $this->_generateFieldsRename(
-//                    $tableName,
-//                    $updateFields['renameFields'],
-//                    $templateDataReal,
-//                );
-//                $templateDataReal = $this->_generateFieldsDrop(
-//                    $tableName,
-//                    $updateFields['dropFields'],
-//                    $templateDataReal,
-//                );
                 $templateDataReal = $this->_generateFieldsUpdate(
                     $tableName,
                     $updateFields['updateFields'],
@@ -97,11 +87,11 @@ class LangUpdateGenerator extends BaseGenerator
         if (! $updateFields) {
             return $templateDataReal;
         }
+        $items = [];
         foreach ($updateFields as $update) {
-            $templateDataReal = $this->phpParserService->addItemToArray($templateDataReal, $tableName, $update['field_name'], $update['field_name_trans']);
+            $items[$update['field_name']] = $update['field_name_trans'];
         }
-
-        return $templateDataReal;
+        return $this->phpParserService->addItemToArray($templateDataReal, $tableName, $items);
     }
 
     private function _generateFieldsDrop($tableName, $dropUpdate, $templateDataReal): string

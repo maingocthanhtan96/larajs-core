@@ -7,18 +7,14 @@ export function use{{$NAME_MODEL$}}Tables() {
   const { t } = useI18n();
   const table = reactive({
     name: '{{$NAME_TABLE$}}',
-    ref: null,
-    data: [],
     actions: {
       list,
       destroy,
     },
     query: {
       column_search: [
-        // {{$COLUMN_SEARCH_NOT_DELETE_THIS_LINE$}}
       ],
       relationship: [
-        // {{$COLUMN_RELATIONSHIP_NOT_DELETE_THIS_LINE$}}
       ],
     },
     columns: [

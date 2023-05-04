@@ -1,7 +1,7 @@
 import { computed, ref, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
-import { FormRules } from 'element-plus';
+import { FormInstance, FormRules } from 'element-plus';
 import { use{{$NAME_USES$}} } from '@larajs/cms/uses';
 import { {{$NAME_MODEL$}} } from '@larajs/common';
 import { FormElementType } from '@larajs/components';
@@ -14,7 +14,7 @@ export function use{{$NAME_MODEL$}}Forms() {
   const { t } = useI18n(); // eslint-disable-line
   const { id } = route.params;
   const { store, update } = use{{$NAME_USES$}}();
-  const {{$CONST_NAME_MODEL$}}Ref = ref(null);
+  const {{$CONST_NAME_MODEL$}}Ref = ref<FormInstance>();
   const form = reactive<{{$NAME_MODEL$}}>({
     // {{$FORM_FIELDS_NOT_DELETE_THIS_LINE$}}
   });
@@ -32,7 +32,6 @@ export function use{{$NAME_MODEL$}}Forms() {
       model: form,
       rules: rules,
     },
-    row: {},
     items: [
       // {{$FORM_ITEM_NOT_DELETE_THIS_LINE$}}
     ],

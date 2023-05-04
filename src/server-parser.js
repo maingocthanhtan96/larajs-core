@@ -44,7 +44,9 @@ try {
                 t.isIdentifier(queryProp.key) &&
                 queryProp.key.name === data.key.split(".")[1]
               ) {
-                queryProp.value.elements.push(t.stringLiteral(data.value));
+                (data.items || []).forEach(item => {
+                  queryProp.value.elements.push(t.stringLiteral(item));
+                })
               }
             });
           }

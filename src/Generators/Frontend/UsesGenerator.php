@@ -72,13 +72,10 @@ class UsesGenerator extends BaseGenerator
             $templateData,
             2,
         );
-        $templateData = $this->serviceGenerator->replaceNotDelete(
-            $this->notDelete['uses']['query']['column_search'],
-            $this->serviceGenerator->generateColumnSearch($fields),
-            4,
-            $templateData,
-            2,
-        );
+        $templateData = $this->phpParserService->runParserJS("$path{$this->jsType('table')}", [
+            'key' => 'query.column_search',
+            'items' => $this->serviceGenerator->generateColumnSearch($fields)
+        ], $templateData);
         $this->serviceFile->createFile($path, $this->jsType('table'), $templateData);
         // create form.tsx
         $templateData = $this->serviceGenerator->get_template('form', 'Uses/', 'vue');
