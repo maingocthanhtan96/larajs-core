@@ -16,7 +16,6 @@ class {{MODEL_CLASS}}Observer
      */
     public function saved({{MODEL_CLASS}} ${{MODAL_CLASS_PARAM}}): void
     {
-        //{{OBSERVER_RELATIONSHIP_MTM_SAVED_NOT_DELETE_THIS_LINE}}
     }
 
     /**
@@ -27,6 +26,5 @@ class {{MODEL_CLASS}}Observer
      */
     public function deleted({{MODEL_CLASS}} ${{MODAL_CLASS_PARAM}}): void
     {
-        //{{OBSERVER_RELATIONSHIP_MTM_DELETED_NOT_DELETE_THIS_LINE}}
     }
 }

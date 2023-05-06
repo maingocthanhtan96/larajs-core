@@ -5,6 +5,8 @@ namespace LaraJS\Core\Services;
 use Exception;
 use PhpParser\Node;
 use PhpParser\NodeFinder;
+use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter;
 use PhpParser\PrettyPrinter\Standard;
@@ -73,6 +75,36 @@ class PhpParserService
         $arrayExpr->items = array_merge($arrayExpr->items, $newArrayItems);
         $prettyPrinter = new Standard();
         return $prettyPrinter->prettyPrintFile($ast);
+    }
+
+    public function addCodeToFunction(string $template, string $code, string $functionName): string
+    {
+        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
+        $ast = $parser->parse($template);
+        $nodeFinder = new NodeFinder();
+        $node = $nodeFinder->findFirst($ast, function (Node $node) use ($functionName) {
+            return $node instanceof Node\Stmt\ClassMethod && $node->name->name === $functionName;
+        });
+        $node->stmts[] = $parser->parse('<?php ' . $code . ' ?>')[0];
+        $prettyPrinter = new Standard();
+
+        return $prettyPrinter->prettyPrintFile($ast);
+    }
+
+    public function usePackage(string $template, string $code): string
+    {
+        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
+        $stmts = $parser->parse($template);
+        $traverser = new NodeTraverser();
+        $nodeFinder = new NodeFinder();
+        $traverser->addVisitor(new NameResolver());
+        $namespace = $nodeFinder->findFirstInstanceOf($stmts, Node\Stmt\Namespace_::class);
+        $namespace->stmts = array_merge(
+            [new Node\Stmt\Use_([new Node\Stmt\UseUse(new Node\Name($code))])],
+            $namespace->stmts,
+        );
+        $printer = new Standard();
+        return $printer->prettyPrintFile($stmts);
     }
 
     public function runParserJS($file, $data, $templateDataReal = null): string

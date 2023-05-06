@@ -764,10 +764,9 @@ class RelationshipGenerator extends BaseGenerator
         $this->serviceFile->createFileReal("$path/$fileName", $templateDataReal);
     }
 
-    private function _generateObserver($modelRelationship, $model)
+    private function _generateObserver($modelRelationship, $model): void
     {
         $pathObserver = config('generator.path.laravel.observer');
-        $notDelete = config('generator.not_delete.laravel.observer');
         $pathTemplate = 'Observers/';
         $fileName = "{$model}Observer.php";
         $templateDataReal = file_exists("$pathObserver{$model}Observer.php")
@@ -812,41 +811,15 @@ class RelationshipGenerator extends BaseGenerator
             $templateDeleted,
         );
         //replace delete
-        $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-            $notDelete['observer_mtm_saved'],
-            $templateSaved,
-            2,
-            $templateDataReal,
-        );
-        $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-            $notDelete['observer_mtm_deleted'],
-            $templateDeleted,
-            2,
-            $templateDataReal,
-        );
-        // end delete
+        $templateDataReal = $this->phpParserService->addCodeToFunction($templateDataReal, $templateSaved, 'saved');
+        $templateDataReal = $this->phpParserService->addCodeToFunction($templateDataReal, $templateDeleted, 'deleted');
         $this->serviceFile->createFile($pathObserver, $fileName, $templateDataReal);
         // provider event
         $fileName = 'EventServiceProvider.php';
         $templateDataRegisterEvent = $this->serviceGenerator->getFile('provider', 'laravel', $fileName);
-        $templateDataRegisterEvent = $this->serviceGenerator->replaceNotDelete(
-            $notDelete['provider']['use_class'],
-            "use App\Models\\$model;",
-            0,
-            $templateDataRegisterEvent,
-        );
-        $templateDataRegisterEvent = $this->serviceGenerator->replaceNotDelete(
-            $notDelete['provider']['use_class'],
-            "use App\Observers\\{$model}Observer;",
-            0,
-            $templateDataRegisterEvent,
-        );
-        $templateDataRegisterEvent = $this->serviceGenerator->replaceNotDelete(
-            $notDelete['provider']['register'],
-            "$model::observe({$model}Observer::class);",
-            2,
-            $templateDataRegisterEvent,
-        );
+        $templateDataRegisterEvent = $this->phpParserService->usePackage($templateDataRegisterEvent, "App\Models\\$model");
+        $templateDataRegisterEvent = $this->phpParserService->usePackage($templateDataRegisterEvent, "App\Observers\\{$model}Observer");
+        $templateDataRegisterEvent = $this->phpParserService->addCodeToFunction($templateDataRegisterEvent, "$model::observe({$model}Observer::class);\n", 'boot');
         $pathProvider = config('generator.path.laravel.provider');
         $this->serviceFile->createFileReal("$pathProvider/$fileName", $templateDataRegisterEvent);
     }
