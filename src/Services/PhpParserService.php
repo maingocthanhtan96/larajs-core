@@ -4,6 +4,7 @@ namespace LaraJS\Core\Services;
 
 use Exception;
 use PhpParser\Node;
+use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeFinder;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
@@ -58,23 +59,20 @@ class PhpParserService
         return $prettyPrinter->prettyPrintFile($ast);
     }
 
-    public function addItemToArrayWithReturn(string $template, array $items): string
+    public function addTemplateToArrayWithReturn(string $template, string $code): string
     {
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
         $ast = $parser->parse($template);
         $nodeFinder = new NodeFinder();
-        $returnStmt = $nodeFinder->findFirstInstanceOf($ast, Node\Stmt\Return_::class);
+        $returnStmt = $nodeFinder->findFirstInstanceOf($ast, Return_::class);
         $arrayExpr = $returnStmt->expr;
-        $newArrayItems = [];
-        foreach ($items as $key => $value) {
-            $newArrayItems[] = new Node\Expr\ArrayItem(
-                new Node\Scalar\String_($value),
-                new Node\Scalar\String_($key),
-            );
-        }
-        $arrayExpr->items = array_merge($arrayExpr->items, $newArrayItems);
+        $arrayExpr->items[] = $parser->parse($code)[0];
         $prettyPrinter = new Standard();
-        return $prettyPrinter->prettyPrintFile($ast);
+        $content = $prettyPrinter->prettyPrintFile($ast);
+        $content = str_replace('<?php', '', $content);
+        $content = str_replace('?>', '', $content);
+
+        return '<?php' . $content;
     }
 
     public function addCodeToFunction(string $template, string $code, string $functionName): string

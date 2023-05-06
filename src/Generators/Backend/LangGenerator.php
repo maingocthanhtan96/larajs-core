@@ -34,13 +34,8 @@ class LangGenerator extends BaseGenerator
                 $templateData = str_replace('{{LANG_MODEL_TRANS_CLASS}}', $model['name_trans'], $templateData);
 
                 $templateDataReal = $this->serviceGenerator->getFile('lang', 'laravel', $key.'/'.$lang.'.php');
+                $templateDataReal = $this->phpParserService->addTemplateToArrayWithReturn($templateDataReal, "$templateData\n");
 
-                $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-                    $langComment[$lang],
-                    $templateData,
-                    1,
-                    $templateDataReal,
-                );
                 $this->serviceFile->createFileReal("$this->path/$key/$lang.php", $templateDataReal);
             }
         }
