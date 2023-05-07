@@ -1004,6 +1004,7 @@ class GeneratorService
     {
         return match ($case) {
             'use_class' => "use App\Repositories\\{$model['name']}\\{$model['name']}{$model['class']};",
+            'ast_use_class' => "App\Repositories\\{$model['name']}\\{$model['name']}{$model['class']}",
             'register' => '$this->app->bind('.
                 $model['name'].
                 'Interface::class, '.

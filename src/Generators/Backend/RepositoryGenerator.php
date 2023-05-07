@@ -39,28 +39,13 @@ class RepositoryGenerator extends BaseGenerator
         $this->serviceFile->createFile($this->path.$createFolderModel, $fileNameInterFace, $templateDataInterface);
         // add bind to RepositoryServiceProvider
         $fileName = 'RepositoryServiceProvider.php';
-        $notDelete = config('generator.not_delete.laravel.repository.provider');
         $templateDataReal = $this->serviceGenerator->getFile('provider', 'laravel', $fileName);
-        $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-            $notDelete['use_class'],
-            "use App\Repositories\\{$model['name']}\\{$model['name']}Interface;",
-            0,
-            $templateDataReal,
-        );
+        $templateDataReal = $this->phpParserService->usePackage($templateDataReal, "App\Repositories\\{$model['name']}\\{$model['name']}Interface");
         $model['class'] = 'Repository';
-        $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-            $notDelete['use_class'],
-            $this->serviceGenerator->generateRepositoryProvider('use_class', $model),
-            0,
-            $templateDataReal,
-        );
+        $templateDataReal = $this->phpParserService->usePackage($templateDataReal, $this->serviceGenerator->generateRepositoryProvider('ast_use_class', $model));
         $model['class'] = 'Interface';
-        $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-            $notDelete['register'],
-            $this->serviceGenerator->generateRepositoryProvider('register', $model),
-            2,
-            $templateDataReal,
-        );
+        $templateDataReal = $this->phpParserService->addCodeToFunction($templateDataReal, $this->serviceGenerator->generateRepositoryProvider('register', $model), 'register');
+
         $path = config('generator.path.laravel.provider');
         $this->serviceFile->createFileReal("$path/$fileName", $templateDataReal);
     }
