@@ -57,12 +57,12 @@ class UsesUpdateGenerator extends BaseGenerator
             $templateDataReal,
             2,
         );
-        $templateDataReal = $this->serviceGenerator->importComponent($updateFields['updateFields'], $templateDataReal);
+        $templateDataReal = $this->serviceGenerator->importComponent($updateFields['updateFields'], $templateDataReal, "{$path}{$this->jsType('form')}", $model);
         $templateDataReal = $this->serviceGenerator->generateRules(
             $updateFields['updateFields'],
             $model,
             $templateDataReal,
         );
-        $this->serviceFile->createFileReal("$path/form.tsx", $templateDataReal);
+        $this->serviceFile->createFileReal("{$path}{$this->jsType('form')}", $templateDataReal);
     }
 }

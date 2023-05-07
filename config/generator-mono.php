@@ -278,13 +278,17 @@ return [
         ],
         'vue' => [
             'tinymce' => [
-                'file' => "import { Tinymce } from '@larajs/components';",
-                'name' => 'Tinymce,',
+                'name' => 'Tinymce',
+                'path' => '@larajs/components'
             ],
             'json_editor' => [
-                'file' => "import { JsonEditor } from '@larajs/components;",
-                'name' => 'JsonEditor,',
+                'name' => 'JsonEditor',
+                'path' => '@larajs/components'
             ],
+            'parse_time' => [
+                'name' => 'parseTime',
+                'path' => '@larajs/utils',
+            ]
         ],
     ],
 

@@ -113,7 +113,7 @@ class UsesGenerator extends BaseGenerator
             $templateData,
             2,
         );
-        $templateData = $this->serviceGenerator->importComponent($fields, $templateData);
+        $templateData = $this->serviceGenerator->importComponent($fields, $templateData, "{$path}{$this->jsType('form')}", $model);
         $templateData = $this->serviceGenerator->generateRules($fields, $model, $templateData);
         $this->serviceFile->createFile($path, $this->jsType('form'), $templateData);
         // import uses/index.ts

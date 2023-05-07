@@ -271,13 +271,17 @@ return [
         ],
         'vue' => [
             'tinymce' => [
-                'file' => "import Tinymce from '@/components/Tinymce/index.vue';",
-                'name' => 'Tinymce,',
+                'name' => 'Tinymce',
+                'path' => '@/components/Tinymce/index.vue',
             ],
             'json_editor' => [
-                'file' => "import JsonEditor from '@/components/JsonEditor/index.vue';",
-                'name' => 'JsonEditor,',
+                'name' => 'JsonEditor',
+                'path' => '@/components/JsonEditor/index.vue',
             ],
+            'parse_time' => [
+                'name' => 'parseTime',
+                'path' => '@libs/utils',
+            ]
         ],
     ],
 

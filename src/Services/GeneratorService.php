@@ -1058,7 +1058,7 @@ class GeneratorService
                     $fieldForm = "$fieldName: '$asDefine'";
                 }
             } elseif ($field['default_value'] === $defaultValue['current_timestamps']) {
-                $fieldForm = "$fieldName: undefined";
+                $fieldForm = "$fieldName: parseTime(new Date())";
             }
             $fieldForm .= ',';
             $fieldsGenerate[] = $fieldForm;
@@ -1163,48 +1163,58 @@ class GeneratorService
         return $column;
     }
 
-    /**
-     * @return mixed|string
-     */
-    public function importComponent($fields, $templateDataReal): mixed
+
+    public function importComponent($fields, $templateDataReal, $path, $model): string
     {
+        $phpParserService = new PhpParserService();
         $dbType = config('generator.db_type');
-        $notDelete = config('generator.not_delete.vue.form');
+        $defaultValue = config('generator.default_value');
         $flags = [
             'long_text' => true,
             'json' => true,
+            'parse_time' => true,
         ];
         $importVueJS = config('generator.import.vue');
         foreach ($fields as $field) {
-            if (! $flags['long_text'] && ! $flags['json']) {
-                return $templateDataReal;
-            }
             if (
                 $field['db_type'] === $dbType['longtext'] &&
-                $flags['long_text'] &&
-                ! strpos($templateDataReal, $importVueJS['tinymce']['file'])
+                $flags['long_text']
             ) {
-                $templateDataReal = $this->replaceNotDelete(
-                    $notDelete['import_component'],
-                    $importVueJS['tinymce']['file'],
-                    0,
-                    $templateDataReal,
-                    2,
-                );
+                $templateDataReal = $phpParserService->runParserJS($path, [
+                    'key' => 'uses.form',
+                    'name' => $importVueJS['tinymce']['name'],
+                    'path' => $importVueJS['tinymce']['path'],
+                ], $templateDataReal);
                 $flags['long_text'] = false;
             } elseif (
                 $field['db_type'] === $dbType['json'] &&
-                $flags['json'] &&
-                ! strpos($templateDataReal, $importVueJS['json_editor']['file'])
+                $flags['json']
             ) {
-                $templateDataReal = $this->replaceNotDelete(
-                    $notDelete['import_component'],
-                    $importVueJS['json_editor']['file'],
-                    0,
-                    $templateDataReal,
-                    2,
-                );
+                $templateDataReal = $phpParserService->runParserJS($path, [
+                    'key' => 'uses.form',
+                    'name' => $importVueJS['json_editor']['name'],
+                    'path' => $importVueJS['json_editor']['path'],
+                ], $templateDataReal);
                 $flags['json'] = false;
+            } elseif (
+                in_array($field['db_type'], [$dbType['dateTime'], $dbType['timestamp']]) &&
+                $flags['parse_time'] &&
+                $field['default_value'] === $defaultValue['current_timestamps']
+            ) {
+                $templateDataReal = $phpParserService->runParserJS($path, [
+                    'key' => 'uses.form',
+                    'name' => $importVueJS['parse_time']['name'],
+                    'path' => $importVueJS['parse_time']['path'],
+                ], $templateDataReal);
+                $flags['parse_time'] = false;
+            } elseif ($field['db_type'] === $dbType['enum'] && config('generator.js_language') === 'ts') {
+                $templateDataReal = $phpParserService->runParserJS($path, [
+                    'key' => 'uses.form',
+                    'interface' => "{$model['name']}Root",
+                    'items' => [
+                        "{$field['field_name']}Options" => "any[];",
+                    ],
+                ], $templateDataReal);
             }
         }
 
@@ -1265,20 +1275,17 @@ class GeneratorService
                 case $dbType['bigInteger']:
                 case $dbType['float']:
                 case $dbType['double']:
-                    $data["{$field['field_name']}$isRequired"] = 'number;';
-                    break;
                 case $dbType['boolean']:
-                    $data["{$field['field_name']}$isRequired"] = 'boolean;';
+                    $data["{$field['field_name']}$isRequired"] = 'number;';
                     break;
                 case $dbType['date']:
                 case $dbType['dateTime']:
                 case $dbType['timestamp']:
-                    $data["{$field['field_name']}$isRequired"] = 'Date;';
-                    break;
                 case $dbType['time']:
                 case $dbType['year']:
                 case $dbType['string']:
                 case $dbType['text']:
+                case $dbType['longtext']:
                     $data["{$field['field_name']}$isRequired"] = 'string;';
                     break;
                 case $dbType['enum']:
