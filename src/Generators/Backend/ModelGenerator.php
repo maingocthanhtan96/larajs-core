@@ -53,9 +53,7 @@ class ModelGenerator extends BaseGenerator
             $templateData = str_replace($notDelete['use_class'], '', $templateData);
             $templateData = str_replace($notDelete['use'], '', $templateData);
         }
-        if (! $this->serviceGenerator->getOptions(config('generator.model.options.timestamps'), $model['options'])) {
-            $templateData = str_replace($notDelete['timestamps'], $importLaravelModel['timestamps'], $templateData);
-        }
+        $templateData = str_replace($notDelete['timestamps'], $this->serviceGenerator->getOptions(config('generator.model.options.timestamps'), $model['options']) ? '' : $importLaravelModel['timestamps'], $templateData);
         $fileName = $model['name'].'.php';
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
     }
