@@ -46,11 +46,12 @@ class FactoryGenerator extends BaseGenerator
     {
         $userSignature = ['created_by', 'updated_by'];
         $notDelete = config('generator.not_delete.laravel.db');
+        $importTrait = config('generator.import.laravel.use.trait_user_signature');
 
         foreach ($userSignature as $signature) {
             $templateData = $this->serviceGenerator->replaceNotDelete(
                 $notDelete['seeder'],
-                "'$signature'".' => \App\Models\User::all()->random()->id,',
+                "'$signature'".' => ' . $importTrait['model'],
                 3,
                 $templateData,
             );

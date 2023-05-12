@@ -10,7 +10,6 @@ class InterfaceCommonGenerator extends BaseGenerator
     {
         parent::__construct();
         $this->path = config('generator.path.package.model');
-        $this->notDelete = config('generator.not_delete.package.model');
         $this->_generate($fields, $model);
     }
 

@@ -7,15 +7,15 @@
  */
 namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-//{{USE_CLASS_NOT_DELETE_THIS_LINE}}
+//{{USE_CLASS}}
 
 class {{MODEL_CLASS}} extends BaseModel
 {
 	use HasFactory;
-	//{{USE_NOT_DELETE_THIS_LINE}}
+	//{{USE}}
 
     protected $table = '{{TABLE_NAME}}';
-    //{{TIMESTAMPS_NOT_DELETE_THIS_LINE}}
+    //{{TIMESTAMPS}}
     protected $fillable = [
     	{{FIELDS}}
     ];

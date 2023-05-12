@@ -31,29 +31,30 @@ class ModelGenerator extends BaseGenerator
         //create sort delete
         $importLaravel = config('generator.import.laravel.use');
         $importLaravelModel = config('generator.import.laravel.model');
-        $notDelete = config('generator.not_delete.laravel.model');
+        $useClass = '//{{USE_CLASS}}';
+        $use = '//{{USE}}';
         if ($this->serviceGenerator->getOptions(config('generator.model.options.user_signature'), $model['options'])) {
             $templateData = $this->serviceGenerator->replaceNotDelete(
-                $notDelete['use_class'],
+                $useClass,
                 $importLaravel['trait_user_signature']['file'],
                 0,
                 $templateData,
             );
             $templateData = $this->serviceGenerator->replaceNotDelete(
-                $notDelete['use'],
+                $use,
                 $importLaravel['trait_user_signature']['name'],
                 1,
                 $templateData,
             );
         }
         if ($this->serviceGenerator->getOptions(config('generator.model.options.soft_deletes'), $model['options'])) {
-            $templateData = str_replace($notDelete['use_class'], $importLaravel['sort_delete']['file'], $templateData);
-            $templateData = str_replace($notDelete['use'], $importLaravel['sort_delete']['name'], $templateData);
+            $templateData = str_replace($useClass, $importLaravel['sort_delete']['file'], $templateData);
+            $templateData = str_replace($use, $importLaravel['sort_delete']['name'], $templateData);
         } else {
-            $templateData = str_replace($notDelete['use_class'], '', $templateData);
-            $templateData = str_replace($notDelete['use'], '', $templateData);
+            $templateData = str_replace($useClass, '', $templateData);
+            $templateData = str_replace($use, '', $templateData);
         }
-        $templateData = str_replace($notDelete['timestamps'], $this->serviceGenerator->getOptions(config('generator.model.options.timestamps'), $model['options']) ? '' : $importLaravelModel['timestamps'], $templateData);
+        $templateData = str_replace('//{{TIMESTAMPS}}', $this->serviceGenerator->getOptions(config('generator.model.options.timestamps'), $model['options']) ? '' : $importLaravelModel['timestamps'], $templateData);
         $fileName = $model['name'].'.php';
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
     }

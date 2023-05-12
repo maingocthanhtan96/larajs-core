@@ -455,7 +455,7 @@ class GeneratorController extends BaseLaraJSController
     {
         $migrationGenerator = new MigrationGenerator($fields, $model);
         new ControllerGenerator($model);
-        new SeederGenerator($fields, $model);
+        new SeederGenerator($model);
         new FactoryGenerator($fields, $model);
         new ModelGenerator($fields, $model);
         new RepositoryGenerator($model);

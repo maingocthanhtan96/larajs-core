@@ -165,9 +165,6 @@ return [
     'not_delete' => [
         'laravel' => [
             'model' => [
-                'use_class' => '//{{USE_CLASS_NOT_DELETE_THIS_LINE}}',
-                'use' => '//{{USE_NOT_DELETE_THIS_LINE}}',
-                'timestamps' => '//{{TIMESTAMPS_NOT_DELETE_THIS_LINE}}',
             ],
             'route' => [
                 'api' => [
@@ -176,16 +173,16 @@ return [
             ],
             'lang' => [
                 'en' => [
-                    'route' => '//{{LANG_ROUTE_NOT_DELETE_THIS_LINE}}',
-                    'table' => '//{{LANG_TABLE_NOT_DELETE_THIS_LINE}}',
+                    'route' => '',
+                    'table' => '',
                 ],
                 'ja' => [
-                    'route' => '//{{LANG_ROUTE_NOT_DELETE_THIS_LINE}}',
-                    'table' => '//{{LANG_TABLE_NOT_DELETE_THIS_LINE}}',
+                    'route' => '',
+                    'table' => '',
                 ],
                 'vi' => [
-                    'route' => '//{{LANG_ROUTE_NOT_DELETE_THIS_LINE}}',
-                    'table' => '//{{LANG_TABLE_NOT_DELETE_THIS_LINE}}',
+                    'route' => '',
+                    'table' => '',
                 ],
             ],
             'db' => [
@@ -195,27 +192,14 @@ return [
                 'rule' => '//{{REQUEST_RULES_NOT_DELETE_THIS_LINE}}',
             ],
             'repository' => [
-                'use_class' => '//{{USE_CLASS_NOT_DELETE_THIS_LINE}}',
-                'provider' => [
-                    'use_class' => '//{{USE_CLASS_SERVICE_PROVIDER_NOT_DELETE_THIS_LINE}}',
-                    'register' => '//{{REGISTER_SERVICE_PROVIDER_NOT_DELETE_THIS_LINE}}',
-                ],
             ],
             'observer' => [
-                'observer_mtm_saved' => '//{{OBSERVER_RELATIONSHIP_MTM_SAVED_NOT_DELETE_THIS_LINE}}',
-                'observer_mtm_deleted' => '//{{OBSERVER_RELATIONSHIP_MTM_DELETED_NOT_DELETE_THIS_LINE}}',
-                'provider' => [
-                    'use_class' => '//{{USE_CLASS_SERVICE_PROVIDER_EVENT_NOT_DELETE_THIS_LINE}}',
-                    'register' => '//{{REGISTER_SERVICE_PROVIDER_EVENT_NOT_DELETE_THIS_LINE}}',
-                ],
             ],
             'tests' => [
             ],
         ],
         'vue' => [
             'route' => [
-                'import' => '// {{$IMPORT_ROUTE_NOT_DELETE_THIS_LINE$}}',
-                'async' => '// {{$ROUTE_ASYNC_NOT_DELETE_THIS_LINE$}}',
             ],
             'form' => [
                 'fields' => '// {{$FORM_FIELDS_NOT_DELETE_THIS_LINE$}}',
@@ -226,31 +210,17 @@ return [
                 'data' => '// {{$DATA_NOT_DELETE_THIS_LINE$}}',
                 'api' => '// {{$API_NOT_DELETE_THIS_LINE$}}',
                 'column' => '// {{$COLUMN_NOT_DELETE_THIS_LINE$}}',
-                'state_root' => '// {{$STATE_ROOT_NOT_DELETE_THIS_LINE$}}',
             ],
             'uses' => [
                 'use' => '// {{$IMPORT_USE_NOT_DELETE_THIS_LINE$}}',
                 'form' => [
                     'item' => '// {{$FORM_ITEM_NOT_DELETE_THIS_LINE$}}',
                 ],
-                'api' => '// {{$IMPORT_API_NOT_DELETE_THIS_LINE$}}',
-                'function' => [
-                    'import' => '// {{$IMPORT_FUNCTION_NOT_DELETE_THIS_LINE$}}',
-                    'export' => '// {{$EXPORT_FUNCTION_NOT_DELETE_THIS_LINE$}}',
-                ],
-                'query' => [
-                    'column_search' => '// {{$COLUMN_SEARCH_NOT_DELETE_THIS_LINE$}}',
-                    'relationship' => '// {{$COLUMN_RELATIONSHIP_NOT_DELETE_THIS_LINE$}}',
-                ],
             ],
             'api' => [
             ],
         ],
         'package' => [
-            'model' => [
-                'index' => '// {{$MODEL_NOT_DELETE_THIS_LINE$}}',
-                'import' => '// {{$IMPORT_COMMON_NOT_DELETE_THIS_LINE$}}',
-            ],
         ],
     ],
 
@@ -270,6 +240,7 @@ return [
                 'trait_user_signature' => [
                     'file' => 'use LaraJS\Core\Traits\UserSignature;',
                     'name' => 'use UserSignature;',
+                    'model' => '\App\Models\User::factory(),'
                 ],
             ],
             'model' => [

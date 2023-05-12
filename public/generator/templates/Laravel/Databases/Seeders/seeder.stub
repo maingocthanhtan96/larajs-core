@@ -8,6 +8,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use App\Models\{{MODEL_CLASS}};
 
 class {{TABLE_NAME_TITLE}}Seeder extends Seeder
 {
@@ -18,13 +19,6 @@ class {{TABLE_NAME_TITLE}}Seeder extends Seeder
      */
     public function run()
     {
-        $faker = \Faker\Factory::create();
-
-        for ($i = 0; $i < 20; $i++){
-        	\App\Models\{{MODEL_CLASS}}::create([
-                {{FIELDS}}
-                //{{SEEDER_NOT_DELETE_THIS_LINE}}
-			]);
-		}
+        {{SEEDER}}
     }
 }

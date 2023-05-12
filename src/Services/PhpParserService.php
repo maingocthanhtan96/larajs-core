@@ -69,8 +69,7 @@ class PhpParserService
         $arrayExpr->items[] = $parser->parse($code)[0];
         $prettyPrinter = new Standard();
         $content = $prettyPrinter->prettyPrintFile($ast);
-        $content = str_replace('<?php', '', $content);
-        $content = str_replace('?>', '', $content);
+        $content = str_replace(['<?php ,', '<?php', '?>'], '', $content);
 
         return '<?php' . $content;
     }
@@ -103,6 +102,21 @@ class PhpParserService
         );
         $printer = new Standard();
         return $printer->prettyPrintFile($stmts);
+    }
+
+    public function addNewMethod(string $template, string $methodName, $argNumber = 0): string
+    {
+        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
+        $ast = $parser->parse($template);
+        $nodeFinder = new NodeFinder();
+        $methodCall = $nodeFinder->findFirstInstanceOf($ast, Node\Expr\MethodCall::class);
+        $methodCall->var = new Node\Expr\MethodCall($methodCall->var, $methodName);
+        if ($argNumber) {
+            $methodCall->var->args[] = new Node\Arg(new Node\Scalar\LNumber($argNumber));
+        }
+        $printer = new Standard();
+
+        return $printer->prettyPrintFile($ast);
     }
 
     public function runParserJS($file, $data, $templateDataReal = null): string

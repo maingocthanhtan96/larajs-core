@@ -141,7 +141,7 @@ class RelationshipGenerator extends BaseGenerator
                 Str::snake($model).
                 '_table.php';
             $this->_generateModelMTM($model, $modelCurrent);
-            $this->_generateSeederMTM($model, $modelCurrent);
+            $this->_generateSeeder($modelCurrent, $model, $relationship);
             $this->_generateRoute($modelCurrent);
             $this->_generateRoute($model);
             $this->_generateRequest($modelCurrent, $model, $relationship);
@@ -172,7 +172,7 @@ class RelationshipGenerator extends BaseGenerator
                 $this->serviceGenerator->tableName($model).
                 '_table.php';
             $this->_generateModel($modelCurrent, $model);
-            $this->_generateSeeder($modelCurrent, $model);
+            $this->_generateSeeder($modelCurrent, $model, $relationship);
             $this->_generateRoute($modelCurrent);
             $this->_generateRequest($modelCurrent, $model, $relationship);
             $this->_generateController($modelCurrent, $model, $options, $column, $relationship);
@@ -891,33 +891,12 @@ class RelationshipGenerator extends BaseGenerator
 
     private function _generateModel($model, $modelRelationship): void
     {
-        $field = Str::snake($model).self::_ID;
-        $fieldsGenerate = [];
-        $fieldAble = 'protected $fillable = [';
         $templateDataReal = $this->serviceGenerator->getFile('model', 'laravel', $modelRelationship.'.php');
-        $template = $this->serviceGenerator->searchTemplate(
-            $fieldAble,
-            '];',
-            strlen($fieldAble),
-            -strlen($fieldAble),
-            $templateDataReal,
-        );
-        if (! $template) {
+        if (! $templateDataReal) {
             return;
         }
-        $arTemplate = explode(',', trim($template));
-        foreach ($arTemplate as $tpl) {
-            if (strlen($tpl) > 0) {
-                $fieldsGenerate[] = trim($tpl).',';
-            }
-        }
-        $fieldsGenerate[] = "'$field',";
-        $implodeString = implode($this->serviceGenerator->infy_nl_tab(1, 2), $fieldsGenerate);
-        $templateDataReal = str_replace(
-            $template,
-            $this->serviceGenerator->infy_nl_tab(1, 2).$implodeString.$this->serviceGenerator->infy_nl_tab(1, 1),
-            $templateDataReal,
-        );
+        $field = Str::snake($model).self::_ID;
+        $templateDataReal = $this->phpParserService->addStringToArray($templateDataReal, $field, 'fillable');
         $this->_createFileAll('model', $modelRelationship, $templateDataReal);
     }
 
@@ -944,75 +923,31 @@ class RelationshipGenerator extends BaseGenerator
         $this->serviceFile->createFile($path, $fileName, $templateData);
     }
 
-    private function _generateSeeder($model, $modelRelationship): void
+    private function _generateSeeder($model, $modelRelationship, $relationship): void
     {
-        $field = Str::snake($model).self::_ID;
-        $notDelete = config('generator.not_delete.laravel.db');
-        $fileName = $modelRelationship.'Seeder.php';
-        $templateDataReal = $this->serviceGenerator->getFile('seeder', 'laravel', $fileName);
-        if (! $templateDataReal) {
-            return;
+        // model hasOne/hasMany
+        $fileName = "{$model}Seeder";
+        $templateDataReal = $this->serviceGenerator->getFile('seeder', 'laravel', "$fileName.php");
+        if ($templateDataReal) {
+            $nameModelRelationship =
+                $relationship === $this->relationship['has_one']
+                    ? $this->serviceGenerator->modelNameNotPlural($modelRelationship)
+                    : $this->serviceGenerator->modelNamePlural($modelRelationship);
+            $hasMethod = "has$nameModelRelationship";
+            $templateDataReal = $this->phpParserService->addNewMethod($templateDataReal, $hasMethod, 5);
+            $this->_createFileAll('seeder', $fileName, $templateDataReal);
         }
-        $fakerCreate = '$faker = \Faker\Factory::create();';
-        $param = '$'.Str::camel(Str::plural($model));
-        $fieldRelationship = $param.' = \App\Models\\'.$model."::all()->pluck('id')->toArray();";
-        $templateDataReal = str_replace(
-            $fakerCreate,
-            $fakerCreate.$this->serviceGenerator->infy_nl_tab(1, 2).$fieldRelationship,
-            $templateDataReal,
-        );
-        $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-            $notDelete['seeder'],
-            "'".$field."' => ".'$faker->randomElement('.$param.'),',
-            4,
-            $templateDataReal,
-        );
-        $this->_createFileAll('seeder', $modelRelationship.'Seeder', $templateDataReal);
-    }
 
-    private function _generateSeederMTM($model, $modelCurrent): void
-    {
-        $now = Carbon::now();
-        $notDelete = config('generator.not_delete.laravel.db');
-        $fieldModel = Str::snake($model).self::_ID;
-        $fieldModelCurrent = Str::snake($modelCurrent).self::_ID;
-        $modelCurrentModel = $modelCurrent.$model;
-        $fileName = self::REF_UPPER."{$modelCurrentModel}Seeder.php";
-        $templateData = $this->serviceGenerator->get_template('seeder', 'Databases/Seeders/');
-        $fakerCreate = '$faker = \Faker\Factory::create();';
-        $paramModel = '$'.Str::camel(Str::plural($model));
-        $paramModelCurrent = '$'.Str::camel(Str::plural($modelCurrent));
-        $fieldRelationshipModel = $paramModel.' = \App\Models\\'.$model."::all()->pluck('id')->toArray();";
-        $fieldRelationshipModelCurrent =
-            $paramModelCurrent.' = \App\Models\\'.$modelCurrent."::all()->pluck('id')->toArray();";
-        $templateData = str_replace(
-            $fakerCreate,
-            $fakerCreate.
-                $this->serviceGenerator->infy_nl_tab(1, 2).
-                $fieldRelationshipModel.
-                $this->serviceGenerator->infy_nl_tab(1, 2).
-                $fieldRelationshipModelCurrent,
-            $templateData,
-        );
-        $templateData = str_replace('{{TABLE_NAME_TITLE}}', "Ref$modelCurrentModel", $templateData);
-        $templateData = str_replace('{{DATE_TIME}}', $now->toDateTimeString(), $templateData);
-        $templateData = str_replace('{{MODEL_CLASS}}', self::REF_UPPER.$modelCurrentModel, $templateData);
-        $templateData = str_replace(
-            '{{FIELDS}}',
-            "'$fieldModel' => ".
-                '$faker->randomElement('.
-                $paramModel.
-                '),'.
-                $this->serviceGenerator->infy_nl_tab(1, 4).
-                "'$fieldModelCurrent' => ".
-                '$faker->randomElement('.
-                $paramModelCurrent.
-                '),',
-            $templateData,
-        );
-        $templateData = str_replace($notDelete['seeder'], '', $templateData);
-        $path = config('generator.path.laravel.seeder');
-        $this->serviceFile->createFile($path, $fileName, $templateData);
+        // model belongsTo/belongsToMany
+        $fileName = "{$modelRelationship}Seeder";
+        $templateDataReal = $this->serviceGenerator->getFile('seeder', 'laravel', "$fileName.php");
+        if ($templateDataReal) {
+            $forMethod = $relationship === $this->relationship['belongs_to_many']
+                ? "has{$this->serviceGenerator->modelNamePlural($model)}"
+                : "for{$this->serviceGenerator->modelNameNotPlural($model)}";
+            $templateDataReal = $this->phpParserService->addNewMethod($templateDataReal, $forMethod, $relationship === $this->relationship['belongs_to_many'] ? 5 : 0);
+            $this->_createFileAll('seeder', $fileName, $templateDataReal);
+        }
     }
 
     private function _createFileAll($namePath, $model, $templateDataReal)
