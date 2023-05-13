@@ -43,7 +43,7 @@ class FormGenerator extends BaseGenerator
             $templateData,
         );
         $folderName = $this->path.$this->serviceGenerator->folderPages($model['name']);
-        if (! is_dir($folderName)) {
+        if (!is_dir($folderName)) {
             mkdir($folderName, 0755, true);
         }
 

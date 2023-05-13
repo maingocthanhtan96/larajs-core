@@ -31,7 +31,7 @@ class RequestUpdateGenerator extends BaseGenerator
 
     public function _generateFieldsUpdate($updateFields, $templateDataReal): string
     {
-        if (! $updateFields) {
+        if (!$updateFields) {
             return $templateDataReal;
         }
 
@@ -70,7 +70,7 @@ class RequestUpdateGenerator extends BaseGenerator
 
     private function _generateFieldsChange($generator, $changeFields, $templateDataReal): string
     {
-        if (! $changeFields) {
+        if (!$changeFields) {
             return $templateDataReal;
         }
 
@@ -82,7 +82,7 @@ class RequestUpdateGenerator extends BaseGenerator
             -4 - strlen(self::COLUMNS),
             $templateDataReal,
         );
-        if (! $templateColumns) {
+        if (!$templateColumns) {
             return $templateDataReal;
         }
 
@@ -142,7 +142,7 @@ class RequestUpdateGenerator extends BaseGenerator
                         $fieldsGenerator[] = "'".$keyField."' => $valField";
                     } else {
                         $value = "'".$keyField."' => $valField";
-                        if (! in_array($value, $fieldsGenerator) && ! in_array($keyField, $arrayChange)) {
+                        if (!in_array($value, $fieldsGenerator) && !in_array($keyField, $arrayChange)) {
                             $fieldsGenerator[] = $value;
                         }
                     }
@@ -162,7 +162,7 @@ class RequestUpdateGenerator extends BaseGenerator
 
     private function _generateFieldsDrop($dropFields, $templateDataReal): string
     {
-        if (! $dropFields) {
+        if (!$dropFields) {
             return $templateDataReal;
         }
 
@@ -174,7 +174,7 @@ class RequestUpdateGenerator extends BaseGenerator
             -4 - strlen(self::COLUMNS),
             $templateDataReal,
         );
-        if (! $templateColumns) {
+        if (!$templateColumns) {
             return $templateDataReal;
         }
 
@@ -189,7 +189,7 @@ class RequestUpdateGenerator extends BaseGenerator
                     $keyField = $this->serviceGenerator->trimQuotes($keyField);
                     $value = "'$keyField' => $valField";
                     if ($keyField !== $drop['field_name']) {
-                        if (! in_array($value, $fieldsGenerator) && ! in_array($keyField, $arrayChange)) {
+                        if (!in_array($value, $fieldsGenerator) && !in_array($keyField, $arrayChange)) {
                             $fieldsGenerator[] = $value;
                         }
                     }

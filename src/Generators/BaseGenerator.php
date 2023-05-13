@@ -93,10 +93,10 @@ class BaseGenerator
                 $this->dbType['bigInteger'],
                 $this->dbType['float'],
                 $this->dbType['double'] => str_replace(
-                        '{{$COMPONENT$}}',
-                        $formFeGenerateField->generateInput('inputNumber', $tableName, $field, $index),
-                        $templateFormItemClone,
-                    ),
+                    '{{$COMPONENT$}}',
+                    $formFeGenerateField->generateInput('inputNumber', $tableName, $field, $index),
+                    $templateFormItemClone,
+                ),
                 $this->dbType['boolean'] => str_replace(
                     '{{$COMPONENT$}}',
                     $formFeGenerateField->generateBoolean($tableName, $field),

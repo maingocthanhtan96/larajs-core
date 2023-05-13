@@ -61,7 +61,7 @@ class LaraJSCoreServiceProvider extends ServiceProvider
     private function _whereLike()
     {
         // whereLike
-        if (! Builder::hasGlobalMacro('whereLike')) {
+        if (!Builder::hasGlobalMacro('whereLike')) {
             Builder::macro('whereLike', function ($attributes, string $searchTerm) {
                 $this->where(function (Builder $query) use ($attributes, $searchTerm) {
                     foreach (Arr::wrap($attributes) as $attribute) {
@@ -92,7 +92,7 @@ class LaraJSCoreServiceProvider extends ServiceProvider
     private function _paginate()
     {
         // Enable pagination
-        if (! Collection::hasMacro('paginate')) {
+        if (!Collection::hasMacro('paginate')) {
             Collection::macro('paginate', function ($perPage = 15, $page = null, $options = []) {
                 $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
 
@@ -111,7 +111,7 @@ class LaraJSCoreServiceProvider extends ServiceProvider
 
     private function _orderByRelationship()
     {
-        if (! Builder::hasGlobalMacro('orderByRelationship')) {
+        if (!Builder::hasGlobalMacro('orderByRelationship')) {
             Builder::macro('orderByRelationship', function ($searchColumn, string $direction = 'asc') {
                 if (Str::contains($searchColumn, '.')) {
                     [$relation, $column] = explode('.', $searchColumn);

@@ -35,7 +35,7 @@ class UsesUpdateGenerator extends BaseGenerator
         );
         $templateDataReal = $this->phpParserService->runParserJS("$path/table.tsx", [
             'key' => 'query.column_search',
-            'items' => $this->serviceGenerator->generateColumnSearch($updateFields['updateFields'])
+            'items' => $this->serviceGenerator->generateColumnSearch($updateFields['updateFields']),
         ], $templateDataReal);
         $this->serviceFile->createFileReal("$path/table.tsx", $templateDataReal);
         // create form.tsx

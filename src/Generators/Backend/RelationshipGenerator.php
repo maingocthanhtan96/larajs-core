@@ -150,14 +150,14 @@ class RelationshipGenerator extends BaseGenerator
             $this->_generateController($model, $modelCurrent, $options, $column2, $relationship);
             $this->_generateTests($model);
             $this->_generateTests($modelCurrent);
-//            $this->_generateRepository($modelCurrent, $model);
-//            $this->_generateRepository($model, $modelCurrent);
+            //            $this->_generateRepository($modelCurrent, $model);
+            //            $this->_generateRepository($model, $modelCurrent);
             $this->_generateObserver($modelCurrent, $model);
             $this->_generateObserver($model, $modelCurrent);
             //generate frontend
             $this->_generateFormFe($modelCurrent, $model, $column, $options, $relationship);
             $this->_generateFormFe($model, $modelCurrent, $column2, $options, $relationship);
-            if (! $this->jsType()) {
+            if (!$this->jsType()) {
                 $this->_generateInterfaceCommon($modelCurrent, $model, $relationship);
                 $this->_generateInterfaceCommon($model, $modelCurrent, $relationship);
             }
@@ -179,7 +179,7 @@ class RelationshipGenerator extends BaseGenerator
             $this->_generateTests($modelCurrent);
             //generate frontend
             $this->_generateFormFe($modelCurrent, $model, $column, $options, $relationship);
-            if (! $this->jsType()) {
+            if (!$this->jsType()) {
                 $this->_generateInterfaceCommon($modelCurrent, $model, $relationship);
             }
         }
@@ -197,10 +197,10 @@ class RelationshipGenerator extends BaseGenerator
         $path = "$path{$folderName}";
         //create form: form.tsx
         $templateDataReal = $this->serviceGenerator->getFile('uses', 'vue', "/$folderName/{$this->jsType('form')}");
-        if (! $templateDataReal) {
+        if (!$templateDataReal) {
             return;
         }
-        if (! $isMTM) {
+        if (!$isMTM) {
             $templateRules = $this->_getHandlerTemplate();
             $templateRules = str_replace('{{$FIELD$}}', Str::snake($model).self::_ID, $templateRules);
             $templateRules = str_replace('{{$ATTRIBUTE_FIELD$}}', 't(\'route.'.Str::snake($model).'\')', $templateRules);
@@ -306,14 +306,14 @@ class RelationshipGenerator extends BaseGenerator
                     : $this->serviceGenerator->modelNameNotPluralFe($model);
             $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->jsType('table')}", [
                 'key' => 'query.relationship',
-                'items' => [$withRelationship]
+                'items' => [$withRelationship],
             ], $templateDataReal);
         }
         if (in_array($configOptions['search'], $options)) {
             $columnDidGenerate = Str::camel($model).".$columnRelationship";
             $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->jsType('table')}", [
                 'key' => 'query.column_search',
-                'items' => [$columnDidGenerate]
+                'items' => [$columnDidGenerate],
             ], $templateDataReal);
         }
 
@@ -400,7 +400,7 @@ class RelationshipGenerator extends BaseGenerator
             2,
         );
         // State Root
-        if (! $this->jsType()) {
+        if (!$this->jsType()) {
             $folderName = $this->serviceGenerator->folderPages($modelRelationship);
             $templateDataReal = $this->phpParserService->runParserJS("$path{$folderName}/{$this->jsType('form')}", [
                 'key' => 'uses.form',
@@ -416,7 +416,7 @@ class RelationshipGenerator extends BaseGenerator
         $templateDataRealForm = $this->serviceGenerator->getFile('views', 'vue', $fileName);
         $useModel = "use{$this->serviceGenerator->modelNamePlural($model)}";
         $importStub = "import { $useModel } from '{$this->getImportJsOrTs()}/uses';";
-        if (! stripos($templateDataRealForm, $useModel)) {
+        if (!stripos($templateDataRealForm, $useModel)) {
             $templateDataRealForm = $this->serviceGenerator->replaceNotDelete(
                 $notDelete['import_component'],
                 $importStub,
@@ -426,7 +426,7 @@ class RelationshipGenerator extends BaseGenerator
             );
         }
         $useStub = "const { {$this->serviceGenerator->modelNamePluralFe("all$model")} } = $useModel();";
-        if (! stripos($templateDataRealForm, $useStub)) {
+        if (!stripos($templateDataRealForm, $useStub)) {
             $templateDataRealForm = $this->serviceGenerator->replaceNotDelete(
                 $notDeleteUses['use'],
                 $useStub,
@@ -479,7 +479,7 @@ class RelationshipGenerator extends BaseGenerator
         $importStub = "import { request } from '{$this->getImportJsOrTs()}/services';";
         $resourceStub = "import { Resource } from '{$this->getImportJsOrTs()}/api';";
         $checkImport = strpos($templateDataReal, $importStub);
-        if (! $checkImport) {
+        if (!$checkImport) {
             $templateDataReal = str_replace(
                 $resourceStub,
                 $resourceStub.$this->serviceGenerator->infy_nl_tab(1, 0).$importStub,
@@ -565,7 +565,7 @@ class RelationshipGenerator extends BaseGenerator
                 0,
                 $templateDataReal,
             );
-            if (! $templateFunctionShow) {
+            if (!$templateFunctionShow) {
                 return $templateDataReal;
             }
             $commaFunctionShow = ',';
@@ -588,7 +588,7 @@ class RelationshipGenerator extends BaseGenerator
         $notDelete = config('generator.not_delete.laravel.request');
         $fileNameFunc = "Store{$model}Request.php";
         $templateDataRealFunc = $this->serviceGenerator->getFile('request', 'laravel', $fileNameFunc);
-        if (! $templateDataRealFunc) {
+        if (!$templateDataRealFunc) {
             return;
         }
         $isMTM = $relationship === $this->relationship['belongs_to_many'];
@@ -609,7 +609,7 @@ class RelationshipGenerator extends BaseGenerator
         $pathTemplate = 'Controllers/';
         $fileName = $model.'Controller.php';
         $templateDataReal = $this->serviceGenerator->getFile('api_controller', 'laravel', $fileName);
-        if (! $templateDataReal) {
+        if (!$templateDataReal) {
             return;
         }
         //generate options
@@ -620,7 +620,7 @@ class RelationshipGenerator extends BaseGenerator
         //generate controller
         $fileNameFunc = $modelRelationship.'Controller.php';
         $templateDataRealFunc = $this->serviceGenerator->getFile('api_controller', 'laravel', $fileNameFunc);
-        if (! stripos($templateDataRealFunc, 'function all()')) {
+        if (!stripos($templateDataRealFunc, 'function all()')) {
             $templateDataFunc = $this->serviceGenerator->get_template('relationship', $pathTemplate);
             $templateDataFunc = str_replace('{{MODEL_RELATIONSHIP}}', $modelRelationship, $templateDataFunc);
             $templateDataFunc = str_replace(
@@ -643,7 +643,7 @@ class RelationshipGenerator extends BaseGenerator
     {
         $fileName = "{$modelRelationship}Test.php";
         $templateDataReal = $this->serviceGenerator->getFile('tests.feature', 'laravel', $fileName);
-        if (! $templateDataReal) {
+        if (!$templateDataReal) {
             return;
         }
         $templateDataFunc = $this->serviceGenerator->get_template('Relationship', 'Tests/');
@@ -664,7 +664,7 @@ class RelationshipGenerator extends BaseGenerator
         $pathTemplate = 'Repositories/';
         $fileName = "$model/{$model}Repository.php";
         $templateDataReal = $this->serviceGenerator->getFile('repository', 'laravel', $fileName);
-        if (! $templateDataReal) {
+        if (!$templateDataReal) {
             return;
         }
         if (stripos($templateDataReal, $notDelete['relationship_mtm'])) {
@@ -772,7 +772,7 @@ class RelationshipGenerator extends BaseGenerator
         $templateDataReal = file_exists("$pathObserver{$model}Observer.php")
             ? $this->serviceGenerator->getFile('observer', 'laravel', $fileName)
             : $this->serviceGenerator->get_template('observer', $pathTemplate);
-        if (! $templateDataReal) {
+        if (!$templateDataReal) {
             return;
         }
         $templateDataReal = str_replace('{{MODEL_CLASS}}', $model, $templateDataReal);
@@ -827,10 +827,10 @@ class RelationshipGenerator extends BaseGenerator
     private function _generateRoute($modelRelationship)
     {
         $templateDataReal = $this->serviceGenerator->getFile('api_routes', 'laravel');
-        if (! $templateDataReal) {
+        if (!$templateDataReal) {
             return;
         }
-        if (! stripos($templateDataReal, "{$this->serviceGenerator->urlResource($modelRelationship)}/all")) {
+        if (!stripos($templateDataReal, "{$this->serviceGenerator->urlResource($modelRelationship)}/all")) {
             $stubResource = "Route::apiResource('{{RESOURCE}}', '{{MODEL_CLASS}}Controller');";
             $stubRoute = "Route::get('/{{MODEL}}/all', '{{CONTROLLER}}Controller@all');";
             $templateResource = str_replace(
@@ -892,7 +892,7 @@ class RelationshipGenerator extends BaseGenerator
     private function _generateModel($model, $modelRelationship): void
     {
         $templateDataReal = $this->serviceGenerator->getFile('model', 'laravel', $modelRelationship.'.php');
-        if (! $templateDataReal) {
+        if (!$templateDataReal) {
             return;
         }
         $field = Str::snake($model).self::_ID;
@@ -1007,11 +1007,11 @@ class RelationshipGenerator extends BaseGenerator
                 [
                     'key' => 'common.import',
                     'name' => $model,
-                    'path' =>  './index',
+                    'path' => './index',
                     'interface' => $this->serviceGenerator->modelNameNotPlural($modelCurrent),
                     'items' => [
                         "$modelIds?" => 'number[];',
-                        "$nameColumnRelationship?" => "{$model}[];"
+                        "$nameColumnRelationship?" => "{$model}[];",
                     ],
                 ],
                 $templateDataReal
@@ -1024,12 +1024,12 @@ class RelationshipGenerator extends BaseGenerator
             if ($relationship === $this->relationship['has_one']) {
                 $nameColumnRelationship = Str::snake($model);
                 $items = [
-                    "$nameColumnRelationship?" => "$model;"
+                    "$nameColumnRelationship?" => "$model;",
                 ];
             } else {
                 $nameColumnRelationship = Str::snake(Str::plural($model));
                 $items = [
-                    "$nameColumnRelationship?" => "{$model}[];"
+                    "$nameColumnRelationship?" => "{$model}[];",
                 ];
             }
             $templateDataReal = $this->phpParserService->runParserJS(
@@ -1037,9 +1037,9 @@ class RelationshipGenerator extends BaseGenerator
                 [
                     'key' => 'common.import',
                     'name' => $model,
-                    'path' =>  './index',
+                    'path' => './index',
                     'interface' => $this->serviceGenerator->modelNameNotPlural($modelCurrent),
-                    'items' => $items
+                    'items' => $items,
                 ],
                 $templateDataReal
             );
@@ -1054,12 +1054,12 @@ class RelationshipGenerator extends BaseGenerator
                 [
                     'key' => 'common.import',
                     'name' => $modelCurrent,
-                    'path' =>  './index',
+                    'path' => './index',
                     'interface' => $this->serviceGenerator->modelNameNotPlural($model),
                     'items' => [
-                        "$fieldModelCurrent?" => "number | null;",
-                        "$nameColumnRelationship?" => "$modelCurrent;"
-                    ]
+                        "$fieldModelCurrent?" => 'number | null;',
+                        "$nameColumnRelationship?" => "$modelCurrent;",
+                    ],
                 ],
                 $templateDataReal
             );
@@ -1077,7 +1077,7 @@ class RelationshipGenerator extends BaseGenerator
         $notDelete = null,
     ): string {
         $notDelete ??= config('generator.not_delete.package.model')['import'];
-        if (! preg_match("~\b$model\b~", $templateDataReal)) {
+        if (!preg_match("~\b$model\b~", $templateDataReal)) {
             return $this->serviceGenerator->replaceNotDelete(
                 $notDelete,
                 "import { $model } from '$from';",

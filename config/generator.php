@@ -263,7 +263,7 @@ return [
                 'trait_user_signature' => [
                     'file' => 'use LaraJS\Core\Traits\UserSignature;',
                     'name' => 'use UserSignature;',
-                    'model' => '\App\Models\User::factory(),'
+                    'model' => '\App\Models\User::factory(),',
                 ],
             ],
             'model' => [
@@ -282,7 +282,7 @@ return [
             'parse_time' => [
                 'name' => 'parseTime',
                 'path' => '@libs/utils',
-            ]
+            ],
         ],
     ],
 

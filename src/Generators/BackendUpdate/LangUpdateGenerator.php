@@ -36,14 +36,14 @@ class LangUpdateGenerator extends BaseGenerator
 
     private function _generateFieldsRename($tableName, $renameFields, $templateDataReal): string
     {
-        if (! $renameFields) {
+        if (!$renameFields) {
             return $templateDataReal;
         }
 
         $langTemplate = $this->serviceGenerator->langTemplate($tableName, $templateDataReal);
         $template = $langTemplate['template'];
         $templateReplace = $langTemplate['template_replace'];
-        if (! $template || ! $templateReplace) {
+        if (!$template || !$templateReplace) {
             return $templateDataReal;
         }
 
@@ -66,9 +66,9 @@ class LangUpdateGenerator extends BaseGenerator
                     } else {
                         $name = "'$fieldName' => '$fieldNameTrans',";
                         if (
-                            ! in_array($name, $fieldsGenerate) &&
-                            ! in_array($fieldName, $arRename) &&
-                            ! in_array($fieldName, $arRenameOld)
+                            !in_array($name, $fieldsGenerate) &&
+                            !in_array($fieldName, $arRename) &&
+                            !in_array($fieldName, $arRenameOld)
                         ) {
                             $fieldsGenerate[] = $name;
                         }
@@ -84,26 +84,27 @@ class LangUpdateGenerator extends BaseGenerator
 
     private function _generateFieldsUpdate($tableName, $updateFields, $templateDataReal): string
     {
-        if (! $updateFields) {
+        if (!$updateFields) {
             return $templateDataReal;
         }
         $items = [];
         foreach ($updateFields as $update) {
             $items[$update['field_name']] = $update['field_name_trans'];
         }
+
         return $this->phpParserService->addItemToArray($templateDataReal, $tableName, $items);
     }
 
     private function _generateFieldsDrop($tableName, $dropUpdate, $templateDataReal): string
     {
-        if (! $dropUpdate) {
+        if (!$dropUpdate) {
             return $templateDataReal;
         }
 
         $langTemplate = $this->serviceGenerator->langTemplate($tableName, $templateDataReal);
         $template = $langTemplate['template'];
         $templateReplace = $langTemplate['template_replace'];
-        if (! $template || ! $templateReplace) {
+        if (!$template || !$templateReplace) {
             return $templateDataReal;
         }
         $arTemplate = explode(',', trim($template));
@@ -118,7 +119,7 @@ class LangUpdateGenerator extends BaseGenerator
                 $fieldName = $this->serviceGenerator->trimQuotes($fieldName);
                 $fieldNameTrans = $this->serviceGenerator->trimQuotes($fieldNameTrans);
                 $name = "'$fieldName' => '$fieldNameTrans',";
-                if (! in_array($fieldName, $dropUpdate) && ! in_array($name, $fieldsGenerate)) {
+                if (!in_array($fieldName, $dropUpdate) && !in_array($name, $fieldsGenerate)) {
                     $fieldsGenerate[] = $name;
                 }
             }

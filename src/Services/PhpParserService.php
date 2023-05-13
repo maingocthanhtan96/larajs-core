@@ -2,7 +2,6 @@
 
 namespace LaraJS\Core\Services;
 
-use Exception;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeFinder;
@@ -33,6 +32,7 @@ class PhpParserService
             }
         }
         $prettyPrinter = new PrettyPrinter\Standard();
+
         return $prettyPrinter->prettyPrintFile($ast);
     }
 
@@ -56,6 +56,7 @@ class PhpParserService
             }
         }
         $prettyPrinter = new Standard();
+
         return $prettyPrinter->prettyPrintFile($ast);
     }
 
@@ -101,6 +102,7 @@ class PhpParserService
             $namespace->stmts,
         );
         $printer = new Standard();
+
         return $printer->prettyPrintFile($stmts);
     }
 
@@ -122,7 +124,7 @@ class PhpParserService
     public function runParserJS($file, $data, $templateDataReal = null): string
     {
         if ($templateDataReal) {
-            if (! file_exists(dirname($file))) {
+            if (!file_exists(dirname($file))) {
                 mkdir(dirname($file), 0755, true);
             }
             file_put_contents($file, $templateDataReal);

@@ -240,7 +240,7 @@ return [
                 'trait_user_signature' => [
                     'file' => 'use LaraJS\Core\Traits\UserSignature;',
                     'name' => 'use UserSignature;',
-                    'model' => '\App\Models\User::factory(),'
+                    'model' => '\App\Models\User::factory(),',
                 ],
             ],
             'model' => [
@@ -250,16 +250,16 @@ return [
         'vue' => [
             'tinymce' => [
                 'name' => 'Tinymce',
-                'path' => '@larajs/components'
+                'path' => '@larajs/components',
             ],
             'json_editor' => [
                 'name' => 'JsonEditor',
-                'path' => '@larajs/components'
+                'path' => '@larajs/components',
             ],
             'parse_time' => [
                 'name' => 'parseTime',
                 'path' => '@larajs/utils',
-            ]
+            ],
         ],
     ],
 

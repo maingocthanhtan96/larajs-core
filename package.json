@@ -1,10 +1,16 @@
 {
   "type": "module",
+  "scripts": {
+    "prepare": "husky install"
+  },
   "devDependencies": {
     "@babel/generator": "^7.21.4",
     "@babel/parser": "^7.21.4",
     "@babel/traverse": "^7.21.4",
     "@babel/types": "^7.21.4",
     "prettier": "^2.8.7"
+  },
+  "dependencies": {
+    "husky": "^8.0.3"
   }
 }

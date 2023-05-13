@@ -424,7 +424,7 @@ class GeneratorService
         string $templateDataReal,
         string $searchOther = '',
     ): bool|string {
-        if (! $searchOther) {
+        if (!$searchOther) {
             $searchOther = $search;
         }
         if (strpos($templateDataReal, $searchOther)) {
@@ -472,7 +472,7 @@ class GeneratorService
     {
         $modelData = [];
         if ($model) {
-            if (! in_array($model, config('generator.relationship.ignore_model'))) {
+            if (!in_array($model, config('generator.relationship.ignore_model'))) {
                 $modelData[] = [
                     'model' => $model,
                     'relationships' => $this->getRelationships(app("\\App\\Models\\$model")),
@@ -482,7 +482,7 @@ class GeneratorService
             $modelNames = $this->getModelsNames(app_path('Models'));
             foreach ($modelNames as $modelName) {
                 $model = class_basename($modelName);
-                if (! in_array($model, config('generator.relationship.ignore_model'))) {
+                if (!in_array($model, config('generator.relationship.ignore_model'))) {
                     $modelData[] = [
                         'model' => $model,
                         'relationships' => $this->getRelationships(app($modelName)),
@@ -560,7 +560,7 @@ class GeneratorService
 
                 if (class_exists($class)) {
                     $reflection = new ReflectionClass($class);
-                    $valid = $reflection->isSubclassOf(Model::class) && ! $reflection->isAbstract();
+                    $valid = $reflection->isSubclassOf(Model::class) && !$reflection->isAbstract();
                 }
 
                 return $valid;
@@ -632,7 +632,7 @@ class GeneratorService
         foreach ((new ReflectionClass($model))->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
             if (
                 $method->class != get_class($model) ||
-                ! empty($method->getParameters()) ||
+                !empty($method->getParameters()) ||
                 $method->getName() == __FUNCTION__
             ) {
                 continue;
@@ -641,7 +641,7 @@ class GeneratorService
             try {
                 $return = $method->invoke($model);
                 // check if not instance of Relation
-                if (! ($return instanceof Relation)) {
+                if (!($return instanceof Relation)) {
                     continue;
                 }
                 $relationType = (new ReflectionClass($return))->getShortName();
@@ -735,8 +735,7 @@ class GeneratorService
 
     public function formFeGenerateField(): object
     {
-        return new class extends GeneratorService
-        {
+        return new class extends GeneratorService {
             public function generateBoolean($tableName, $field): string
             {
                 $formTemplate = $this->_getFormTemplate('switch');
@@ -1098,7 +1097,7 @@ class GeneratorService
         $columns = [];
         $template = $this->get_template('column', 'Forms/', 'vue');
         foreach ($fields as $field) {
-            if ($field['field_name'] === 'id' || ! $field['show']) {
+            if ($field['field_name'] === 'id' || !$field['show']) {
                 continue;
             }
             $templateClone = $template;
@@ -1110,7 +1109,7 @@ class GeneratorService
             $templateClone = str_replace('{{$FORM_TEMPLATE$}}', $templateColumn, $templateClone);
             $columns[] = $templateClone;
         }
-        if (! $ignoreOptions && $this->getOptions(config('generator.model.options.timestamps'), $model['options'])) {
+        if (!$ignoreOptions && $this->getOptions(config('generator.model.options.timestamps'), $model['options'])) {
             $template = str_replace('{{$FIELD_NAME$}}', 'updated_at', $template);
             $template = str_replace('{{$FORM_SORTABLE$}}', "'custom'", $template);
             $template = str_replace('{{$FORM_ALIGN$}}', 'center', $template);
@@ -1140,7 +1139,7 @@ class GeneratorService
             default:
                 $template = '';
         }
-        if (! $template) {
+        if (!$template) {
             return '';
         }
 
@@ -1162,7 +1161,6 @@ class GeneratorService
 
         return $column;
     }
-
 
     public function importComponent($fields, $templateDataReal, $path, $model): string
     {
@@ -1212,7 +1210,7 @@ class GeneratorService
                     'key' => 'uses.form',
                     'interface' => "{$model['name']}Root",
                     'items' => [
-                        "{$field['field_name']}Options" => "any[];",
+                        "{$field['field_name']}Options" => 'any[];',
                     ],
                 ], $templateDataReal);
             }

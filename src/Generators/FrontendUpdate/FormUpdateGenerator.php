@@ -41,7 +41,7 @@ class FormUpdateGenerator extends BaseGenerator
 
     private function _generateFieldsRename($renameFields, $templateDataReal): string
     {
-        if (! $renameFields) {
+        if (!$renameFields) {
             return $templateDataReal;
         }
 
@@ -70,7 +70,7 @@ class FormUpdateGenerator extends BaseGenerator
 
     private function _generateFieldsChange($generator, $changeFields, $model, $templateDataReal)
     {
-        if (! $changeFields) {
+        if (!$changeFields) {
             return $templateDataReal;
         }
 
@@ -119,7 +119,7 @@ class FormUpdateGenerator extends BaseGenerator
 
     private function _generateFieldsDrop($dropFields, $templateDataReal)
     {
-        if (! $dropFields) {
+        if (!$dropFields) {
             return $templateDataReal;
         }
 
@@ -147,7 +147,7 @@ class FormUpdateGenerator extends BaseGenerator
 
     private function _generateFieldsUpdate($updateFields, $model, $templateDataReal)
     {
-        if (! $updateFields) {
+        if (!$updateFields) {
             return $templateDataReal;
         }
 
@@ -177,7 +177,7 @@ class FormUpdateGenerator extends BaseGenerator
         $importVueJS = config('generator.import.vue');
         foreach ($mergeUpdate as $field) {
             if ($field['db_type'] === $this->dbType['longtext'] && $flags['import']['long_text']) {
-                if (! strpos($templateDataReal, $importVueJS['tinymce']['file'])) {
+                if (!strpos($templateDataReal, $importVueJS['tinymce']['file'])) {
                     $templateDataReal = $this->serviceGenerator->replaceNotDelete(
                         $this->notDelete['import_component'],
                         $importVueJS['tinymce']['file'],
@@ -187,7 +187,7 @@ class FormUpdateGenerator extends BaseGenerator
                     );
                     $flags['import']['long_text'] = false;
                 }
-                if (! strpos($templateDataReal, $importVueJS['tinymce']['name']) && $flags['component']['long_text']) {
+                if (!strpos($templateDataReal, $importVueJS['tinymce']['name']) && $flags['component']['long_text']) {
                     $templateDataReal = $this->serviceGenerator->replaceNotDelete(
                         $this->notDelete['import_component_name'],
                         $importVueJS['tinymce']['name'],
@@ -198,7 +198,7 @@ class FormUpdateGenerator extends BaseGenerator
                     $flags['component']['long_text'] = false;
                 }
             } elseif ($field['db_type'] === $this->dbType['json']) {
-                if (! strpos($templateDataReal, $importVueJS['json_editor']['file']) && $flags['import']['json']) {
+                if (!strpos($templateDataReal, $importVueJS['json_editor']['file']) && $flags['import']['json']) {
                     $templateDataReal = $this->serviceGenerator->replaceNotDelete(
                         $this->notDelete['import_component'],
                         $importVueJS['json_editor']['file'],
@@ -208,7 +208,7 @@ class FormUpdateGenerator extends BaseGenerator
                     );
                     $flags['import']['json'] = false;
                 }
-                if (! strpos($templateDataReal, $importVueJS['json_editor']['name']) && $flags['component']['json']) {
+                if (!strpos($templateDataReal, $importVueJS['json_editor']['name']) && $flags['component']['json']) {
                     $templateDataReal = $this->serviceGenerator->replaceNotDelete(
                         $this->notDelete['import_component_name'],
                         $importVueJS['json_editor']['name'],
@@ -229,7 +229,7 @@ class FormUpdateGenerator extends BaseGenerator
         $fieldsGenerate = [];
         foreach ($templates as $template) {
             if (\Str::contains($template, $fields['field_name_old']['field_name'])) {
-                if (! \Str::contains($template, '<json-editor')) {
+                if (!\Str::contains($template, '<json-editor')) {
                     $fieldsGenerate[] = str_replace(
                         $fields['field_name_old']['field_name'],
                         $fields['field_name_new']['field_name'],
@@ -283,7 +283,7 @@ class FormUpdateGenerator extends BaseGenerator
 
     private function _checkTemplateStartsWith($templateFormItem)
     {
-        if (! strpos($templateFormItem, '<el-form-item')) {
+        if (!strpos($templateFormItem, '<el-form-item')) {
             $templateFormItem = "<$templateFormItem";
         }
 

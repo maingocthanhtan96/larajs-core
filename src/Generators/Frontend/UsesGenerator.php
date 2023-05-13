@@ -74,7 +74,7 @@ class UsesGenerator extends BaseGenerator
         );
         $templateData = $this->phpParserService->runParserJS("$path{$this->jsType('table')}", [
             'key' => 'query.column_search',
-            'items' => $this->serviceGenerator->generateColumnSearch($fields)
+            'items' => $this->serviceGenerator->generateColumnSearch($fields),
         ], $templateData);
         $this->serviceFile->createFile($path, $this->jsType('table'), $templateData);
         // create form.tsx

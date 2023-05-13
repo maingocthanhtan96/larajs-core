@@ -23,7 +23,7 @@ class InterfaceCommonGenerator extends BaseGenerator
             $templateData,
         );
         $templateData = $this->phpParserService->runParserJS(
-            $this->path . $fileName,
+            $this->path.$fileName,
             [
                 'key' => 'common.import',
                 'interface' => $this->serviceGenerator->modelNameNotPlural($model['name']),
@@ -36,7 +36,7 @@ class InterfaceCommonGenerator extends BaseGenerator
         $fileName = "/{$this->jsType('index')}";
         $templateDataReal = $this->serviceGenerator->getFile('model', 'package', $fileName);
         $fileImport = "'./{$this->serviceGenerator->folderPages($model['name'])}'";
-        if (! stripos($templateDataReal, $fileImport)) {
+        if (!stripos($templateDataReal, $fileImport)) {
             $templateDataReal .= "export * from $fileImport;";
             $this->serviceFile->createFileReal($this->path.$fileName, $templateDataReal);
         }

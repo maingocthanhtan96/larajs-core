@@ -409,7 +409,7 @@ class GeneratorController extends BaseLaraJSController
             foreach ($models as $model) {
                 $modelName = $model->getBasename('.php');
                 if ($modelName !== $modelTable) {
-                    if (! in_array($modelName, $ignoreModel)) {
+                    if (!in_array($modelName, $ignoreModel)) {
                         $modelData[] = $modelName;
                     }
                 }
@@ -429,7 +429,7 @@ class GeneratorController extends BaseLaraJSController
             $files = [];
             foreach ($allFiles as $file) {
                 $model = basename($file->getFilename(), '.php');
-                ! in_array($model, $whiteList) && ($files[] = $model);
+                !in_array($model, $whiteList) && ($files[] = $model);
             }
 
             return $this->jsonData($files);
@@ -544,10 +544,10 @@ class GeneratorController extends BaseLaraJSController
 
     private function _runCommand(array $model = [])
     {
-        if (! isset($model['options'])) {
+        if (!isset($model['options'])) {
             $model['options'] = [];
         }
-        if (! $this->serviceGenerator->getOptions(config('generator.model.options.ignore_migrate'), $model['options'])) {
+        if (!$this->serviceGenerator->getOptions(config('generator.model.options.ignore_migrate'), $model['options'])) {
             Artisan::call('migrate');
         }
         Artisan::call('vue-i18n:generate');

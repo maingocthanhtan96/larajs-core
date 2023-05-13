@@ -9,7 +9,7 @@ class FileService
      */
     public static function createFile($path, $fileName, $contents)
     {
-        if (! file_exists($path)) {
+        if (!file_exists($path)) {
             mkdir($path, 0755, true);
         }
         $path .= $fileName;
@@ -23,7 +23,7 @@ class FileService
      */
     public static function createFileReal($path, $contents)
     {
-        if (! file_exists($path)) {
+        if (!file_exists($path)) {
             return false;
         }
         file_put_contents($path, $contents);
@@ -39,7 +39,7 @@ class FileService
         if (file_exists($path) && $replace) {
             rmdir($path);
         }
-        if (! file_exists($path)) {
+        if (!file_exists($path)) {
             mkdir($path, 0755, true);
         }
     }

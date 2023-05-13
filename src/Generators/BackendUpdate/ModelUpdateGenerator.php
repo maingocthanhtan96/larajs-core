@@ -2,7 +2,6 @@
 
 namespace LaraJS\Core\Generators\BackendUpdate;
 
-use Exception;
 use LaraJS\Core\Generators\BaseGenerator;
 
 class ModelUpdateGenerator extends BaseGenerator
@@ -20,8 +19,8 @@ class ModelUpdateGenerator extends BaseGenerator
     {
         $templateDataReal = $this->serviceGenerator->getFile('model', 'laravel', $model['name'].'.php');
         $templateDataReal = $this->_generateUpdateFields($updateFields['updateFields'], $templateDataReal);
-//        $templateDataReal = $this->_generateFieldsRename($updateFields['renameFields'], $templateDataReal);
-//        $templateDataReal = $this->_generateFieldsDrop($updateFields['dropFields'], $templateDataReal);
+        //        $templateDataReal = $this->_generateFieldsRename($updateFields['renameFields'], $templateDataReal);
+        //        $templateDataReal = $this->_generateFieldsDrop($updateFields['dropFields'], $templateDataReal);
 
         $fileName = $this->path.$model['name'].'.php';
         $this->serviceFile->createFileReal($fileName, $templateDataReal);
@@ -36,6 +35,7 @@ class ModelUpdateGenerator extends BaseGenerator
         foreach ($updateFields as $field) {
             $templateDataReal = $this->phpParserService->addStringToArray($templateDataReal, $field['field_name'], 'fillable');
         }
+
         return $templateDataReal;
     }
 

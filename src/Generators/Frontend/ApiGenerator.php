@@ -34,7 +34,7 @@ class ApiGenerator extends BaseGenerator
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
         $fileNameReal = $this->jsType('index');
         $pathApi = "{$this->path}$fileNameReal";
-        if (! file_exists($pathApi)) {
+        if (!file_exists($pathApi)) {
             file_put_contents($pathApi, '');
         }
         $templateDataReal = $this->serviceGenerator->getFile('api', 'vue', $fileNameReal);

@@ -23,7 +23,8 @@ class LaraJSCore
         Route::apiResource('generators', '\\LaraJS\\Core\Controllers\\GeneratorController');
     }
 
-    public static function routeCores () {
+    public static function routeCores()
+    {
         Route::controller('\\LaraJS\\Core\Controllers\\LaraJSController')->group(function () {
             Route::get('/language/{language}', 'setLanguage');
             Route::post('/logging', 'logging');

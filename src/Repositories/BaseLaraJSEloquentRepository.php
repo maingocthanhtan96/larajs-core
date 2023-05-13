@@ -26,6 +26,7 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
     }
 
     abstract public function getModel(): string;
+
     abstract public function getLimit(): int;
 
     /**
@@ -98,6 +99,7 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
     public function queryBuilder(Request $request, array $options): Builder
     {
         $queryService = new QueryService($this->model);
+
         return $queryService->filters([
             'select' => $options['select'] ?? [],
             'columnSearch' => [...$options['columnSearch'] ?? [], ...$request->get('column_search', [])],
