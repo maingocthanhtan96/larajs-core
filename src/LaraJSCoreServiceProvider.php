@@ -124,8 +124,8 @@ class LaraJSCoreServiceProvider extends ServiceProvider
                         $queryTableRelated = $relation->getModel()->getTable();
 
                         return $this->select("$queryTable.*")
-                            ->join($tableThrough, "$tableThrough.$relationForeignKey", "$queryTable.id")
-                            ->join($queryTableRelated, "$queryTableRelated.id", "$tableThrough.$relationRelatedKey")
+                            ->leftJoin($tableThrough, "$tableThrough.$relationForeignKey", "$queryTable.id")
+                            ->leftJoin($queryTableRelated, "$queryTableRelated.id", "$tableThrough.$relationRelatedKey")
                             ->orderBy("$queryTableRelated.$column", $direction);
                     } else {
                         $relationTable = $relation->getModel()->getTable();
@@ -133,7 +133,7 @@ class LaraJSCoreServiceProvider extends ServiceProvider
                         $queryTable = $this->getModel()->getTable();
 
                         return $this->select("$queryTable.*")
-                            ->join($relationTable, "$queryTable.$relationForeignKey", "$relationTable.id")
+                            ->leftJoin($relationTable, "$queryTable.$relationForeignKey", "$relationTable.id")
                             ->orderBy("$relationTable.$column", $direction);
                     }
                 }
