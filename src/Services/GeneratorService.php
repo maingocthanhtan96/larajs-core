@@ -278,6 +278,21 @@ class GeneratorService
         return \Str::camel($tableName);
     }
 
+    public function modelNameSingular(string $tableName): string
+    {
+        return \Str::camel(\Str::singular($tableName));
+    }
+
+    public function modelNameRouteParamSingular(string $tableName): string
+    {
+        return \Str::snake(\Str::singular($tableName));
+    }
+
+    public function modelNameTitle(string $tableName): string
+    {
+        return \Str::of($tableName)->snake(' ')->title()->lower();
+    }
+
     /**
      * generates model name from table name frontend.
      *

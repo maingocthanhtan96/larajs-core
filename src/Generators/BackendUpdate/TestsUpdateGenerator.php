@@ -6,22 +6,19 @@ use LaraJS\Core\Generators\BaseGenerator;
 
 class TestsUpdateGenerator extends BaseGenerator
 {
-    public function __construct($generator, $model, $updateFields)
+    public function __construct($model, $updateFields)
     {
         parent::__construct();
         $this->path = config('generator.path.laravel.tests.feature');
         $this->notDelete = config('generator.not_delete.laravel.db');
 
-        $this->_generate($generator, $model, $updateFields);
+        $this->_generate($model, $updateFields);
     }
 
-    private function _generate($generator, $model, $updateFields)
+    private function _generate($model, $updateFields)
     {
         $fileName = $model['name'].'Test.php';
         $templateDataReal = $this->serviceGenerator->getFile('tests.feature', 'laravel', $fileName);
-        $templateDataReal = $this->_generateRenameFields($updateFields['renameFields'], $templateDataReal);
-        $templateDataReal = $this->_generateChangeFields($updateFields['changeFields'], $generator, $templateDataReal);
-        $templateDataReal = $this->_generateFieldsDrop($updateFields['dropFields'], $templateDataReal);
         if ($updateFields['updateFields']) {
             $templateDataReal = $this->serviceGenerator->replaceNotDelete(
                 $this->notDelete['seeder'],
@@ -31,46 +28,6 @@ class TestsUpdateGenerator extends BaseGenerator
             );
         }
         $this->serviceFile->createFileReal($this->path.$fileName, $templateDataReal);
-    }
-
-    private function _generateRenameFields($renameFields, $templateDataReal)
-    {
-        foreach ($renameFields as $rename) {
-            $templateDataReal = str_replace(
-                "'{$rename['field_name_old']['field_name']}'",
-                "'{$rename['field_name_new']['field_name']}'",
-                $templateDataReal,
-            );
-        }
-
-        return $templateDataReal;
-    }
-
-    private function _generateChangeFields($changeFields, $generator, $templateDataReal)
-    {
-        $formFields = json_decode($generator->field, true);
-        foreach ($changeFields as $change) {
-            foreach ($formFields as $index => $oldField) {
-                if ($index > 0 && $oldField['id'] === $change['id']) {
-                    $templateDataReal = str_replace(
-                        $this->switchDbType($oldField),
-                        $this->switchDbType($change),
-                        $templateDataReal,
-                    );
-                }
-            }
-        }
-
-        return $templateDataReal;
-    }
-
-    private function _generateFieldsDrop($dropFields, $templateDataReal)
-    {
-        foreach ($dropFields as $drop) {
-            $templateDataReal = str_replace($this->switchDbType($drop), '', $templateDataReal);
-        }
-
-        return $templateDataReal;
     }
 
     private function _generateFieldsUpdate($updateFields): string

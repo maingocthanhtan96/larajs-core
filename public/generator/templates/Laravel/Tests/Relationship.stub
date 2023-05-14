@@ -1,5 +1,6 @@
-public function test_all()
-    {
-        $response = $this->getJson("/api/{{$API_VERSION$}}/{{RESOURCE}}/all");
-        $response->assertStatus(Response::HTTP_OK);
-    }
+test('all {{MODEL_TEST}}', function () {
+    $response = $this->signIn()
+        ->get(route('{{ROUTE_RESOURCE}}.all')
+        ->assertOK()
+        ->json();
+});

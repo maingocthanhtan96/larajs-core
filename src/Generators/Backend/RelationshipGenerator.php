@@ -647,13 +647,9 @@ class RelationshipGenerator extends BaseGenerator
             return;
         }
         $templateDataFunc = $this->serviceGenerator->get_template('Relationship', 'Tests/');
-        $templateDataFunc = str_replace('{{$API_VERSION$}}', config('generator.api_version'), $templateDataFunc);
-        $templateDataFunc = str_replace(
-            '{{RESOURCE}}',
-            $this->serviceGenerator->urlResource($modelRelationship),
-            $templateDataFunc,
-        );
-        $templateDataReal = $this->serviceGenerator->replaceEndFile($templateDataReal, $templateDataFunc, 1);
+        $templateDataFunc = str_replace('{{MODEL_TEST}}', $this->serviceGenerator->modelNameTitle($modelRelationship), $templateDataFunc);
+        $templateDataFunc = str_replace('{{ROUTE_RESOURCE}}', $this->serviceGenerator->urlResource($modelRelationship), $templateDataFunc);
+        $templateDataReal = $this->serviceGenerator->replaceEndFile($templateDataReal, $templateDataFunc, 0);
         $fileNameFunc = config('generator.path.laravel.tests.feature').$fileName;
         $this->serviceFile->createFileReal($fileNameFunc, $templateDataReal);
     }
@@ -832,7 +828,7 @@ class RelationshipGenerator extends BaseGenerator
         }
         if (!stripos($templateDataReal, "{$this->serviceGenerator->urlResource($modelRelationship)}/all")) {
             $stubResource = "Route::apiResource('{{RESOURCE}}', '{{MODEL_CLASS}}Controller');";
-            $stubRoute = "Route::get('/{{MODEL}}/all', '{{CONTROLLER}}Controller@all');";
+            $stubRoute = "Route::get('/{{MODEL}}/all', '{{CONTROLLER}}Controller@all')->name('{{MODEL}}.all');";
             $templateResource = str_replace(
                 '{{RESOURCE}}',
                 $this->serviceGenerator->urlResource($modelRelationship),

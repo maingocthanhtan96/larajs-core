@@ -40,7 +40,7 @@ return [
             'lang' => base_path('lang/'),
             'request' => app_path('Http/Requests/'),
             'tests' => [
-                'feature' => base_path('tests/Feature/Controllers/Api/'.$API_VERSION),
+                'feature' => base_path('tests/Feature/'),
             ],
         ],
         'delete_files' => [

@@ -1,85 +1,63 @@
 <?php
 
-namespace Tests\Feature\Controllers\Api\v1;
+use App\Models\{{MODEL}};
 
-use Database\Seeders\{{CONTROLLER_CLASS}}Seeder;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Testing\Fluent\AssertableJson;
-use Symfony\Component\HttpFoundation\Response;
-use Tests\TestCase;
+beforeEach(function () {
+    $faker = $this->faker;
+    $this->data = [
+        {{FIELDS}}
+        //{{SEEDER_NOT_DELETE_THIS_LINE}}
+    ];
+});
 
-class {{CONTROLLER_CLASS}}Test extends TestCase
-{
-    use WithFaker;
+test('get table {{MODEL_TEST}}', function () {
+    $response = $this->signIn()
+        ->get(route('{{ROUTE_RESOURCE}}.index', $this->query))
+        ->assertOK()
+        ->json('data');
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $faker = $this->faker;
-        $this->seed({{CONTROLLER_CLASS}}Seeder::class);
-        $this->data = [
-            {{FIELDS}}
-            //{{SEEDER_NOT_DELETE_THIS_LINE}}
-        ];
-    }
+    expect($response)
+        ->toHaveKey('total')
+        ->total->toBeInt()
+        ->and($response['items'])
+        ->toBeArray();
+});
 
-    public function test_get_table_list()
-    {
-        $query = http_build_query([...$this->query, 'direction' => 'ascending', 'orderBy' => 'id']);
-        $response = $this->getJson("/api/{{$API_VERSION$}}/{{RESOURCE}}?$query");
-        $response->assertStatus(Response::HTTP_OK)->assertJson(
-            fn(AssertableJson $json) => $json
-                ->has('data.total')
-                ->where('data.items.0.id', 1)
-                ->etc()
-        );
-    }
+test('store a {{MODEL_TEST}}', function () {
+    $response = $this->signIn()
+        ->post(route('{{ROUTE_RESOURCE}}.store'), $this->data)
+        ->assertOK()
+        ->json('data');
 
-    public function test_CRUD_{{CONTROLLER_CLASS}}()
-    {
-        $response = $this->create{{CONTROLLER_CLASS}}();
-        $response = $this->edit{{CONTROLLER_CLASS}}($response);
-        $response = $this->update{{CONTROLLER_CLASS}}($response);
-        $this->delete{{CONTROLLER_CLASS}}($response);
-    }
+    expect($response)->not->toBeEmpty();
+});
 
-    protected function create{{CONTROLLER_CLASS}}()
-    {
-        $response = $this->postJson('/api/{{$API_VERSION$}}/{{RESOURCE}}', $this->data)->assertStatus(Response::HTTP_OK);
+test('show a {{MODEL_TEST}}', function () {
+    ${{MODEL_VARIABLE}} = {{MODEL}}::factory()->create();
+    $response = $this->signIn()
+        ->get(route('{{ROUTE_RESOURCE}}.show', ['{{MODEL_SINGULAR}}' => ${{MODEL_VARIABLE}}->id]))
+        ->assertOK()
+        ->json('data');
 
-        return $response->json('data');
-    }
+    expect($response)->id->toBe(${{MODEL_VARIABLE}}->id);
+});
 
-    public function edit{{CONTROLLER_CLASS}}($body)
-    {
-        return $this->getJson("/api/{{$API_VERSION$}}/{{RESOURCE}}/{$body['id']}")
-            ->assertStatus(Response::HTTP_OK)
-            ->assertJson(
-                fn(AssertableJson $json) => $json
-                    ->where('data.id', $body['id'])
-                    ->missing('data.password')
-                    ->etc()
-            )
-            ->json('data');
-    }
+test('update a {{MODEL_TEST}}', function () {
+    ${{MODEL_VARIABLE}} = {{MODEL}}::factory()->create();
+    $response = $this->signIn()
+        ->put(route('{{ROUTE_RESOURCE}}.update', ['{{MODEL_SINGULAR}}' => ${{MODEL_VARIABLE}}->id]), $this->data)
+        ->assertOK()
+        ->json('data');
 
-    public function update{{CONTROLLER_CLASS}}($body)
-    {
-        $response = $this->putJson("/api/{{$API_VERSION$}}/{{RESOURCE}}/{$body['id']}", $this->data)
-            ->assertStatus(Response::HTTP_OK)
-            ->assertJson(
-                fn(AssertableJson $json) => $json
-                    ->where('data.id', $body['id'])
-                    ->etc()
-            );
+    expect($response)->id->toBe(${{MODEL_VARIABLE}}->id);
+});
 
-        return $response->json('data');
-    }
+test('destroy a {{MODEL_TEST}}', function () {
+    ${{MODEL_VARIABLE}} = {{MODEL}}::factory()->create();
+    $response = $this->signIn()
+        ->delete(route('{{ROUTE_RESOURCE}}.destroy', ['{{MODEL_SINGULAR}}' => ${{MODEL_VARIABLE}}->id]))
+        ->assertOK()
+        ->json();
 
-    public function delete{{CONTROLLER_CLASS}}($body)
-    {
-        $this->deleteJson("/api/{{$API_VERSION$}}/{{RESOURCE}}/{$body['id']}")
-            ->assertStatus(Response::HTTP_OK)
-            ->assertJson(fn(AssertableJson $json) => $json->where('message', trans('messages.delete'))->etc());
-    }
-}
+    expect($response)->message->toBeString();
+});

@@ -30,14 +30,12 @@ class TestsGenerator extends BaseGenerator
     {
         //template Repository
         $templateData = $this->serviceGenerator->get_template('Feature', 'Tests/');
-        $templateData = str_replace('{{CONTROLLER_CLASS}}', $model['name'], $templateData);
-        $templateData = str_replace('{{$API_VERSION$}}', config('generator.api_version'), $templateData);
-        $templateData = str_replace(
-            '{{RESOURCE}}',
-            $this->serviceGenerator->urlResource($model['name']),
-            $templateData,
-        );
+        $templateData = str_replace('{{MODEL}}', $model['name'], $templateData);
         $templateData = str_replace('{{FIELDS}}', $this->generateFields($fields), $templateData);
+        $templateData = str_replace('{{MODEL_TEST}}', $this->serviceGenerator->modelNameTitle($model['name']), $templateData);
+        $templateData = str_replace('{{ROUTE_RESOURCE}}', $this->serviceGenerator->urlResource($model['name']), $templateData);
+        $templateData = str_replace('{{MODEL_VARIABLE}}', $this->serviceGenerator->modelNameSingular($model['name']), $templateData);
+        $templateData = str_replace('{{MODEL_SINGULAR}}', $this->serviceGenerator->modelNameRouteParamSingular($model['name']), $templateData);
         $this->serviceFile->createFile($this->path, $model['name'].'Test.php', $templateData);
     }
 }
