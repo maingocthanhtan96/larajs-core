@@ -18,10 +18,7 @@ class {{TABLE_NAME_TITLE}}Factory extends Factory
      */
     public function definition()
     {
-        $faker = $this->faker;
         return [
-            {{FIELDS}}
-            //{{SEEDER_NOT_DELETE_THIS_LINE}}
         ];
     }
 }

@@ -3,6 +3,7 @@
 namespace LaraJS\Core\Services;
 
 use PhpParser\Node;
+use PhpParser\Node\Expr;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeFinder;
 use PhpParser\NodeTraverser;
@@ -101,9 +102,36 @@ class PhpParserService
             [new Node\Stmt\Use_([new Node\Stmt\UseUse(new Node\Name($code))])],
             $namespace->stmts,
         );
+
         $printer = new Standard();
 
         return $printer->prettyPrintFile($stmts);
+    }
+
+    public function addFakerToFactory(string $template, array $fields, $isSignature = false): string
+    {
+        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
+        $ast = $parser->parse($template);
+        $finder = new NodeFinder();
+        $methodNode = $finder->findFirstInstanceOf($ast, Node\Stmt\ClassMethod::class);
+        $returnNode = $finder->findFirstInstanceOf($methodNode, Node\Stmt\Return_::class);
+        $returnNode->expr->items = array_merge($returnNode->expr->items, $this->itemFakers($fields));
+        if ($isSignature) {
+            $userFactory = new Expr\StaticCall(new Node\Name('\App\Models\User'), new Node\Identifier('factory'));
+            $returnNode->expr->items = array_merge($returnNode->expr->items, [
+                new Node\Expr\ArrayItem(
+                    $userFactory,
+                    new Node\Scalar\String_('created_by'),
+                ),
+                new Node\Expr\ArrayItem(
+                    $userFactory,
+                    new Node\Scalar\String_('updated_by'),
+                ),
+            ]);
+        }
+        $printer = new PrettyPrinter\Standard();
+
+        return $printer->prettyPrintFile($ast);
     }
 
     public function addNewMethod(string $template, string $methodName, $argNumber = 0): string
@@ -135,5 +163,101 @@ class PhpParserService
         abort_if(!$output, Response::HTTP_FORBIDDEN, 'Node parser output empty!');
 
         return implode(PHP_EOL, $output);
+    }
+
+    public function itemFakers($fields): array
+    {
+        $dbType = config('generator.db_type');
+        $data = [];
+        foreach ($fields as $index => $field) {
+            if ($index > 0) {
+                $faker = match ($field['db_type']) {
+                    $dbType['integer'], $dbType['bigInteger'] => [
+                        'faker' => 'numberBetween',
+                        'args' => [],
+                    ],
+                    $dbType['float'], $dbType['double'] => [
+                        'faker' => 'randomFloat',
+                        'args' => [
+                        ],
+                    ],
+                    $dbType['boolean'] => [
+                        'faker' => 'boolean',
+                        'args' => [],
+                    ],
+                    $dbType['date'] => [
+                        'faker' => 'date',
+                        'args' => [],
+                    ],
+                    $dbType['dateTime'], $dbType['timestamp'] => [
+                        'faker' => 'dateTime',
+                        'args' => [
+                        ],
+                    ],
+                    $dbType['time'] => [
+                        'faker' => 'time',
+                        'args' => [
+                        ],
+                    ],
+                    $dbType['year'] => [
+                        'faker' => 'year',
+                        'args' => [
+                        ],
+                    ],
+                    $dbType['string'] => [
+                        'faker' => 'name',
+                        'args' => [
+                        ],
+                    ],
+                    $dbType['text'], $dbType['longtext'] => [
+                        'faker' => 'text',
+                        'args' => [
+                        ],
+                    ],
+                    $dbType['enum'] => [
+                        'faker' => 'randomElement',
+                        'enum' => $field['enum'],
+                        'args' => [
+                        ],
+                    ],
+                    $dbType['json'] => [],
+                };
+                $faker['key'] = $field['field_name'];
+                $faker['db_type'] = $field['db_type'];
+                $data[] = $faker;
+            }
+        }
+        $itemFakers = [];
+        foreach ($data as $item) {
+            switch ($item['db_type']) {
+                case $dbType['enum']:
+                    $enum = \Arr::map($item['enum'], function ($value) {
+                        if (is_numeric($value)) {
+                            return new Node\Scalar\LNumber($value);
+                        } else {
+                            return new Node\Scalar\String_($value);
+                        }
+                    });
+                    $item['args'] = new Node\Expr\Array_($enum);
+                    $itemFakers[] = new Node\Expr\ArrayItem(
+                        new Node\Expr\MethodCall(new Node\Expr\PropertyFetch(new Node\Expr\Variable('this'), 'faker'), $item['faker'], [$item['args']]),
+                        new Node\Scalar\String_($item['key']),
+                    );
+                    break;
+                case $dbType['json']:
+                    $itemFakers[] = new Node\Expr\ArrayItem(
+                        new Node\Scalar\String_('{}'),
+                        new Node\Scalar\String_($item['key']),
+                    );
+                    break;
+                default:
+                    $itemFakers[] = new Node\Expr\ArrayItem(
+                        new Node\Expr\MethodCall(new Node\Expr\PropertyFetch(new Node\Expr\Variable('this'), 'faker'), $item['faker'], $item['args']),
+                        new Node\Scalar\String_($item['key']),
+                    );
+            }
+        }
+
+        return $itemFakers;
     }
 }

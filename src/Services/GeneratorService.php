@@ -1049,7 +1049,7 @@ class GeneratorService
                 $field['default_value'] === $defaultValue['null']
             ) {
                 if ($field['db_type'] === $dbType['json']) {
-                    $fieldForm = "$fieldName: '[]'";
+                    $fieldForm = "$fieldName: '{}'";
                 } elseif (
                     in_array($field['db_type'], [
                         $dbType['integer'],
