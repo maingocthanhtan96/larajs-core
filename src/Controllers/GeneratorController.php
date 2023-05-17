@@ -473,7 +473,7 @@ class GeneratorController extends BaseLaraJSController
         ];
     }
 
-    private function _generateFrontend($fields, $model)
+    private function _generateFrontend($fields, $model): void
     {
         new RouteGeneratorFe($model);
         new ApiGenerator($model);
@@ -523,12 +523,12 @@ class GeneratorController extends BaseLaraJSController
         return $files;
     }
 
-    private function _generateBackendUpdate($generator, $model, $updateFields)
+    private function _generateBackendUpdate($generator, $model, $updateFields): void
     {
         new MigrationUpdateGenerator($generator, $model, $updateFields);
         new ModelUpdateGenerator($model, $updateFields);
         new SeederUpdateGenerator($generator, $model, $updateFields);
-        new FactoryUpdateGenerator($generator, $model, $updateFields);
+        new FactoryUpdateGenerator($model, $updateFields);
         new LangUpdateGenerator($model, $updateFields);
         new RequestUpdateGenerator($generator, $model, $updateFields);
         if ($this->serviceGenerator->getOptions(config('generator.model.options.test_cases'), $model['options'])) {
@@ -536,13 +536,13 @@ class GeneratorController extends BaseLaraJSController
         }
     }
 
-    private function _generateFrontendUpdate($model, $updateFields)
+    private function _generateFrontendUpdate($model, $updateFields): void
     {
         new UsesUpdateGenerator($model, $updateFields);
         new InterfaceCommonUpdateGenerator($updateFields, $model);
     }
 
-    private function _runCommand(array $model = [])
+    private function _runCommand(array $model = []): void
     {
         if (!isset($model['options'])) {
             $model['options'] = [];
@@ -563,7 +563,7 @@ class GeneratorController extends BaseLaraJSController
         exec_in_background("(sleep 1 && cd $basePath && node ./node_modules/.bin/pretty-quick)");
     }
 
-    private function _exportDataGenerator()
+    private function _exportDataGenerator(): void
     {
         $generators = Generator::withTrashed()
             ->get()
@@ -593,7 +593,7 @@ class GeneratorController extends BaseLaraJSController
         }
     }
 
-    private function _gitCommit($model)
+    private function _gitCommit($model): void
     {
         if (env('GENERATOR_DEBUG')) {
             return;

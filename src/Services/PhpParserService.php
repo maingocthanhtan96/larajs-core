@@ -110,6 +110,8 @@ class PhpParserService
 
     public function addFakerToFactory(string $template, array $fields, $isSignature = false): string
     {
+        if (!$fields) { return $template; }
+
         $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
         $ast = $parser->parse($template);
         $finder = new NodeFinder();
@@ -172,8 +174,8 @@ class PhpParserService
     {
         $dbType = config('generator.db_type');
         $data = [];
-        foreach ($fields as $index => $field) {
-            if ($index > 0) {
+        foreach ($fields as $field) {
+            if ($field['field_name'] !== 'id') {
                 $faker = match ($field['db_type']) {
                     $dbType['integer'], $dbType['bigInteger'] => [
                         'faker' => 'numberBetween',
