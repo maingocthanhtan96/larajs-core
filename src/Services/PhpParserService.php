@@ -158,9 +158,12 @@ class PhpParserService
             file_put_contents($file, $templateDataReal);
         }
         $node = __DIR__ . '/../server-parser.js';
-        $cmd = "node '$node' '$file' " . "'" . json_encode($data) . "'";
+        $cmd = "node $node $file " . base64_encode(json_encode($data));
         exec($cmd, $output);
-        abort_if(!$output, Response::HTTP_FORBIDDEN, 'Node parser output empty!');
+        if (!$output) {
+            \Log::error($cmd, $data);
+            abort(Response::HTTP_FORBIDDEN, 'Node parser output empty!');
+        }
 
         return implode(PHP_EOL, $output);
     }

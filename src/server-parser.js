@@ -1,16 +1,16 @@
-import { readFileSync } from "node:fs";
-import * as babelParser from "@babel/parser";
-import _traverse from "@babel/traverse";
-import t from "@babel/types";
-import _generate from "@babel/generator";
-import prettier from "prettier";
+import { readFileSync } from 'node:fs';
+import * as babelParser from '@babel/parser';
+import _traverse from '@babel/traverse';
+import t from '@babel/types';
+import _generate from '@babel/generator';
+import prettier from 'prettier';
 
 const traverse = _traverse.default;
 const generate = _generate.default;
-const astParser = (code) =>
+const astParser = code =>
   babelParser.parse(code, {
-    sourceType: "module",
-    plugins: ["jsx", "typescript"],
+    sourceType: 'module',
+    plugins: ['jsx', 'typescript'],
   });
 const addImport = (hasImportExist, data, lastImport, ast) => {
   if (!hasImportExist && data.name && data.path) {
@@ -27,8 +27,8 @@ const addImport = (hasImportExist, data, lastImport, ast) => {
 };
 
 try {
-  const codeContent = readFileSync(process.argv[2], "utf8");
-  const data = JSON.parse(process.argv[3]);
+  const codeContent = readFileSync(process.argv[2], 'utf8');
+  const data = JSON.parse(atob(process.argv[3]));
   const ast = astParser(codeContent);
   let lastImport = null;
   let hasImportExist = null;
@@ -36,17 +36,14 @@ try {
     ObjectProperty(path) {
       const node = path.node;
       switch (data.key) {
-        case "query.column_search":
-        case "query.relationship": {
-          if (node.key.name === "query") {
-            node.value.properties.forEach((queryProp) => {
-              if (
-                t.isIdentifier(queryProp.key) &&
-                queryProp.key.name === data.key.split(".")[1]
-              ) {
+        case 'query.column_search':
+        case 'query.relationship': {
+          if (node.key.name === 'query') {
+            node.value.properties.forEach(queryProp => {
+              if (t.isIdentifier(queryProp.key) && queryProp.key.name === data.key.split('.')[1]) {
                 (data.items || []).forEach(item => {
                   queryProp.value.elements.push(t.stringLiteral(item));
-                })
+                });
               }
             });
           }
@@ -56,10 +53,10 @@ try {
     },
   });
   switch (data.key) {
-    case "router.import": {
+    case 'router.import': {
       traverse(ast, {
         ArrayExpression(path) {
-          if (path.parent?.id?.name === "asyncRouterMap") {
+          if (path.parent?.id?.name === 'asyncRouterMap') {
             path.parent.init.elements.unshift(t.identifier(data.name));
           }
         },
@@ -78,18 +75,16 @@ try {
       }
       break;
     }
-    case "common.import": {
+    case 'common.import': {
       traverse(ast, {
         ImportDeclaration(path) {
           lastImport = path;
           const importSpecifiers = path.node.specifiers;
-          hasImportExist = importSpecifiers.some(
-            (specifier) => specifier.local.name === data.name
-          );
+          hasImportExist = importSpecifiers.some(specifier => specifier.local.name === data.name);
         },
         TSInterfaceDeclaration(path) {
           if (path.node.id.name === data.interface) {
-            Object.keys(data.items).forEach((field) => {
+            Object.keys(data.items).forEach(field => {
               const newProperty = t.objectTypeProperty(
                 t.identifier(field),
                 t.genericTypeAnnotation(t.identifier(data.items[field]))
@@ -102,38 +97,34 @@ try {
       addImport(hasImportExist, data, lastImport, ast);
       break;
     }
-    case "uses.index": {
+    case 'uses.index': {
       traverse(ast, {
         FunctionDeclaration(path) {
           if (path.node.id.name === data.name) {
             const returnStatement = path
-              .get("body")
-              .get("body")
-              .find((node) => node.isReturnStatement());
+              .get('body')
+              .get('body')
+              .find(node => node.isReturnStatement());
             if (returnStatement) {
-              const returnObject = returnStatement.get("argument");
+              const returnObject = returnStatement.get('argument');
               returnStatement.insertBefore(astParser(data.value));
-              returnObject.node.properties.push(
-                babelParser.parse(data.property).program.body[0].expression
-              );
+              returnObject.node.properties.push(babelParser.parse(data.property).program.body[0].expression);
             }
           }
         },
       });
       break;
     }
-    case "uses.form": {
+    case 'uses.form': {
       traverse(ast, {
         ImportDeclaration(path) {
           lastImport = path;
           const importSpecifiers = path.node.specifiers;
-          hasImportExist = importSpecifiers.some(
-            (specifier) => specifier.local.name === data.name
-          );
+          hasImportExist = importSpecifiers.some(specifier => specifier.local.name === data.name);
         },
         TSInterfaceDeclaration(path) {
           if (path.node.id.name === data.interface) {
-            Object.keys(data.items).forEach((field) => {
+            Object.keys(data.items).forEach(field => {
               const newProperty = t.objectTypeProperty(
                 t.identifier(field),
                 t.genericTypeAnnotation(t.identifier(data.items[field]))
@@ -149,14 +140,14 @@ try {
   }
   const { code } = generate(ast);
   const formattedCode = prettier.format(code, {
-    parser: "typescript",
+    parser: 'typescript',
     semi: true,
     singleQuote: true,
-    arrowParens: "avoid",
-    htmlWhitespaceSensitivity: "ignore",
+    arrowParens: 'avoid',
+    htmlWhitespaceSensitivity: 'ignore',
     jsxSingleQuote: true,
     printWidth: 120,
-    proseWrap: "always",
+    proseWrap: 'always',
   });
 
   console.log(formattedCode); // eslint-disable-line no-console
