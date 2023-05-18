@@ -16,7 +16,6 @@ export function use{{$NAME_MODEL$}}Forms() {
   const { store, update } = use{{$NAME_USES$}}();
   const {{$CONST_NAME_MODEL$}}Ref = ref<FormInstance>();
   const form = reactive<{{$NAME_MODEL$}}>({
-    // {{$FORM_FIELDS_NOT_DELETE_THIS_LINE$}}
   });
   const state = reactive<{{$NAME_MODEL$}}Root>({
     // {{$DATA_NOT_DELETE_THIS_LINE$}}

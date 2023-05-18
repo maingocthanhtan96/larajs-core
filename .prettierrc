@@ -1,0 +1,27 @@
+{
+  "useTabs": false,
+  "singleQuote": true,
+  "semi": true,
+  "arrowParens": "avoid",
+  "bracketSpacing": true,
+  "htmlWhitespaceSensitivity": "ignore",
+  "insertPragma": false,
+  "jsxBracketSameLine": false,
+  "jsxSingleQuote": true,
+  "printWidth": 120,
+  "proseWrap": "always",
+  "quoteProps": "as-needed",
+  "requirePragma": false,
+  "tabWidth": 2,
+  "trailingComma": "es5",
+  "vueIndentScriptAndStyle": false,
+  "overrides": [
+    {
+      "files": "*.php",
+      "options": {
+        "phpVersion": "8.1",
+        "tabWidth": 4
+      }
+    }
+  ]
+}

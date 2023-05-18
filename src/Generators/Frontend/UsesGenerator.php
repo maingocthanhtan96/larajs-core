@@ -99,13 +99,10 @@ class UsesGenerator extends BaseGenerator
             $this->serviceGenerator->modelNameNotPluralFe($model['name']),
             $templateData,
         );
-        $templateData = $this->serviceGenerator->replaceNotDelete(
-            $this->notDelete['form']['fields'],
-            implode($this->serviceGenerator->infy_nl_tab(1, 2, 2), $this->serviceGenerator->generateFieldForm($fields)),
-            2,
-            $templateData,
-            2,
-        );
+        $templateData = $this->phpParserService->runParserJS("{$path}{$this->jsType('form')}", [
+            'key' => 'uses.form:form',
+            'items' => $this->serviceGenerator->generateFieldForm($fields),
+        ], $templateData);
         $templateData = $this->serviceGenerator->replaceNotDelete(
             $this->notDelete['uses']['form']['item'],
             $this->generateItems($fields, $model),

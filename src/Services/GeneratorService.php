@@ -970,7 +970,7 @@ class GeneratorService
         $dbType = config('generator.db_type');
 
         return match ($field['db_type']) {
-            'Increments',
+            $dbType['increments'],
             $dbType['integer'],
             $dbType['bigInteger'],
             $dbType['float'],
@@ -1038,47 +1038,56 @@ class GeneratorService
 
     public function generateFieldForm($fields): array
     {
-        $fieldsGenerate = [];
         $defaultValue = config('generator.default_value');
         $dbType = config('generator.db_type');
+        $items = [];
         foreach ($fields as $field) {
             $fieldName = $field['field_name'];
-            $fieldForm = '';
-            if (
-                $field['default_value'] === $defaultValue['none'] ||
-                $field['default_value'] === $defaultValue['null']
-            ) {
-                if ($field['db_type'] === $dbType['json']) {
-                    $fieldForm = "$fieldName: '{}'";
-                } elseif (
-                    in_array($field['db_type'], [
+            $items[$fieldName] = [
+                'value' => '',
+                'type' => '',
+            ];
+            switch ($field['default_value']) {
+                case $defaultValue['none']:
+                case $defaultValue['null']:
+                    if ($field['db_type'] === $dbType['json']) {
+                        $items[$fieldName] = [
+                            'value' => '{}',
+                            'type' => 'string',
+                        ];
+                    } elseif (in_array($field['db_type'], [
                         $dbType['integer'],
                         $dbType['bigInteger'],
                         $dbType['float'],
                         $dbType['double'],
                         $dbType['boolean'],
                         $dbType['increments'],
-                    ])
-                ) {
-                    $fieldForm = "$fieldName: 0";
-                } else {
-                    $fieldForm = "$fieldName: ''";
-                }
-            } elseif ($field['default_value'] === $defaultValue['as_define']) {
-                $asDefine = $field['as_define'];
-                if (is_numeric($asDefine)) {
-                    $fieldForm = "$fieldName: $asDefine";
-                } else {
-                    $fieldForm = "$fieldName: '$asDefine'";
-                }
-            } elseif ($field['default_value'] === $defaultValue['current_timestamps']) {
-                $fieldForm = "$fieldName: parseTime(new Date())";
+                    ])) {
+                        $items[$fieldName] = [
+                            'value' => 0,
+                            'type' => 'number',
+                        ];
+                    } else {
+                        $items[$fieldName] = [
+                            'value' => '',
+                            'type' => 'string',
+                        ];
+                    }
+                    break;
+                case $defaultValue['as_define']:
+                    $value = $field['as_define'];
+                    $items[$fieldName] = [
+                        'value' => is_numeric($value) ? +$value : $value,
+                        'type' => is_numeric($value) ? 'number' : 'string',
+                    ];
+                    break;
+                case $defaultValue['current_timestamps']:
+                    $items[$fieldName]['type'] = $defaultValue['current_timestamps'];
+                    break;
             }
-            $fieldForm .= ',';
-            $fieldsGenerate[] = $fieldForm;
         }
 
-        return $fieldsGenerate;
+        return $items;
     }
 
     public function getHandlerTemplate(): string

@@ -85,11 +85,11 @@ try {
         TSInterfaceDeclaration(path) {
           if (path.node.id.name === data.interface) {
             Object.keys(data.items).forEach(field => {
-              const newProperty = t.objectTypeProperty(
+              const item = t.objectTypeProperty(
                 t.identifier(field),
                 t.genericTypeAnnotation(t.identifier(data.items[field]))
               );
-              path.node.body.body.push(newProperty);
+              path.node.body.body.push(item);
             });
           }
         },
@@ -125,16 +125,48 @@ try {
         TSInterfaceDeclaration(path) {
           if (path.node.id.name === data.interface) {
             Object.keys(data.items).forEach(field => {
-              const newProperty = t.objectTypeProperty(
+              const item = t.objectTypeProperty(
                 t.identifier(field),
                 t.genericTypeAnnotation(t.identifier(data.items[field]))
               );
-              path.node.body.body.push(newProperty);
+              path.node.body.body.push(item);
             });
           }
         },
       });
       addImport(hasImportExist, data, lastImport, ast);
+      break;
+    }
+    case 'uses.form:form': {
+      traverse(ast, {
+        VariableDeclarator(path) {
+          if (t.isIdentifier(path.node.id) && path.node.id.name === 'form') {
+            const generateValue = item => {
+              switch (item.type) {
+                case 'number': {
+                  return t.numericLiteral(item.value);
+                }
+                case 'string': {
+                  return t.stringLiteral(item.value);
+                }
+                case 'CURRENT_TIMESTAMPS': {
+                  return t.callExpression(t.identifier('parseTime'), [t.newExpression(t.identifier('Date'), [])]);
+                }
+                case 'array': {
+                  return t.arrayExpression([]);
+                }
+                case 'null': {
+                  return t.nullLiteral();
+                }
+              }
+            };
+            Object.keys(data.items).forEach(field => {
+              const item = t.objectProperty(t.identifier(field), generateValue(data.items[field]));
+              path.node.init?.arguments[0]?.properties.push(item);
+            });
+          }
+        },
+      });
       break;
     }
     case 'api.import': {

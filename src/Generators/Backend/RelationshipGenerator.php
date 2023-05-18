@@ -219,6 +219,14 @@ class RelationshipGenerator extends BaseGenerator
             $templateDataReal,
             2,
         );
+        $templateDataReal = $this->phpParserService->runParserJS("{$path}{$this->jsType('form')}", [
+            'key' => 'uses.form:form',
+            'items' => [
+                $field => [
+                    'type' => $isMTM ? 'array' : ': null',
+                ],
+            ],
+        ], $templateDataReal);
         $templateDataReal = $this->_generateAddApi(
             $model,
             $modelRelationship,
@@ -463,7 +471,7 @@ class RelationshipGenerator extends BaseGenerator
             'key' => 'api.import',
             'name' => 'request',
             'path' => "'{$this->getImportJsOrTs()}/services'",
-            'class_name' => "{$model}Resource"
+            'class_name' => "{$model}Resource",
         ]);
 
         $this->serviceFile->createFile(config('generator.path.vue.api'), $fileName, $templateDataReal);

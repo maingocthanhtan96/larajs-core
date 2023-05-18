@@ -202,7 +202,6 @@ return [
             'route' => [
             ],
             'form' => [
-                'fields' => '// {{$FORM_FIELDS_NOT_DELETE_THIS_LINE$}}',
                 'rules' => '// {{$RULES_NOT_DELETE_THIS_LINE$}}',
                 'import_component' => '// {{$IMPORT_COMPONENT_NOT_DELETE_THIS_LINE$}}',
                 'create' => '// {{$CREATE_NOT_DELETE_THIS_LINE$}}',
