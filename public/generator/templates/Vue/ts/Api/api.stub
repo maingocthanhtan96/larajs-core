@@ -11,8 +11,6 @@ class {{$MODEL_CLASS$}}Resource extends Resource {
   constructor() {
     super('/{{$MODEL_CLASS_URI$}}');
   }
-
-  // {{$API_NOT_DELETE_THIS_LINE$}}
 }
 
 export default new {{$MODEL_CLASS$}}Resource();

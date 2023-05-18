@@ -539,7 +539,9 @@ class GeneratorController extends BaseLaraJSController
     private function _generateFrontendUpdate($model, $updateFields): void
     {
         new UsesUpdateGenerator($model, $updateFields);
-        new InterfaceCommonUpdateGenerator($updateFields, $model);
+        if (config('generator.js_language') === 'ts') {
+            new InterfaceCommonUpdateGenerator($updateFields, $model);
+        }
     }
 
     private function _runCommand(array $model = []): void

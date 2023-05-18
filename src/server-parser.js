@@ -137,6 +137,52 @@ try {
       addImport(hasImportExist, data, lastImport, ast);
       break;
     }
+    case 'api.import': {
+      traverse(ast, {
+        ImportDeclaration(path) {
+          lastImport = path;
+          const importSpecifiers = path.node.specifiers;
+          hasImportExist = importSpecifiers.some(specifier => specifier.local.name === data.name);
+        },
+      });
+      addImport(hasImportExist, data, lastImport, ast);
+      const classDeclaration = ast.program.body.find(
+        node => node.type === 'ClassDeclaration' && node.id?.name === data.class_name
+      );
+      if (classDeclaration) {
+        const hasFunctionAll = classDeclaration.body.body.some(
+          node => t.isClassMethod(node) && t.isIdentifier(node.key, { name: 'all' })
+        );
+        if (hasFunctionAll) break;
+        const methodAll = t.classMethod(
+          'method',
+          t.identifier('all'),
+          [t.identifier('props = {}')],
+          t.blockStatement([
+            t.returnStatement(
+              t.callExpression(t.identifier('request'), [
+                t.objectExpression([
+                  t.objectProperty(
+                    t.identifier('url'),
+                    t.templateLiteral(
+                      [
+                        t.templateElement({ raw: '', cooked: '' }),
+                        t.templateElement({ raw: '/all', cooked: '/all' }, true),
+                      ],
+                      [t.identifier('this.uri')]
+                    )
+                  ),
+                  t.objectProperty(t.identifier('method'), t.stringLiteral('get')),
+                  t.spreadElement(t.identifier('props')),
+                ]),
+              ])
+            ),
+          ])
+        );
+        classDeclaration.body.body.push(methodAll);
+      }
+      break;
+    }
   }
   const { code } = generate(ast);
   const formattedCode = prettier.format(code, {

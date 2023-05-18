@@ -457,35 +457,15 @@ class RelationshipGenerator extends BaseGenerator
 
     private function _generateApi($model): void
     {
-        $checkFuncName = 'all() {';
-        $notDelete = config('generator.not_delete.vue.form');
+        $path = config('generator.path.vue.api');
         $fileName = $this->serviceGenerator->folderPages($model).".{$this->jsType('ext')}";
-        $templateDataReal = $this->serviceGenerator->getFile('api', 'vue', $fileName);
-        if (strpos($templateDataReal, $checkFuncName)) {
-            return;
-        }
-        $stubAPI = $this->serviceGenerator->get_template('apiRelationship', 'Api/', 'vue');
-        $templateAPI = str_replace('{{$FUNCTION$}}', $model, $stubAPI);
-        $templateAPI = str_replace('{{$MODEL$}}', $this->serviceGenerator->urlResource($model), $templateAPI);
-        $templateAPI = str_replace('{{$API_VERSION$}}', config('generator.api_version'), $templateAPI);
-        $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-            $notDelete['api'],
-            $templateAPI,
-            1,
-            $templateDataReal,
-            2,
-        );
-        //check import
-        $importStub = "import { request } from '{$this->getImportJsOrTs()}/services';";
-        $resourceStub = "import { Resource } from '{$this->getImportJsOrTs()}/api';";
-        $checkImport = strpos($templateDataReal, $importStub);
-        if (!$checkImport) {
-            $templateDataReal = str_replace(
-                $resourceStub,
-                $resourceStub.$this->serviceGenerator->infy_nl_tab(1, 0).$importStub,
-                $templateDataReal,
-            );
-        }
+        $templateDataReal = $this->phpParserService->runParserJS($path.$fileName, [
+            'key' => 'api.import',
+            'name' => 'request',
+            'path' => "'{$this->getImportJsOrTs()}/services'",
+            'class_name' => "{$model}Resource"
+        ]);
+
         $this->serviceFile->createFile(config('generator.path.vue.api'), $fileName, $templateDataReal);
     }
 
