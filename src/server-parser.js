@@ -137,26 +137,33 @@ try {
       addImport(hasImportExist, data, lastImport, ast);
       break;
     }
-    case 'uses.form:form': {
+    case 'uses.form:item': {
       traverse(ast, {
         VariableDeclarator(path) {
-          if (t.isIdentifier(path.node.id) && path.node.id.name === 'form') {
+          if (t.isIdentifier(path.node.id) && path.node.id.name === data.variable) {
             const generateValue = item => {
               switch (item.type) {
                 case 'number': {
-                  return t.numericLiteral(item.value);
+                  return t.numericLiteral(+item.value);
                 }
                 case 'string': {
                   return t.stringLiteral(item.value);
                 }
-                case 'CURRENT_TIMESTAMPS': {
-                  return t.callExpression(t.identifier('parseTime'), [t.newExpression(t.identifier('Date'), [])]);
-                }
                 case 'array': {
-                  return t.arrayExpression([]);
+                  const array = t.arrayExpression([]);
+                  (item.value || []).forEach(value => {
+                    array.elements.push(isNaN(value) ? t.stringLiteral(value) : t.numericLiteral(+value)); // eslint-disable-line
+                  });
+                  return array;
                 }
                 case 'null': {
                   return t.nullLiteral();
+                }
+                case 'json': {
+                  return t.objectExpression([]);
+                }
+                case 'CURRENT_TIMESTAMPS': {
+                  return t.callExpression(t.identifier('parseTime'), [t.newExpression(t.identifier('Date'), [])]);
                 }
               }
             };

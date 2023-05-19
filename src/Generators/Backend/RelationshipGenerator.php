@@ -211,16 +211,8 @@ class RelationshipGenerator extends BaseGenerator
         $tableFunctionRelationship = $isMTM
             ? $this->serviceGenerator->tableName($model)
             : $this->serviceGenerator->tableNameNotPlural($model);
-        $columnDidGenerate = $field.($isMTM ? ': [],' : ': null,');
-        $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-            $notDelete['fields'],
-            $columnDidGenerate,
-            3,
-            $templateDataReal,
-            2,
-        );
         $templateDataReal = $this->phpParserService->runParserJS("{$path}{$this->jsType('form')}", [
-            'key' => 'uses.form:form',
+            'key' => 'uses.form:item',
             'items' => [
                 $field => [
                     'type' => $isMTM ? 'array' : ': null',
@@ -395,28 +387,31 @@ class RelationshipGenerator extends BaseGenerator
     {
         $path = config('generator.path.vue.uses');
         $notDeleteUses = config('generator.not_delete.vue.uses');
+        $folderName = $this->serviceGenerator->folderPages($modelRelationship);
         $fileName = "{$this->serviceGenerator->folderPages($modelRelationship)}/Form.vue";
         $nameModelRelationship =
             $relationship === $this->relationship['has_one']
                 ? $this->serviceGenerator->modelNameNotPluralFe($model)
                 : $this->serviceGenerator->modelNamePluralFe($model);
-        $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-            $notDelete['data'],
-            "$nameModelRelationship: [],",
-            3,
-            $templateDataReal,
-            2,
-        );
+        $templateDataReal = $this->phpParserService->runParserJS("$path{$folderName}/{$this->jsType('form')}", [
+            'key' => 'uses.form:item',
+            'variable' => 'state',
+            'items' => [
+                $nameModelRelationship => [
+                    'value' => [],
+                    'type' => 'array',
+                ],
+            ],
+        ], $templateDataReal);
         // State Root
         if (!$this->jsType()) {
-            $folderName = $this->serviceGenerator->folderPages($modelRelationship);
             $templateDataReal = $this->phpParserService->runParserJS("$path{$folderName}/{$this->jsType('form')}", [
                 'key' => 'uses.form',
                 'name' => $model,
                 'path' => '@larajs/common',
                 'interface' => "{$modelRelationship}Root",
                 'items' => [
-                    "$nameModelRelationship" => "{$model}[];",
+                    $nameModelRelationship => "{$model}[];",
                 ],
             ], $templateDataReal);
         }

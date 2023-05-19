@@ -100,8 +100,14 @@ class UsesGenerator extends BaseGenerator
             $templateData,
         );
         $templateData = $this->phpParserService->runParserJS("{$path}{$this->jsType('form')}", [
-            'key' => 'uses.form:form',
+            'key' => 'uses.form:item',
+            'variable' => 'form',
             'items' => $this->serviceGenerator->generateFieldForm($fields),
+        ], $templateData);
+        $templateData = $this->phpParserService->runParserJS("{$path}{$this->jsType('form')}", [
+            'key' => 'uses.form:item',
+            'variable' => 'state',
+            'items' => $this->serviceGenerator->generateEnumItem($fields),
         ], $templateData);
         $templateData = $this->serviceGenerator->replaceNotDelete(
             $this->notDelete['uses']['form']['item'],

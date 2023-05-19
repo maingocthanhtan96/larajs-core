@@ -6,8 +6,7 @@ import { use{{$NAME_USES$}} } from '@larajs/cms/uses';
 import { {{$NAME_MODEL$}} } from '@larajs/common';
 import { FormElementType } from '@larajs/components';
 
-export interface {{$NAME_MODEL$}}Root {
-}
+export interface {{$NAME_MODEL$}}Root {}
 
 export function use{{$NAME_MODEL$}}Forms() {
   const route = useRoute();
@@ -15,11 +14,8 @@ export function use{{$NAME_MODEL$}}Forms() {
   const { id } = route.params;
   const { store, update } = use{{$NAME_USES$}}();
   const {{$CONST_NAME_MODEL$}}Ref = ref<FormInstance>();
-  const form = reactive<{{$NAME_MODEL$}}>({
-  });
-  const state = reactive<{{$NAME_MODEL$}}Root>({
-    // {{$DATA_NOT_DELETE_THIS_LINE$}}
-  });
+  const form = reactive<{{$NAME_MODEL$}}>({});
+  const state = reactive<{{$NAME_MODEL$}}Root>({});
   const rules = computed<FormRules>(() => ({
     // {{$RULES_NOT_DELETE_THIS_LINE$}}
   }));

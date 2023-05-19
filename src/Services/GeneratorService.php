@@ -1052,8 +1052,8 @@ class GeneratorService
                 case $defaultValue['null']:
                     if ($field['db_type'] === $dbType['json']) {
                         $items[$fieldName] = [
-                            'value' => '{}',
-                            'type' => 'string',
+                            'value' => [],
+                            'type' => 'json',
                         ];
                     } elseif (in_array($field['db_type'], [
                         $dbType['integer'],
@@ -1084,6 +1084,22 @@ class GeneratorService
                 case $defaultValue['current_timestamps']:
                     $items[$fieldName]['type'] = $defaultValue['current_timestamps'];
                     break;
+            }
+        }
+
+        return $items;
+    }
+
+    public function generateEnumItem($fields): array
+    {
+        $dbType = config('generator.db_type');
+        $items = [];
+        foreach ($fields as $field) {
+            if ($field['db_type'] === $dbType['enum']) {
+                $items["{$field['field_name']}Options"] = [
+                    'value' => $field['enum'],
+                    'type' => 'array',
+                ];
             }
         }
 
@@ -1250,7 +1266,6 @@ class GeneratorService
     {
         $notDelete = config('generator.not_delete.vue');
         $defaultValue = config('generator.default_value');
-        $dbType = config('generator.db_type');
         foreach ($fields as $field) {
             if ($field['field_name'] === 'id') {
                 continue;
@@ -1265,19 +1280,6 @@ class GeneratorService
                     2,
                 );
                 $templateData = $this->replaceField($field, $model, $templateData);
-            }
-            if ($field['db_type'] === $dbType['enum']) {
-                $enum = '';
-                foreach ($field['enum'] as $keyEnum => $value) {
-                    $value = is_numeric($value) ? $value : "'$value'";
-                    if ($keyEnum === count($field['enum']) - 1) {
-                        $enum .= $value;
-                    } else {
-                        $enum .= "$value,";
-                    }
-                }
-                $name = "{$field['field_name']}Options: [$enum],";
-                $templateData = $this->replaceNotDelete($notDelete['form']['data'], $name, 2, $templateData, 2);
             }
         }
 

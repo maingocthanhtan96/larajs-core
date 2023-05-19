@@ -41,7 +41,8 @@ class UsesUpdateGenerator extends BaseGenerator
         // create form.tsx
         $templateDataReal = $this->serviceGenerator->getFile('uses', 'vue', "/$folderName/form.tsx");
         $templateDataReal = $this->phpParserService->runParserJS("{$path}{$this->jsType('form')}", [
-            'key' => 'uses.form:form',
+            'key' => 'uses.form:item',
+            'variable' => 'form',
             'items' => $this->serviceGenerator->generateFieldForm($updateFields['updateFields']),
         ], $templateDataReal);
         $templateDataReal = $this->serviceGenerator->replaceNotDelete(

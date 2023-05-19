@@ -12,10 +12,10 @@ export function use{{$NAME_MODEL$}}Tables() {
       destroy,
     },
     query: {
-      column_search: [
-      ],
-      relationship: [
-      ],
+      orderBy: 'id',
+      direction: 'desc',
+      column_search: [],
+      relationship: [],
     },
     columns: [
       {
