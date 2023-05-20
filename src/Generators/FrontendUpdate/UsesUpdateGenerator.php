@@ -23,18 +23,12 @@ class UsesUpdateGenerator extends BaseGenerator
         $path = "$this->path{$folderName}/";
         // create table.tsx
         $templateDataReal = $this->serviceGenerator->getFile('uses', 'vue', "/$folderName/table.tsx");
-        $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-            $this->notDelete['form']['column'],
-            implode(
-                $this->serviceGenerator->infy_nl_tab(1, 2, 2),
-                $this->serviceGenerator->generateColumns($updateFields['updateFields'], $model, true),
-            ),
-            3,
-            $templateDataReal,
-            2,
-        );
+        $templateDataReal = $this->phpParserService->runParserJS("$path{$this->jsType('table')}", [
+            'key' => 'uses.table:columns',
+            'items' => $this->serviceGenerator->generateColumns($updateFields['updateFields'], $model, true),
+        ], $templateDataReal);
         $templateDataReal = $this->phpParserService->runParserJS("$path/table.tsx", [
-            'key' => 'query.column_search',
+            'key' => 'uses.table:column_search',
             'items' => $this->serviceGenerator->generateColumnSearch($updateFields['updateFields']),
         ], $templateDataReal);
         $this->serviceFile->createFileReal("$path/table.tsx", $templateDataReal);

@@ -270,12 +270,10 @@ class RelationshipGenerator extends BaseGenerator
                 TEMPLATE;
             }
             $templateColumn = str_replace('{{$FORM_TEMPLATE$}}', $templateRow, $templateColumn);
-            $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-                $notDelete['column'],
-                $templateColumn,
-                3,
-                $templateDataReal,
-            );
+            $templateDataReal = $this->phpParserService->runParserJS("$path{$this->jsType('table')}", [
+                'key' => 'uses.table:columns',
+                'items' => [$templateColumn],
+            ], $templateDataReal);
             $templateDataReal = $this->_generateQuery(
                 $model,
                 $modelRelationship,
@@ -305,14 +303,14 @@ class RelationshipGenerator extends BaseGenerator
                     ? $this->serviceGenerator->modelNamePluralFe($model)
                     : $this->serviceGenerator->modelNameNotPluralFe($model);
             $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->jsType('table')}", [
-                'key' => 'query.relationship',
+                'key' => 'uses.table:relationship',
                 'items' => [$withRelationship],
             ], $templateDataReal);
         }
         if (in_array($configOptions['search'], $options)) {
             $columnDidGenerate = Str::camel($model).".$columnRelationship";
             $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->jsType('table')}", [
-                'key' => 'query.column_search',
+                'key' => 'uses.table:column_search',
                 'items' => [$columnDidGenerate],
             ], $templateDataReal);
         }

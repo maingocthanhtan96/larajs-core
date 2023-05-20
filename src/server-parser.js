@@ -32,26 +32,6 @@ try {
   const ast = astParser(codeContent);
   let lastImport = null;
   let hasImportExist = null;
-  traverse(ast, {
-    ObjectProperty(path) {
-      const node = path.node;
-      switch (data.key) {
-        case 'query.column_search':
-        case 'query.relationship': {
-          if (node.key.name === 'query') {
-            node.value.properties.forEach(queryProp => {
-              if (t.isIdentifier(queryProp.key) && queryProp.key.name === data.key.split('.')[1]) {
-                (data.items || []).forEach(item => {
-                  queryProp.value.elements.push(t.stringLiteral(item));
-                });
-              }
-            });
-          }
-          break;
-        }
-      }
-    },
-  });
   switch (data.key) {
     case 'router.import': {
       traverse(ast, {
@@ -170,6 +150,54 @@ try {
             Object.keys(data.items).forEach(field => {
               const item = t.objectProperty(t.identifier(field), generateValue(data.items[field]));
               path.node.init?.arguments[0]?.properties.push(item);
+            });
+          }
+        },
+      });
+      break;
+    }
+    case 'query.column_search':
+    case 'query.relationship': {
+      traverse(ast, {
+        ObjectProperty(path) {
+          const node = path.node;
+          if (node.key.name === 'query') {
+            node.value.properties.forEach(queryProp => {
+              if (t.isIdentifier(queryProp.key) && queryProp.key.name === data.key.split('.')[1]) {
+                (data.items || []).forEach(item => {
+                  queryProp.value.elements.push(t.stringLiteral(item));
+                });
+              }
+            });
+          }
+        },
+      });
+      break;
+    }
+    case 'uses.table:column_search':
+    case 'uses.table:relationship':
+    case 'uses.table:columns': {
+      traverse(ast, {
+        ObjectProperty(path) {
+          const node = path.node;
+          const name = data.key.split(':')[1];
+          if (node.key.name === name) {
+            (data.items || []).forEach(item => {
+              switch (name) {
+                case 'column_search':
+                case 'relationship': {
+                  node.value.elements.push(t.stringLiteral(item));
+                  break;
+                }
+                case 'columns': {
+                  node.value.elements.push(
+                    babelParser.parseExpression(item, {
+                      sourceType: 'module',
+                      plugins: ['jsx', 'typescript'],
+                    })
+                  );
+                }
+              }
             });
           }
         },

@@ -1,11 +1,12 @@
 import { reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { use{{$NAME_USES$}} } from '@larajs/cms/uses';
+import { ManagementTableType } from '@larajs/components';
 
 export function use{{$NAME_MODEL$}}Tables() {
   const { list, destroy } = use{{$NAME_USES$}}();
   const { t } = useI18n();
-  const table = reactive({
+  const table = reactive<ManagementTableType>({
     name: '{{$NAME_TABLE$}}',
     actions: {
       list,
@@ -26,7 +27,6 @@ export function use{{$NAME_MODEL$}}Tables() {
         align: 'center',
         headerAlign: 'center',
       },
-      // {{$COLUMN_NOT_DELETE_THIS_LINE$}}
     ],
   });
 

@@ -207,7 +207,6 @@ return [
                 'create' => '// {{$CREATE_NOT_DELETE_THIS_LINE$}}',
                 'edit' => '// {{$EDIT_NOT_DELETE_THIS_LINE$}}',
                 'data' => '// {{$DATA_NOT_DELETE_THIS_LINE$}}',
-                'column' => '// {{$COLUMN_NOT_DELETE_THIS_LINE$}}',
             ],
             'uses' => [
                 'use' => '// {{$IMPORT_USE_NOT_DELETE_THIS_LINE$}}',

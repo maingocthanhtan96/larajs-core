@@ -62,18 +62,12 @@ class UsesGenerator extends BaseGenerator
             $this->serviceGenerator->modelNameNotPluralFe($model['name']),
             $templateData,
         );
-        $templateData = $this->serviceGenerator->replaceNotDelete(
-            $this->notDelete['form']['column'],
-            implode(
-                $this->serviceGenerator->infy_nl_tab(1, 2, 2),
-                $this->serviceGenerator->generateColumns($fields, $model),
-            ),
-            3,
-            $templateData,
-            2,
-        );
         $templateData = $this->phpParserService->runParserJS("$path{$this->jsType('table')}", [
-            'key' => 'query.column_search',
+            'key' => 'uses.table:columns',
+            'items' => $this->serviceGenerator->generateColumns($fields, $model),
+        ], $templateData);
+        $templateData = $this->phpParserService->runParserJS("$path{$this->jsType('table')}", [
+            'key' => 'uses.table:column_search',
             'items' => $this->serviceGenerator->generateColumnSearch($fields),
         ], $templateData);
         $this->serviceFile->createFile($path, $this->jsType('table'), $templateData);
