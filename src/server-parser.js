@@ -175,26 +175,46 @@ try {
       });
       break;
     }
+    case 'uses.form:items': {
+      traverse(ast, {
+        VariableDeclarator(path) {
+          if (t.isIdentifier(path.node.id, { name: 'formElement' })) {
+            const astItems = path.node.init?.arguments?.[0]?.properties?.find(property =>
+              t.isIdentifier(property.key, { name: 'items' })
+            );
+            if (astItems?.value?.elements) {
+              (data.items || []).forEach(item => {
+                astItems.value.elements.push(parserExpression(item));
+              });
+            }
+          }
+        },
+      });
+      break;
+    }
     case 'uses.table:column_search':
     case 'uses.table:relationship':
     case 'uses.table:columns': {
       traverse(ast, {
-        ObjectProperty(path) {
-          const node = path.node;
-          const name = data.key.split(':')[1];
-          if (node.key.name === name) {
-            (data.items || []).forEach(item => {
-              switch (name) {
-                case 'column_search':
-                case 'relationship': {
-                  node.value.elements.push(t.stringLiteral(item));
-                  break;
+        VariableDeclarator(path) {
+          if (t.isIdentifier(path.node.id, { name: 'table' })) {
+            const astItems = path.node.init?.arguments?.[0]?.properties?.find(property =>
+              t.isIdentifier(property.key, { name: data.key.split(':')[1] })
+            );
+            if (astItems?.value?.elements) {
+              (data.items || []).forEach(item => {
+                switch (name) {
+                  case 'column_search':
+                  case 'relationship': {
+                    astItems.value.elements.push(t.stringLiteral(item));
+                    break;
+                  }
+                  case 'columns': {
+                    astItems.value.elements.push(parserExpression(item));
+                  }
                 }
-                case 'columns': {
-                  node.value.elements.push(parserExpression(item));
-                }
-              }
-            });
+              });
+            }
           }
         },
       });

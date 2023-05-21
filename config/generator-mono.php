@@ -209,9 +209,7 @@ return [
             ],
             'uses' => [
                 'use' => '// {{$IMPORT_USE_NOT_DELETE_THIS_LINE$}}',
-                'form' => [
-                    'item' => '// {{$FORM_ITEM_NOT_DELETE_THIS_LINE$}}',
-                ],
+                'form' => [],
             ],
             'api' => [
             ],

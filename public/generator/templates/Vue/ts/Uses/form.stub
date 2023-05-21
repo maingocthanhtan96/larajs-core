@@ -25,9 +25,7 @@ export function use{{$NAME_MODEL$}}Forms() {
       model: form,
       rules: rules,
     },
-    items: [
-      // {{$FORM_ITEM_NOT_DELETE_THIS_LINE$}}
-    ],
+    items: [],
     actions: {
       store,
       update

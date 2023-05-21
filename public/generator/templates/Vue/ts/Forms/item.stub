@@ -1,7 +1,7 @@
 {
-        prop: '{{$PROP_NAME$}}',
-        col: {
-          span: {{$COLUMNS$}},
-        },
-        component: () => ({{$COMPONENT$}}),
-      },
+  prop: '{{$PROP_NAME$}}',
+  col: {
+    span: {{$COLUMNS$}},
+  },
+  component: () => ({{$COMPONENT$}}),
+}

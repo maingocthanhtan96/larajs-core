@@ -78,12 +78,15 @@ class BaseGenerator
         return false;
     }
 
-    public function generateItems($fields, $model): string
+    public function generateItems($fields, $model): array
     {
         $fieldsGenerate = [];
         $formFeGenerateField = $this->serviceGenerator->formFeGenerateField();
         $templateFormItem = $this->serviceGenerator->get_template('item', 'Forms/', 'vue');
         foreach ($fields as $index => $field) {
+            if ($field['field_name'] === 'id') {
+                continue;
+            }
             $tableName = $this->serviceGenerator->tableNameNotPlural($model['name']);
             $templateFormItemClone = $templateFormItem;
             $templateFormItemClone = str_replace('{{$PROP_NAME$}}', $field['field_name'], $templateFormItemClone);
@@ -151,6 +154,6 @@ class BaseGenerator
             };
         }
 
-        return implode($this->serviceGenerator->infy_nl_tab(1, 5, 2), $fieldsGenerate);
+        return $fieldsGenerate;
     }
 }
