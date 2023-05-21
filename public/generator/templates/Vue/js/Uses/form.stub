@@ -16,7 +16,6 @@ export function use{{$NAME_MODEL$}}Forms() {
     // {{$DATA_NOT_DELETE_THIS_LINE$}}
   });
   const rules = computed(() => ({
-    // {{$RULES_NOT_DELETE_THIS_LINE$}}
   }));
 
   const formElement = reactive({

@@ -12,6 +12,11 @@ const astParser = code =>
     sourceType: 'module',
     plugins: ['jsx', 'typescript'],
   });
+const parserExpression = code =>
+  babelParser.parseExpression(code, {
+    sourceType: 'module',
+    plugins: ['jsx', 'typescript'],
+  });
 const addImport = (hasImportExist, data, lastImport, ast) => {
   if (!hasImportExist && data.name && data.path) {
     const newImport = t.importDeclaration(
@@ -149,25 +154,21 @@ try {
             };
             Object.keys(data.items).forEach(field => {
               const item = t.objectProperty(t.identifier(field), generateValue(data.items[field]));
-              path.node.init?.arguments[0]?.properties.push(item);
+              path.node.init?.arguments[0]?.properties?.push(item);
             });
           }
         },
       });
       break;
     }
-    case 'query.column_search':
-    case 'query.relationship': {
+    case 'uses.form:rules': {
       traverse(ast, {
-        ObjectProperty(path) {
-          const node = path.node;
-          if (node.key.name === 'query') {
-            node.value.properties.forEach(queryProp => {
-              if (t.isIdentifier(queryProp.key) && queryProp.key.name === data.key.split('.')[1]) {
-                (data.items || []).forEach(item => {
-                  queryProp.value.elements.push(t.stringLiteral(item));
-                });
-              }
+        VariableDeclarator(path) {
+          if (t.isIdentifier(path.node.id) && path.node.id.name === 'rules') {
+            Object.keys(data.items).forEach(field => {
+              path.node.init?.arguments[0]?.body?.properties.push(
+                t.objectProperty(t.identifier(field), parserExpression(data.items[field]))
+              );
             });
           }
         },
@@ -190,12 +191,7 @@ try {
                   break;
                 }
                 case 'columns': {
-                  node.value.elements.push(
-                    babelParser.parseExpression(item, {
-                      sourceType: 'module',
-                      plugins: ['jsx', 'typescript'],
-                    })
-                  );
+                  node.value.elements.push(parserExpression(item));
                 }
               }
             });

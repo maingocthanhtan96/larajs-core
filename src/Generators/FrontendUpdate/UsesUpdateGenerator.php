@@ -39,6 +39,10 @@ class UsesUpdateGenerator extends BaseGenerator
             'variable' => 'form',
             'items' => $this->serviceGenerator->generateFieldForm($updateFields['updateFields']),
         ], $templateDataReal);
+        $templateDataReal = $this->phpParserService->runParserJS("{$path}{$this->jsType('form')}", [
+            'key' => 'uses.form:rules',
+            'items' => $this->serviceGenerator->generateRules($updateFields['updateFields'], $model),
+        ], $templateDataReal);
         $templateDataReal = $this->serviceGenerator->replaceNotDelete(
             $this->notDelete['uses']['form']['item'],
             $this->generateItems($updateFields['updateFields'], $model),
@@ -47,11 +51,7 @@ class UsesUpdateGenerator extends BaseGenerator
             2,
         );
         $templateDataReal = $this->serviceGenerator->importComponent($updateFields['updateFields'], $templateDataReal, "{$path}{$this->jsType('form')}", $model);
-        $templateDataReal = $this->serviceGenerator->generateRules(
-            $updateFields['updateFields'],
-            $model,
-            $templateDataReal,
-        );
+
         $this->serviceFile->createFileReal("{$path}{$this->jsType('form')}", $templateDataReal);
     }
 }

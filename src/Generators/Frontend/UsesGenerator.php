@@ -103,6 +103,10 @@ class UsesGenerator extends BaseGenerator
             'variable' => 'state',
             'items' => $this->serviceGenerator->generateEnumItem($fields),
         ], $templateData);
+        $templateData = $this->phpParserService->runParserJS("{$path}{$this->jsType('form')}", [
+            'key' => 'uses.form:rules',
+            'items' => $this->serviceGenerator->generateRules($fields, $model),
+        ], $templateData);
         $templateData = $this->serviceGenerator->replaceNotDelete(
             $this->notDelete['uses']['form']['item'],
             $this->generateItems($fields, $model),
@@ -111,7 +115,6 @@ class UsesGenerator extends BaseGenerator
             2,
         );
         $templateData = $this->serviceGenerator->importComponent($fields, $templateData, "{$path}{$this->jsType('form')}", $model);
-        $templateData = $this->serviceGenerator->generateRules($fields, $model, $templateData);
         $this->serviceFile->createFile($path, $this->jsType('form'), $templateData);
         // import uses/index.ts
         $fileNameReal = $this->jsType('index');

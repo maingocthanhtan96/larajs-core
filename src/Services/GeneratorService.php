@@ -1106,11 +1106,6 @@ class GeneratorService
         return $items;
     }
 
-    public function getHandlerTemplate(): string
-    {
-        return $this->get_template('rules', 'Handler/', 'vue');
-    }
-
     public function replaceField($field, $model, $formTemplate): string
     {
         $dbType = config('generator.db_type');
@@ -1122,7 +1117,7 @@ class GeneratorService
             $formTemplate = str_replace('{{$TRIGGER$}}', 'blur', $formTemplate);
         }
 
-        return str_replace('{{$FIELD$}}', $field['field_name'], $formTemplate);
+        return $formTemplate;
     }
 
     public function replaceTemplate($fieldsGenerate, int $space = 2, int $start = 1): string
@@ -1260,30 +1255,26 @@ class GeneratorService
     }
 
     /**
-     * @return mixed|string
+     * @param $fields
+     * @param $model
+     * @return array
      */
-    public function generateRules($fields, $model, $templateData): mixed
+    public function generateRules($fields, $model): array
     {
-        $notDelete = config('generator.not_delete.vue');
         $defaultValue = config('generator.default_value');
+        $items = [];
         foreach ($fields as $field) {
             if ($field['field_name'] === 'id') {
                 continue;
             }
             if ($field['default_value'] === $defaultValue['none']) {
-                $templateRules = $this->getHandlerTemplate();
-                $templateData = $this->replaceNotDelete(
-                    $notDelete['form']['rules'],
-                    $templateRules,
-                    2,
-                    $templateData,
-                    2,
-                );
-                $templateData = $this->replaceField($field, $model, $templateData);
+                $templateRules = $this->get_template('rules', 'Handler/', 'vue');
+                $templateRules = $this->replaceField($field, $model, $templateRules);
+                $items[$field['field_name']] = $templateRules;
             }
         }
 
-        return $templateData;
+        return $items;
     }
 
     public function generateModel($fields): array

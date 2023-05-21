@@ -16,9 +16,7 @@ export function use{{$NAME_MODEL$}}Forms() {
   const {{$CONST_NAME_MODEL$}}Ref = ref<FormInstance>();
   const form = reactive<{{$NAME_MODEL$}}>({});
   const state = reactive<{{$NAME_MODEL$}}Root>({});
-  const rules = computed<FormRules>(() => ({
-    // {{$RULES_NOT_DELETE_THIS_LINE$}}
-  }));
+  const rules = computed<FormRules>(() => ({}));
 
   const formElement = reactive<FormElementType>({
     name: '{{$NAME_TABLE$}}',
