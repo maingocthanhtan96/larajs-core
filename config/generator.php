@@ -34,7 +34,7 @@ return [
             'repository' => app_path('Repositories/'),
             'observer' => app_path('Observers/'),
             'provider' => app_path('Providers/'),
-            'api_routes' => base_path('routes/api-v1.php'),
+            'api_routes' => base_path('routes/api-'.env('API_VERSION_GENERATOR', 'v1').'.php'),
             'api_controller' => app_path('Http/Controllers/Api/'.$API_VERSION),
             'lang' => base_path('lang/'),
             'request' => app_path('Http/Requests/'),

@@ -119,7 +119,8 @@ class PhpParserService
         $returnNode = $finder->findFirstInstanceOf($methodNode, Node\Stmt\Return_::class);
         $returnNode->expr->items = array_merge($returnNode->expr->items, $this->itemFakers($fields));
         if ($isSignature) {
-            $userFactory = new Expr\StaticCall(new Node\Name('\App\Models\User'), new Node\Identifier('factory'));
+            $importLaravel = config('generator.import.laravel.use');
+            $userFactory = new Expr\StaticCall(new Node\Name(explode('::', $importLaravel['trait_user_signature']['model'])[0]), new Node\Identifier('factory'));
             $returnNode->expr->items = array_merge($returnNode->expr->items, [
                 new Node\Expr\ArrayItem(
                     $userFactory,

@@ -198,8 +198,9 @@ try {
       traverse(ast, {
         VariableDeclarator(path) {
           if (t.isIdentifier(path.node.id, { name: 'table' })) {
+            const name = data.key.split(':')[1];
             const astItems = path.node.init?.arguments?.[0]?.properties?.find(property =>
-              t.isIdentifier(property.key, { name: data.key.split(':')[1] })
+              t.isIdentifier(property.key, { name: name })
             );
             if (astItems?.value?.elements) {
               (data.items || []).forEach(item => {

@@ -1,6 +1,6 @@
 <?php
 
-$API_VERSION = env('API_VERSION_GENERATOR', 'v1').'/';
+$API_VERSION = env('API_VERSION_GENERATOR', 'v1') . '/';
 
 return [
     'js_language' => 'ts',
@@ -35,8 +35,8 @@ return [
             'repository' => app_path('Repositories/'),
             'observer' => app_path('Observers/'),
             'provider' => app_path('Providers/'),
-            'api_routes' => base_path('routes/api-v1.php'),
-            'api_controller' => app_path('Http/Controllers/Api/'.$API_VERSION),
+            'api_routes' => base_path('routes/api-' . env('API_VERSION_GENERATOR', 'v1') . '.php'),
+            'api_controller' => app_path('Http/Controllers/Api/' . $API_VERSION),
             'lang' => base_path('lang/'),
             'request' => app_path('Http/Requests/'),
             'tests' => [
@@ -53,15 +53,15 @@ return [
                 'observer' => '/app/Observers/',
                 'provider' => '/app/Providers/',
                 'api_routes' => '/routes/api-v1.php',
-                'api_controller' => '/app/Http/Controllers/Api/'.$API_VERSION,
+                'api_controller' => '/app/Http/Controllers/Api/' . $API_VERSION,
                 'lang' => '/lang/',
                 'request' => '/app/Http/Requests/',
                 'tests' => [
-                    'feature' => '/tests/Feature/Controllers/Api/'.$API_VERSION,
+                    'feature' => '/tests/Feature/Controllers/Api/' . $API_VERSION,
                 ],
             ],
             'vue' => [
-                'api' => '../cms/src/api/'.$API_VERSION,
+                'api' => '../cms/src/api/' . $API_VERSION,
                 'uses' => '../cms/src/uses/',
                 'views' => '../cms/src/views/',
                 'router_modules' => '../cms/src/router/modules/',
@@ -73,7 +73,7 @@ return [
             ],
         ],
         'vue' => [
-            'api' => cms_path('api/'.$API_VERSION),
+            'api' => cms_path('api/' . $API_VERSION),
             'views' => cms_path('views/'),
             'router_modules' => cms_path('router/modules/'),
             'router' => cms_path('router/'),
@@ -153,7 +153,7 @@ return [
     'namespace' => [
         'model' => 'App\Models',
         'repository' => 'App\Repositories',
-        'api_controller' => 'App\Http\Controllers\Api\\'.env('API_VERSION_GENERATOR', 'v1'),
+        'api_controller' => 'App\Http\Controllers\Api\\' . env('API_VERSION_GENERATOR', 'v1'),
     ],
 
     /*
@@ -164,8 +164,7 @@ return [
     */
     'not_delete' => [
         'laravel' => [
-            'model' => [
-            ],
+            'model' => [],
             'route' => [
                 'api' => [
                     'user' => '//{{ROUTE_USER_NOT_DELETE_THIS_LINE}}',
@@ -191,16 +190,12 @@ return [
             'request' => [
                 'rule' => '//{{REQUEST_RULES_NOT_DELETE_THIS_LINE}}',
             ],
-            'repository' => [
-            ],
-            'observer' => [
-            ],
-            'tests' => [
-            ],
+            'repository' => [],
+            'observer' => [],
+            'tests' => [],
         ],
         'vue' => [
-            'route' => [
-            ],
+            'route' => [],
             'form' => [
                 'import_component' => '// {{$IMPORT_COMPONENT_NOT_DELETE_THIS_LINE$}}',
                 'create' => '// {{$CREATE_NOT_DELETE_THIS_LINE$}}',
@@ -211,11 +206,9 @@ return [
                 'use' => '// {{$IMPORT_USE_NOT_DELETE_THIS_LINE$}}',
                 'form' => [],
             ],
-            'api' => [
-            ],
+            'api' => [],
         ],
-        'package' => [
-        ],
+        'package' => [],
     ],
 
     /*

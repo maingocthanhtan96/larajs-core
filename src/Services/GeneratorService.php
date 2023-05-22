@@ -873,7 +873,7 @@ class GeneratorService
                 }
             }
 
-            return "'".$field['field_name']."'".' => '."'$required|$enum',";
+            return "'".$field['field_name']."'".' => '."['$required','$enum'],";
         };
 
         return match ($field['db_type']) {
@@ -881,24 +881,24 @@ class GeneratorService
                 $field['field_name'].
                 "'".
                 ' => '.
-                "'$required|numeric',",
-            $dbType['boolean'] => "'".$field['field_name']."'".' => '."'$required|boolean',",
-            $dbType['date'] => "'".$field['field_name']."'".' => '."'$required|date_format:Y-m-d',",
+                "['$required','numeric'],",
+            $dbType['boolean'] => "'".$field['field_name']."'".' => '."['$required','boolean'],",
+            $dbType['date'] => "'".$field['field_name']."'".' => '."['$required','date_format:Y-m-d'],",
             $dbType['dateTime'], $dbType['timestamp'] => "'".
                 $field['field_name'].
                 "'".
                 ' => '.
-                "'$required|date_format:Y-m-d H:i:s',",
-            $dbType['time'] => "'".$field['field_name']."'".' => '."'$required|date_format:H:i:s',",
-            $dbType['year'] => "'".$field['field_name']."'".' => '."'$required|date_format:Y',",
+                "['$required','date_format:Y-m-d H:i:s'],",
+            $dbType['time'] => "'".$field['field_name']."'".' => '."['$required','date_format:H:i:s'],",
+            $dbType['year'] => "'".$field['field_name']."'".' => '."['$required','date_format:Y'],",
             $dbType['string'] => "'".
                 $field['field_name'].
                 "'".
                 ' => '.
-                "'$required|string|max:{$field['length_varchar']}',",
-            $dbType['text'], $dbType['longtext'] => "'".$field['field_name']."'".' => '."'$required|string',",
+                "['$required','string','max:{$field['length_varchar']}'],",
+            $dbType['text'], $dbType['longtext'] => "'".$field['field_name']."'".' => '."['$required','string'],",
             $dbType['enum'] => $enumFunc($field, $required),
-            $dbType['json'] => "'".$field['field_name']."'".' => '."'$required|json',",
+            $dbType['json'] => "'".$field['field_name']."'".' => '."['$required','json'],",
             default => '',
         };
     }
