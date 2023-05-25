@@ -4,7 +4,9 @@ import _traverse from '@babel/traverse';
 import t from '@babel/types';
 import _generate from '@babel/generator';
 import prettier from 'prettier';
+import { parse } from '@vue/compiler-sfc';
 
+let ast;
 const traverse = _traverse.default;
 const generate = _generate.default;
 const astParser = code =>
@@ -24,8 +26,10 @@ const addImport = (hasImportExist, data, lastImport, ast) => {
       t.stringLiteral(data.path)
     );
     if (lastImport) {
+      lastImport.insertAfter(t.jsxText('\n'));
       lastImport.insertAfter(newImport);
     } else {
+      ast.program.body.unshift(t.jsxText('\n'));
       ast.program.body.unshift(newImport);
     }
   }
@@ -34,7 +38,18 @@ const addImport = (hasImportExist, data, lastImport, ast) => {
 try {
   const codeContent = readFileSync(process.argv[2], 'utf8');
   const data = JSON.parse(atob(process.argv[3]));
-  const ast = astParser(codeContent);
+  switch (data.key) {
+    case 'views.form:import': {
+      const { descriptor } = parse(codeContent);
+      const scriptSetupBlock = descriptor.scriptSetup;
+      const scriptContent = scriptSetupBlock.content;
+      ast = astParser(scriptContent);
+      break;
+    }
+    default: {
+      ast = astParser(codeContent);
+    }
+  }
   let lastImport = null;
   let hasImportExist = null;
   switch (data.key) {
@@ -47,17 +62,11 @@ try {
         },
         ImportDeclaration(path) {
           lastImport = path;
+          const importSpecifiers = path.node.specifiers;
+          hasImportExist = importSpecifiers.some(specifier => specifier.local.name === data.name);
         },
       });
-      const newImport = t.importDeclaration(
-        [t.importDefaultSpecifier(t.identifier(data.name))],
-        t.stringLiteral(data.path)
-      );
-      if (lastImport) {
-        lastImport.insertAfter(newImport);
-      } else {
-        ast.program.body.unshift(newImport);
-      }
+      addImport(hasImportExist, data, lastImport, ast);
       break;
     }
     case 'common.import': {
@@ -198,10 +207,21 @@ try {
       traverse(ast, {
         VariableDeclarator(path) {
           if (t.isIdentifier(path.node.id, { name: 'table' })) {
+            let astItems;
             const name = data.key.split(':')[1];
-            const astItems = path.node.init?.arguments?.[0]?.properties?.find(property =>
-              t.isIdentifier(property.key, { name: name })
-            );
+            if (['columns'].includes(name)) {
+              astItems = path.node.init?.arguments?.[0]?.properties?.find(property =>
+                t.isIdentifier(property.key, { name: name })
+              );
+            } else {
+              astItems = path.node.init?.arguments?.[0]?.properties?.find(property => {
+                return property.key.name === 'query';
+              });
+              astItems = astItems?.value?.properties?.find(property => {
+                return property.key.name === name;
+              });
+            }
+
             if (astItems?.value?.elements) {
               (data.items || []).forEach(item => {
                 switch (name) {
@@ -267,9 +287,47 @@ try {
       }
       break;
     }
+    case 'views.form:import': {
+      let hasImportUses = false;
+      traverse(ast, {
+        ImportDeclaration(path) {
+          lastImport = path;
+          const importSpecifiers = path.node.specifiers;
+          hasImportExist = importSpecifiers.some(specifier => specifier.local.name === data.name);
+        },
+        VariableDeclaration(path) {
+          if (path.node.declarations.length === 1) {
+            const declaration = path.node.declarations[0];
+            if (
+              declaration.id.type === 'ObjectPattern' &&
+              declaration.init &&
+              declaration.init.type === 'CallExpression' &&
+              declaration.init.callee.name === data.useName &&
+              declaration.id.properties.some(
+                property => t.isIdentifier(property.key) && property.key.name === data.useKey
+              )
+            ) {
+              hasImportUses = true;
+              path.stop();
+            }
+          }
+        },
+      });
+      if (lastImport && !hasImportUses) {
+        const newImport = t.variableDeclaration('const', [
+          t.variableDeclarator(
+            t.objectPattern([t.objectProperty(t.identifier(data.useKey), t.identifier(data.useKey), false, true)]),
+            t.callExpression(t.identifier(data.useName), [])
+          ),
+        ]);
+        lastImport.insertAfter(newImport);
+      }
+      addImport(hasImportExist, data, lastImport, ast);
+      break;
+    }
   }
   const { code } = generate(ast);
-  const formattedCode = prettier.format(code, {
+  let formattedCode = prettier.format(code, {
     parser: 'typescript',
     semi: true,
     singleQuote: true,
@@ -279,6 +337,17 @@ try {
     printWidth: 120,
     proseWrap: 'always',
   });
+
+  switch (data.key) {
+    case 'views.form:import': {
+      const { descriptor } = parse(codeContent);
+      const attrs = Object.entries(descriptor.scriptSetup.attrs)
+        .map(([key, value]) => (value === true ? key : `${key}="${value}"`))
+        .join(' ');
+      formattedCode = `<script ${attrs}>\n${formattedCode}</script>\n\n<template>${descriptor.template.content}</template>`;
+      break;
+    }
+  }
 
   console.log(formattedCode); // eslint-disable-line no-console
 } catch (error) {

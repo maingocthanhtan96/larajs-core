@@ -190,7 +190,6 @@ class RelationshipGenerator extends BaseGenerator
     private function _generateFormFe($model, $modelRelationship, $columnRelationship, $options, $relationship)
     {
         $notDelete = config('generator.not_delete.vue.form');
-        $notDeleteUses = config('generator.not_delete.vue.uses');
         $isMTM = $relationship === $this->relationship['belongs_to_many'];
         $path = config('generator.path.vue.uses');
         $folderName = $this->serviceGenerator->folderPages($modelRelationship);
@@ -211,7 +210,7 @@ class RelationshipGenerator extends BaseGenerator
         $tableFunctionRelationship = $isMTM
             ? $this->serviceGenerator->tableName($model)
             : $this->serviceGenerator->tableNameNotPlural($model);
-        $templateDataReal = $this->phpParserService->runParserJS("{$path}{$this->jsType('form')}", [
+        $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->jsType('form')}", [
             'key' => 'uses.form:item',
             'items' => [
                 $field => [
@@ -226,18 +225,17 @@ class RelationshipGenerator extends BaseGenerator
             $notDelete,
             $relationship,
         );
-        $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-            $notDeleteUses['form']['item'],
-            $this->_generateSelect(
-                Str::snake($model),
-                Str::snake($model).($isMTM ? self::_IDS : self::_ID),
-                $columnRelationship,
-                $relationship,
-            ),
-            3,
-            $templateDataReal,
-            2,
-        );
+        $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->jsType('form')}", [
+            'key' => 'uses.form:items',
+            'items' => [
+                $this->_generateSelect(
+                    Str::snake($model),
+                    Str::snake($model).($isMTM ? self::_IDS : self::_ID),
+                    $columnRelationship,
+                    $relationship,
+                )
+            ],
+        ], $templateDataReal);
         $this->serviceFile->createFileReal("$path/{$this->jsType('form')}", $templateDataReal);
         // create column: table.tsx
         $configOptions = config('generator.relationship.options');
@@ -270,7 +268,7 @@ class RelationshipGenerator extends BaseGenerator
                 TEMPLATE;
             }
             $templateColumn = str_replace('{{$FORM_TEMPLATE$}}', $templateRow, $templateColumn);
-            $templateDataReal = $this->phpParserService->runParserJS("$path{$this->jsType('table')}", [
+            $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->jsType('table')}", [
                 'key' => 'uses.table:columns',
                 'items' => [$templateColumn],
             ], $templateDataReal);
@@ -387,6 +385,7 @@ class RelationshipGenerator extends BaseGenerator
         $notDeleteUses = config('generator.not_delete.vue.uses');
         $folderName = $this->serviceGenerator->folderPages($modelRelationship);
         $fileName = "{$this->serviceGenerator->folderPages($modelRelationship)}/Form.vue";
+        $pathFile = config('generator.path.vue.views').$fileName;
         $nameModelRelationship =
             $relationship === $this->relationship['has_one']
                 ? $this->serviceGenerator->modelNameNotPluralFe($model)
@@ -416,26 +415,14 @@ class RelationshipGenerator extends BaseGenerator
         // form
         $templateDataRealForm = $this->serviceGenerator->getFile('views', 'vue', $fileName);
         $useModel = "use{$this->serviceGenerator->modelNamePlural($model)}";
-        $importStub = "import { $useModel } from '{$this->getImportJsOrTs()}/uses';";
-        if (!stripos($templateDataRealForm, $useModel)) {
-            $templateDataRealForm = $this->serviceGenerator->replaceNotDelete(
-                $notDelete['import_component'],
-                $importStub,
-                0,
-                $templateDataRealForm,
-                2,
-            );
-        }
-        $useStub = "const { {$this->serviceGenerator->modelNamePluralFe("all$model")} } = $useModel();";
-        if (!stripos($templateDataRealForm, $useStub)) {
-            $templateDataRealForm = $this->serviceGenerator->replaceNotDelete(
-                $notDeleteUses['use'],
-                $useStub,
-                1,
-                $templateDataRealForm,
-                2,
-            );
-        }
+        $templateDataRealForm = $this->phpParserService->runParserJS($pathFile, [
+            'key' => 'views.form:import',
+            'name' => $useModel,
+            'path' => "{$this->getImportJsOrTs()}/uses",
+            'useName' => $useModel,
+            'useKey' => $this->serviceGenerator->modelNamePluralFe("all$model"),
+        ], $templateDataRealForm);
+
         $stubGetData = $this->serviceGenerator->get_template('getDataRelationship', 'Handler/', 'vue');
         $stubGetData = str_replace(
             '{{$USE_MODEL_RELATIONSHIP$}}',
@@ -450,8 +437,7 @@ class RelationshipGenerator extends BaseGenerator
             $templateDataRealForm,
             2,
         );
-        $fileName = config('generator.path.vue.views').$fileName;
-        $this->serviceFile->createFileReal($fileName, $templateDataRealForm);
+        $this->serviceFile->createFileReal($pathFile, $templateDataRealForm);
 
         return $templateDataReal;
     }
@@ -463,7 +449,7 @@ class RelationshipGenerator extends BaseGenerator
         $templateDataReal = $this->phpParserService->runParserJS($path.$fileName, [
             'key' => 'api.import',
             'name' => 'request',
-            'path' => "'{$this->getImportJsOrTs()}/services'",
+            'path' => "{$this->getImportJsOrTs()}/services",
             'class_name' => "{$model}Resource",
         ]);
 

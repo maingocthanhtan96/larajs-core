@@ -197,10 +197,8 @@ return [
         'vue' => [
             'route' => [],
             'form' => [
-                'import_component' => '// {{$IMPORT_COMPONENT_NOT_DELETE_THIS_LINE$}}',
                 'create' => '// {{$CREATE_NOT_DELETE_THIS_LINE$}}',
                 'edit' => '// {{$EDIT_NOT_DELETE_THIS_LINE$}}',
-                'data' => '// {{$DATA_NOT_DELETE_THIS_LINE$}}',
             ],
             'uses' => [
                 'use' => '// {{$IMPORT_USE_NOT_DELETE_THIS_LINE$}}',
