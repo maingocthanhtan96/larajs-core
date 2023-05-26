@@ -19,10 +19,15 @@ const parserExpression = code =>
     sourceType: 'module',
     plugins: ['jsx', 'typescript'],
   });
-const addImport = (hasImportExist, data, lastImport, ast) => {
+const addImport = (hasImportExist, data, lastImport, ast, isImportDefault = false) => {
   if (!hasImportExist && data.name && data.path) {
     const newImport = t.importDeclaration(
-      [t.importSpecifier(t.identifier(data.name), t.identifier(data.name))],
+      [
+        t[isImportDefault ? 'importDefaultSpecifier' : 'importSpecifier'](
+          t.identifier(data.name),
+          t.identifier(data.name)
+        ),
+      ],
       t.stringLiteral(data.path)
     );
     if (lastImport) {
@@ -39,7 +44,9 @@ try {
   const codeContent = readFileSync(process.argv[2], 'utf8');
   const data = JSON.parse(atob(process.argv[3]));
   switch (data.key) {
-    case 'views.form:import': {
+    case 'views.form:import':
+    case 'views.form:create':
+    case 'views.form:edit': {
       const { descriptor } = parse(codeContent);
       const scriptSetupBlock = descriptor.scriptSetup;
       const scriptContent = scriptSetupBlock.content;
@@ -66,7 +73,7 @@ try {
           hasImportExist = importSpecifiers.some(specifier => specifier.local.name === data.name);
         },
       });
-      addImport(hasImportExist, data, lastImport, ast);
+      addImport(hasImportExist, data, lastImport, ast, true);
       break;
     }
     case 'common.import': {
@@ -214,12 +221,10 @@ try {
                 t.isIdentifier(property.key, { name: name })
               );
             } else {
-              astItems = path.node.init?.arguments?.[0]?.properties?.find(property => {
-                return property.key.name === 'query';
-              });
-              astItems = astItems?.value?.properties?.find(property => {
-                return property.key.name === name;
-              });
+              astItems = path.node.init?.arguments?.[0]?.properties?.find(property =>
+                t.isIdentifier(property.key, { name: 'query' })
+              );
+              astItems = astItems?.value?.properties?.find(property => t.isIdentifier(property.key, { name: name }));
             }
 
             if (astItems?.value?.elements) {
@@ -325,6 +330,48 @@ try {
       addImport(hasImportExist, data, lastImport, ast);
       break;
     }
+    case 'views.form:create': {
+      traverse(ast, {
+        ExpressionStatement(path) {
+          const { node } = path;
+          if (
+            t.isCallExpression(node.expression) &&
+            t.isMemberExpression(node.expression.callee) &&
+            t.isIdentifier(node.expression.callee.object) &&
+            ['appStore', 'coreStore'].includes(node.expression.callee.object.name) &&
+            t.isIdentifier(node.expression.callee.property, { name: 'setLoading' }) &&
+            node.expression.arguments.length === 1 &&
+            t.isBooleanLiteral(node.expression.arguments[0], { value: true })
+          ) {
+            const code = astParser(data.content);
+            path.insertAfter(code.program.body);
+            path.stop();
+          }
+        },
+      });
+      break;
+    }
+    case 'views.form:edit': {
+      const hasIdIdentifierInCondition = node => {
+        if (t.isIdentifier(node, { name: 'id' })) {
+          return true;
+        } else if (node.type === 'LogicalExpression') {
+          return hasIdIdentifierInCondition(node.left) || hasIdIdentifierInCondition(node.right);
+        }
+        return false;
+      };
+      traverse(ast, {
+        IfStatement(path) {
+          const { node } = path;
+          if (hasIdIdentifierInCondition(node.test)) {
+            const code = astParser(data.content);
+            node.consequent.body.push(...code.program.body);
+            path.stop();
+          }
+        },
+      });
+      break;
+    }
   }
   const { code } = generate(ast);
   let formattedCode = prettier.format(code, {
@@ -339,7 +386,9 @@ try {
   });
 
   switch (data.key) {
-    case 'views.form:import': {
+    case 'views.form:import':
+    case 'views.form:create':
+    case 'views.form:edit': {
       const { descriptor } = parse(codeContent);
       const attrs = Object.entries(descriptor.scriptSetup.attrs)
         .map(([key, value]) => (value === true ? key : `${key}="${value}"`))

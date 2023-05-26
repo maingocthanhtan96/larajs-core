@@ -184,8 +184,7 @@ class PhpParserService
                     ],
                     $dbType['float'], $dbType['double'] => [
                         'faker' => 'randomFloat',
-                        'args' => [
-                        ],
+                        'args' => [],
                     ],
                     $dbType['boolean'] => [
                         'faker' => 'boolean',
@@ -197,34 +196,28 @@ class PhpParserService
                     ],
                     $dbType['dateTime'], $dbType['timestamp'] => [
                         'faker' => 'dateTime',
-                        'args' => [
-                        ],
+                        'args' => [],
                     ],
                     $dbType['time'] => [
                         'faker' => 'time',
-                        'args' => [
-                        ],
+                        'args' => [],
                     ],
                     $dbType['year'] => [
                         'faker' => 'year',
-                        'args' => [
-                        ],
+                        'args' => [],
                     ],
                     $dbType['string'] => [
                         'faker' => 'name',
-                        'args' => [
-                        ],
+                        'args' => [],
                     ],
                     $dbType['text'], $dbType['longtext'] => [
                         'faker' => 'text',
-                        'args' => [
-                        ],
+                        'args' => [],
                     ],
                     $dbType['enum'] => [
                         'faker' => 'randomElement',
                         'enum' => $field['enum'],
-                        'args' => [
-                        ],
+                        'args' => [],
                     ],
                     $dbType['json'] => [],
                 };

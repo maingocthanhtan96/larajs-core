@@ -286,7 +286,7 @@ class RelationshipGenerator extends BaseGenerator
         $this->_generateApi($model);
         $this->_generateFunctionAll($model);
         //generate form item
-        $this->_generateFormItem($model, $modelRelationship, $notDelete, $isMTM);
+        $this->_generateFormItem($model, $modelRelationship, $isMTM);
     }
 
     private function _generateQuery($model, $modelRelationship, $relationship, $options, $columnRelationship, $templateDataReal)
@@ -317,12 +317,12 @@ class RelationshipGenerator extends BaseGenerator
     }
 
     //create form item
-    private function _generateFormItem($model, $modelRelationship, $notDelete, $isMTM)
+    private function _generateFormItem($model, $modelRelationship, $isMTM): void
     {
-        $fileName = "{$this->serviceGenerator->folderPages($modelRelationship)}/Form.vue";
-        $templateDataReal = $this->serviceGenerator->getFile('views', 'vue', $fileName);
         // edit
         if ($isMTM) {
+            $fileName = "{$this->serviceGenerator->folderPages($modelRelationship)}/Form.vue";
+            $pathFile = config('generator.path.vue.views').$fileName;
             $stubGetData =
                 'form.{{$FIELD_NAME$}} = {{$MODEL_RELATIONSHIP$}}.{{$FIELD_RELATIONSHIP$}}.map(item => item.id);';
             $stubGetData = str_replace(
@@ -340,20 +340,17 @@ class RelationshipGenerator extends BaseGenerator
                 Str::snake($this->serviceGenerator->modelNamePluralFe($model)),
                 $stubGetData,
             );
-            $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-                $notDelete['edit'],
-                $stubGetData,
-                4,
-                $templateDataReal,
-            );
-        }
+            $templateDataReal = $this->phpParserService->runParserJS($pathFile, [
+                'key' => 'views.form:edit',
+                'content' => $stubGetData,
+            ]);
 
-        $fileName = config('generator.path.vue.views').$fileName;
-        $this->serviceFile->createFileReal($fileName, $templateDataReal);
+            $this->serviceFile->createFileReal($pathFile, $templateDataReal);
+        }
     }
 
     // crate function "all" in file use
-    private function _generateFunctionAll($model)
+    private function _generateFunctionAll($model): void
     {
         $fileName = "{$this->serviceGenerator->folderPages($model)}/{$this->jsType('index')}";
         $templateDataRealRelationship = $this->serviceGenerator->getFile('uses', 'vue', $fileName);
@@ -382,7 +379,6 @@ class RelationshipGenerator extends BaseGenerator
     private function _generateAddApi($model, $modelRelationship, $templateDataReal, $notDelete, $relationship): string
     {
         $path = config('generator.path.vue.uses');
-        $notDeleteUses = config('generator.not_delete.vue.uses');
         $folderName = $this->serviceGenerator->folderPages($modelRelationship);
         $fileName = "{$this->serviceGenerator->folderPages($modelRelationship)}/Form.vue";
         $pathFile = config('generator.path.vue.views').$fileName;
@@ -430,13 +426,11 @@ class RelationshipGenerator extends BaseGenerator
             $stubGetData,
         );
         $stubGetData = str_replace('{{$MODEL_RELATIONSHIP$}}', $nameModelRelationship, $stubGetData);
-        $templateDataRealForm = $this->serviceGenerator->replaceNotDelete(
-            $notDelete['create'],
-            $stubGetData,
-            3,
-            $templateDataRealForm,
-            2,
-        );
+        $templateDataRealForm = $this->phpParserService->runParserJS($pathFile, [
+            'key' => 'views.form:create',
+            'content' => $stubGetData,
+        ], $templateDataRealForm);
+
         $this->serviceFile->createFileReal($pathFile, $templateDataRealForm);
 
         return $templateDataReal;
