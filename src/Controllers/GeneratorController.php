@@ -363,19 +363,21 @@ class GeneratorController extends BaseLaraJSController
         $request->validate([
             'relationship' => 'required',
             'model' => 'required',
+            'model_name' => $request->get('relationship') === 'belongsToMany' ? 'required' : '',
             'column' => 'required',
-            'column2' => $request->get('column2') !== null ? 'required' : '',
+            'column2' => $request->get('relationship') === 'belongsToMany' ? 'required' : '',
         ]);
         try {
             $relationship = $request->get('relationship');
             $model = $request->get('model');
+            $modelName = $request->get('model_name');
             $modelCurrent = $request->get('model_current');
             $column = $request->get('column');
             $column2 = $request->get('column2');
             $options = $request->get('options', []);
             // git commit
             $this->_gitCommit($model);
-            new RelationshipGenerator($relationship, $model, $modelCurrent, $column, $column2, $options);
+            new RelationshipGenerator($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName);
             $this->_runCommand();
 
             return $this->jsonMessage(trans('messages.success'));

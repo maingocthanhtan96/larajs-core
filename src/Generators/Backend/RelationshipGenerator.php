@@ -8,10 +8,6 @@ use LaraJS\Core\Generators\BaseGenerator;
 
 class RelationshipGenerator extends BaseGenerator
 {
-    public const REF_UPPER = 'Ref';
-
-    public const _REF_LOWER = 'ref_';
-
     public const SORT_COLUMN = 'sortable="custom"';
 
     public const _ID = '_id';
@@ -22,18 +18,16 @@ class RelationshipGenerator extends BaseGenerator
 
     protected array $relationship;
 
-    protected array $tableDiff;
-
-    public function __construct($relationship, $model, $modelCurrent, $column, $column2, $options)
+    public function __construct($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName)
     {
         parent::__construct();
         $this->path = config('generator.path.laravel.migration');
         $this->notDelete = config('generator.not_delete.laravel.model');
         $this->relationship = config('generator.relationship.relationship');
-        $this->_generate($relationship, $model, $modelCurrent, $column, $column2, $options);
+        $this->_generate($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName);
     }
 
-    private function _generate($relationship, $model, $modelCurrent, $column, $column2, $options)
+    private function _generate($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName)
     {
         $pathTemplate = 'Models/';
         $fileRelationship =
@@ -72,10 +66,7 @@ class RelationshipGenerator extends BaseGenerator
             $templateModel = str_replace(
                 '{{FIELD_RELATIONSHIP}}',
                 "'".
-                    self::_REF_LOWER.
-                    Str::snake($modelCurrent).
-                    '_'.
-                    Str::snake($model).
+                $this->serviceGenerator->tableName($modelName).
                     "', '".
                     Str::snake($modelCurrent).
                     "_id', '".
@@ -87,10 +78,7 @@ class RelationshipGenerator extends BaseGenerator
             $templateInverse = str_replace(
                 '{{FIELD_RELATIONSHIP}}',
                 "'".
-                    self::_REF_LOWER.
-                    Str::snake($modelCurrent).
-                    '_'.
-                    Str::snake($model).
+                $this->serviceGenerator->tableName($modelName).
                     "', '".
                     Str::snake($model).
                     "_id', '".
@@ -112,7 +100,7 @@ class RelationshipGenerator extends BaseGenerator
             );
             $templateInverse = str_replace('{{RELATION}}', 'belongsTo', $templateInverse);
         }
-        $this->_migrateRelationship($relationship, $model, $modelCurrent, $column, $column2, $options);
+        $this->_migrateRelationship($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName);
         //replace file model real
         $templateModelReal = $this->serviceGenerator->getFile('model', 'laravel', $model.'.php');
         $this->_replaceFile($model, $templateInverse, $templateModelReal);
@@ -121,7 +109,7 @@ class RelationshipGenerator extends BaseGenerator
         $this->_replaceFile($modelCurrent, $templateModel, $templateModelCurrentReal);
     }
 
-    private function _migrateRelationship($relationship, $model, $modelCurrent, $column, $column2, $options)
+    private function _migrateRelationship($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName)
     {
         $now = Carbon::now();
         $pathTemplate = 'Databases/Migrations/';
@@ -131,16 +119,9 @@ class RelationshipGenerator extends BaseGenerator
             //belongsToMany
             $templateData = $this->serviceGenerator->get_template('migrationRelationshipMTM', $pathTemplate);
             //if belongsToMany replace table to create
-            $templateData = $this->_replaceTemplateRelationshipMTM($model, $modelCurrent, $templateData);
-            $fileName =
-                date('Y_m_d_His').
-                '_relationship_'.
-                self::_REF_LOWER.
-                Str::snake($modelCurrent).
-                '_'.
-                Str::snake($model).
-                '_table.php';
-            $this->_generateModelMTM($model, $modelCurrent);
+            $templateData = $this->_replaceTemplateRelationshipMTM($model, $modelCurrent, $templateData, $modelName);
+            $fileName = date('Y_m_d_His')."_relationship_{$this->serviceGenerator->tableName($modelName)}_table.php";
+            $this->_generateModelMTM($model, $modelCurrent, $modelName);
             $this->_generateSeeder($modelCurrent, $model, $relationship);
             $this->_generateRoute($modelCurrent);
             $this->_generateRoute($model);
@@ -553,7 +534,7 @@ class RelationshipGenerator extends BaseGenerator
             return;
         }
         $isMTM = $relationship === $this->relationship['belongs_to_many'];
-        $rule = $isMTM ? 'array' : 'integer|required';
+        $rule = $isMTM ? "['array']" : "['integer', 'required']";
         $templateDataRealFunc = $this->serviceGenerator->replaceNotDelete(
             $notDelete['rule'],
             "'".Str::snake($modelRelationship).($isMTM ? self::_IDS : self::_ID)."'".' => '."'$rule',",
@@ -826,13 +807,13 @@ class RelationshipGenerator extends BaseGenerator
         return str_replace('{{TABLE_FOREIGN_KEY}}', $this->serviceGenerator->tableName($modelDif), $templateData);
     }
 
-    private function _replaceTemplateRelationshipMTM($model, $modelCurrent, $templateData): string
+    private function _replaceTemplateRelationshipMTM($model, $modelCurrent, $templateData, $modelName): string
     {
         $now = Carbon::now();
         $templateData = str_replace('{{DATE_TIME}}', $now->toDateTimeString(), $templateData);
         $templateData = str_replace(
             '{{TABLE_NAME}}',
-            self::_REF_LOWER.Str::snake($modelCurrent).'_'.Str::snake($model),
+            $this->serviceGenerator->tableName($modelName),
             $templateData,
         );
         $templateData = str_replace('{{FOREIGN_KEY_1}}', Str::snake($model).self::_ID, $templateData);
@@ -857,7 +838,7 @@ class RelationshipGenerator extends BaseGenerator
         $this->_createFileAll('model', $modelRelationship, $templateDataReal);
     }
 
-    private function _generateModelMTM($model, $modelCurrent): void
+    private function _generateModelMTM($model, $modelCurrent, $modelName): void
     {
         $fieldModel = Str::snake($model).self::_ID;
         $fieldModelCurrent = Str::snake($modelCurrent).self::_ID;
@@ -865,19 +846,19 @@ class RelationshipGenerator extends BaseGenerator
         $pathTemplate = 'Models/';
         $templateData = $this->serviceGenerator->get_template('model', $pathTemplate);
         $templateData = str_replace('{{DATE}}', $now->toDateTimeString(), $templateData);
-        $templateData = str_replace('{{MODEL_CLASS}}', self::REF_UPPER.$modelCurrent.$model, $templateData);
+        $templateData = str_replace('{{MODEL_CLASS}}', $modelName, $templateData);
+        $templateData = str_replace(['//{{USE_CLASS}}', '//{{USE}}', '//{{TIMESTAMPS}}'], '', $templateData);
         $arFields = ["'".$fieldModel."',", "'".$fieldModelCurrent."',"];
         $implodeFields = implode($this->serviceGenerator->infy_nl_tab(1, 2), $arFields);
         $templateData = str_replace('{{FIELDS}}', $implodeFields, $templateData);
         $templateData = str_replace(
             '{{TABLE_NAME}}',
-            self::_REF_LOWER.Str::snake($modelCurrent).'_'.Str::snake($model),
+            $this->serviceGenerator->tableName($modelName),
             $templateData,
         );
         $templateData = str_replace('{{CATS}}', '', $templateData);
-        $fileName = self::REF_UPPER.$modelCurrent.$model.'.php';
         $path = config('generator.path.laravel.model');
-        $this->serviceFile->createFile($path, $fileName, $templateData);
+        $this->serviceFile->createFile($path, "$modelName.php", $templateData);
     }
 
     private function _generateSeeder($model, $modelRelationship, $relationship): void
