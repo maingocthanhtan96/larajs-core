@@ -57,7 +57,7 @@ return [
                 'lang' => '/lang/',
                 'request' => '/app/Http/Requests/',
                 'tests' => [
-                    'feature' => '/tests/Feature/Controllers/Api/' . $API_VERSION,
+                    'feature' => '/tests/Feature/',
                 ],
             ],
             'vue' => [

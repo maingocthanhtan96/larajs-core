@@ -285,8 +285,9 @@ class GeneratorController extends BaseLaraJSController
             // START - api VueJS
             $pathApiVueJSReal = config('generator.path.vue.api').'index.ts';
             $templateDataApiVueJSReal = $this->serviceGenerator->getFile('api', 'vue', 'index.ts');
+            $replace = "export { default as {$model['name']}Resource } from './{$generatorService->nameAttribute($model['name'])}';";
             $templateDataApiVueJSReal = str_replace(
-                "export { default as {$model['name']}Resource } from './{$generatorService->nameAttribute($model['name'])}';\n",
+                [$replace . PHP_EOL, $replace],
                 '',
                 $templateDataApiVueJSReal,
             );
@@ -295,15 +296,17 @@ class GeneratorController extends BaseLaraJSController
             // START - route VueJS
             $pathRouteVueJSReal = config('generator.path.vue.router').'index.ts';
             $templateDataRouteVueJSReal = $this->serviceGenerator->getFile('router', 'vue', 'index.ts');
-            $templateDataRouteVueJSReal = str_replace(
-                "import {$generatorService->modelNameNotPluralFe(
+            $replace = "import {$generatorService->modelNameNotPluralFe(
                     $model['name'],
-                )} from '{$this->baseGenerator->getImportJsOrTs()}/router/modules/{$generatorService->nameAttribute($model['name'])}';\n",
+                )} from '{$this->baseGenerator->getImportJsOrTs()}/router/modules/{$generatorService->nameAttribute($model['name'])}';";
+            $templateDataRouteVueJSReal = str_replace(
+                [$replace . PHP_EOL, $replace],
                 '',
                 $templateDataRouteVueJSReal,
             );
+            $replace = "{$generatorService->modelNameNotPluralFe($model['name'])},";
             $templateDataRouteVueJSReal = str_replace(
-                "{$generatorService->modelNameNotPluralFe($model['name'])},\n",
+                [$replace . PHP_EOL, $replace],
                 '',
                 $templateDataRouteVueJSReal,
             );
@@ -320,8 +323,9 @@ class GeneratorController extends BaseLaraJSController
             if (config('generator.js_language') === 'ts') {
                 $pathPackageModelReal = config('generator.path.package.model').'index.ts';
                 $templateDataPackageModelReal = $this->serviceGenerator->getFile('model', 'package', 'index.ts');
+                $replace = "export * from './{$generatorService->nameAttribute($model['name'])}';";
                 $templateDataPackageModelReal = str_replace(
-                    "export * from './{$generatorService->nameAttribute($model['name'])}';\n",
+                    [$replace . PHP_EOL, $replace],
                     '',
                     $templateDataPackageModelReal,
                 );
