@@ -19,9 +19,13 @@ return new class extends Migration {
     public function up()
     {
         Schema::table('{{TABLE_NAME}}', function (Blueprint $table) {
-            $table->foreignId('{{FOREIGN_KEY}}')->after('id');
+            $table
+                ->foreignId('{{FOREIGN_KEY}}')
+                ->after('id')
+                ->constrained('{{TABLE_FOREIGN_KEY}}')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
             $table->index('{{FOREIGN_KEY}}');
-            $table->constrained('{{TABLE_FOREIGN_KEY}}')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

@@ -185,7 +185,12 @@ class RelationshipGenerator extends BaseGenerator
             $templateRules = str_replace('{{$FIELD$}}', Str::snake($model).self::_ID, $templateRules);
             $templateRules = str_replace('{{$ATTRIBUTE_FIELD$}}', 't(\'route.'.Str::snake($model).'\')', $templateRules);
             $templateRules = str_replace('{{$TRIGGER$}}', 'change', $templateRules);
-            $templateDataReal = $this->serviceGenerator->replaceNotDelete($notDelete['rules'], $templateRules, 1, $templateDataReal, 2);
+            $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->jsType('form')}", [
+                'key' => 'uses.form:rules',
+                'items' => [
+                    Str::snake($model).self::_ID => $templateRules
+                ],
+            ]);
         }
         $field = $isMTM ? Str::snake($model).self::_IDS : Str::snake($model).self::_ID;
         $tableFunctionRelationship = $isMTM
@@ -537,7 +542,7 @@ class RelationshipGenerator extends BaseGenerator
         $rule = $isMTM ? "['array']" : "['integer', 'required']";
         $templateDataRealFunc = $this->serviceGenerator->replaceNotDelete(
             $notDelete['rule'],
-            "'".Str::snake($modelRelationship).($isMTM ? self::_IDS : self::_ID)."'".' => '."'$rule',",
+            "'".Str::snake($modelRelationship).($isMTM ? self::_IDS : self::_ID)."'".' => '."$rule,",
             3,
             $templateDataRealFunc,
         );
