@@ -73,10 +73,10 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
 	 *
 	 * @author tanmnt
 	 */
-	public function show(int ${{MODAL_CLASS_PARAM}}): JsonResponse
+	public function show(int ${{MODAL_CLASS_PARAM}}, Request $request): JsonResponse
 	{
 		try {
-		    ${{MODAL_CLASS_PARAM}} = $this->{{MODAL_CLASS_PARAM}}Repository->show(${{MODAL_CLASS_PARAM}}, []);
+		    ${{MODAL_CLASS_PARAM}} = $this->{{MODAL_CLASS_PARAM}}Repository->show(${{MODAL_CLASS_PARAM}}, $request->get('relationship', []));
 
 			return $this->jsonData(${{MODAL_CLASS_PARAM}});
 		} catch (\Exception $e) {

@@ -64,11 +64,7 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
 
     public function show(int $id, array $relationship = []): Model
     {
-        if (request()->has('relationship')) {
-            $relationship = request()->get('relationship');
-        }
-
-        return $this->model->with(\Arr::wrap($relationship))->findOrFail($id);
+        return $this->model->with($relationship)->findOrFail($id);
     }
 
     public function update(int $id, array $data): Model
@@ -89,11 +85,7 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
 
     public function all(array $relationship = []): Collection
     {
-        if (request()->has('relationship')) {
-            $relationship = request()->get('relationship');
-        }
-
-        return $this->model->with(\Arr::wrap($relationship))->get();
+        return $this->model->with($relationship)->get();
     }
 
     public function queryBuilder(Request $request, array $options): Builder

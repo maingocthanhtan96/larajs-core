@@ -3,10 +3,10 @@
      *
      * @return JsonResponse
      */
-    public function all(): JsonResponse
+    public function all(Request $request): JsonResponse
     {
         try {
-            ${{PARAM_MODEL_RELATIONSHIP_LIST}} = $this->{{PARAM_MODEL_RELATIONSHIP}}Repository->all();
+            ${{PARAM_MODEL_RELATIONSHIP_LIST}} = $this->{{PARAM_MODEL_RELATIONSHIP}}Repository->all($request->get('relationship', []));
 
             return $this->jsonData(${{PARAM_MODEL_RELATIONSHIP_LIST}});
         } catch (\Exception $e) {

@@ -127,8 +127,8 @@ class RelationshipGenerator extends BaseGenerator
             $this->_generateRoute($model);
             $this->_generateRequest($modelCurrent, $model, $relationship);
             $this->_generateRequest($model, $modelCurrent, $relationship);
-            $this->_generateController($modelCurrent, $model, $options, $column, $relationship);
-            $this->_generateController($model, $modelCurrent, $options, $column2, $relationship);
+            $this->_generateController($modelCurrent, $model);
+            $this->_generateController($model, $modelCurrent);
             $this->_generateTests($model);
             $this->_generateTests($modelCurrent);
             //            $this->_generateRepository($modelCurrent, $model);
@@ -156,7 +156,7 @@ class RelationshipGenerator extends BaseGenerator
             $this->_generateSeeder($modelCurrent, $model, $relationship);
             $this->_generateRoute($modelCurrent);
             $this->_generateRequest($modelCurrent, $model, $relationship);
-            $this->_generateController($modelCurrent, $model, $options, $column, $relationship);
+            $this->_generateController($modelCurrent, $model);
             $this->_generateTests($modelCurrent);
             //generate frontend
             $this->_generateFormFe($modelCurrent, $model, $column, $options, $relationship);
@@ -246,7 +246,7 @@ class RelationshipGenerator extends BaseGenerator
             );
             if ($isMTM) {
                 $templateRow = <<<TEMPLATE
-                template: ({ row }) => row.$tableFunctionRelationship.map(item => <el-tag>{item.$columnRelationship}</el-tag>),
+                template: ({ row }) => row.$tableFunctionRelationship.map(item => <el-tag key={item.id}>{item.$columnRelationship}</el-tag>),
                 TEMPLATE;
             } else {
                 $templateRow = <<<TEMPLATE
@@ -404,8 +404,12 @@ class RelationshipGenerator extends BaseGenerator
             'useName' => $useModel,
             'useKey' => $this->serviceGenerator->modelNamePluralFe("all$model"),
         ], $templateDataRealForm);
-
-        $stubGetData = $this->serviceGenerator->get_template('getDataRelationship', 'Handler/', 'vue');
+        if ($relationship === $this->relationship['belongs_to_many']) {
+            $stubGetData = $this->serviceGenerator->get_template('getDataRelationshipMTM', 'Handler/', 'vue');
+            $stubGetData = str_replace('{{$RELATIONSHIP$}}', "'{$this->serviceGenerator->modelNamePluralFe($modelRelationship)}'", $stubGetData);
+        } else {
+            $stubGetData = $this->serviceGenerator->get_template('getDataRelationship', 'Handler/', 'vue');
+        }
         $stubGetData = str_replace(
             '{{$USE_MODEL_RELATIONSHIP$}}',
             $this->serviceGenerator->modelNamePluralFe("all{$model}"),
@@ -550,9 +554,8 @@ class RelationshipGenerator extends BaseGenerator
         $this->serviceFile->createFileReal($fileNameFunc, $templateDataRealFunc);
     }
 
-    private function _generateController($modelRelationship, $model, $options, $column, $relationship)
+    private function _generateController($modelRelationship, $model)
     {
-        $notDelete = config('generator.not_delete.laravel.controller');
         $pathTemplate = 'Controllers/';
         $fileName = $model.'Controller.php';
         $templateDataReal = $this->serviceGenerator->getFile('api_controller', 'laravel', $fileName);
@@ -560,7 +563,6 @@ class RelationshipGenerator extends BaseGenerator
             return;
         }
         //generate options
-        $templateDataReal = $this->_generateOptions($model, $modelRelationship, $templateDataReal, $relationship);
         $path = config('generator.path.laravel.api_controller');
         $fileName = $path.$fileName;
         $this->serviceFile->createFileReal($fileName, $templateDataReal);
