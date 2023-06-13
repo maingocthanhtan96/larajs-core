@@ -94,10 +94,9 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
 
         return $queryService->filters([
             'select' => $options['select'] ?? [],
-            'columnSearch' => [...$options['columnSearch'] ?? [], ...$request->get('column_search', [])],
-            'withRelationship' => [...$options['withRelationship'] ?? [], ...$request->get('relationship', [])],
-            'customQuery' => $options['customQuery'] ?? [],
-            'columnDate' => $request->get('column_date') ?? ($options['columnDate'] ?? ''),
+            'columnSearch' => $request->get('column_search') ?? $options['columnSearch'] ?? [],
+            'withRelationship' => $request->get('relationship') ?? $options['withRelationship'] ?? [],
+            'columnDate' => $request->get('column_date') ?? $options['columnDate'] ?? '',
             'search' => $request->get('search'),
             'betweenDate' => $request->get('between_date'),
             'direction' => $request->get('direction'),

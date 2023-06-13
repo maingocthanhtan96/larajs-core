@@ -188,7 +188,7 @@ class RelationshipGenerator extends BaseGenerator
             $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->jsType('form')}", [
                 'key' => 'uses.form:rules',
                 'items' => [
-                    Str::snake($model).self::_ID => $templateRules
+                    Str::snake($model).self::_ID => $templateRules,
                 ],
             ]);
         }
@@ -219,7 +219,7 @@ class RelationshipGenerator extends BaseGenerator
                     Str::snake($model).($isMTM ? self::_IDS : self::_ID),
                     $columnRelationship,
                     $relationship,
-                )
+                ),
             ],
         ], $templateDataReal);
         $this->serviceFile->createFileReal("$path/{$this->jsType('form')}", $templateDataReal);

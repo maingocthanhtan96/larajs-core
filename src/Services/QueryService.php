@@ -54,13 +54,6 @@ class QueryService
     public string $columnDate = 'updated_at';
 
     /**
-     * Add dynamic query
-     *
-     * @var callable
-     */
-    public $customQuery = null;
-
-    /**
      * QueryService constructor.
      *
      *
@@ -78,10 +71,9 @@ class QueryService
     public function query(): Builder
     {
         $query = $this->model::query();
-        $query->when($this->select, fn (Builder $q) => $q->select($this->select));
-        $query->when($this->search, fn (Builder $q) => $q->whereLike($this->columnSearch, $this->search));
+        $query->when($this->select, fn(Builder $q) => $q->select($this->select));
+        $query->when($this->search, fn(Builder $q) => $q->whereLike($this->columnSearch, $this->search));
         $query->with(Arr::wrap($this->withRelationship));
-        $query->when(is_callable($this->customQuery), $this->customQuery);
         $query->when(isset($this->betweenDate[0]) && isset($this->betweenDate[1]), function (Builder $q) {
             $startDate = Carbon::parse($this->betweenDate[0])->startOfDay();
             $endDate = Carbon::parse($this->betweenDate[1])->endOfDay();
@@ -89,20 +81,20 @@ class QueryService
         });
         $query->when(
             $this->orderBy && $this->direction,
-            fn (Builder $q) => $q->orderByRelationship($this->orderBy, convert_direction($this->direction)),
+            fn(Builder $q) => $q->orderByRelationship($this->orderBy, convert_direction($this->direction)),
         );
 
         return $query;
     }
 
     /**
-     * @property string $select
-     * @property array $columnSearch
      * @property string $search
-     * @property array $betweenDate
+     * @property string $select
+     * @property string $columnDate
      * @property string $direction
      * @property string $orderBy
-     * @property callable $customQuery
+     * @property array $columnSearch
+     * @property array $betweenDate
      */
     public function filters(array $filters): static
     {
