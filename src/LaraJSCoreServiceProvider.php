@@ -3,6 +3,7 @@
 namespace LaraJS\Core;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use LaraJS\Core\Commands\SetupCommand;
+use Znck\Eloquent\Relations\BelongsToThrough;
 
 class LaraJSCoreServiceProvider extends ServiceProvider
 {
@@ -28,27 +30,30 @@ class LaraJSCoreServiceProvider extends ServiceProvider
         $this->commands('larajs.setup');
         $this->publishes(
             [
-                __DIR__.'/../config/generator.php' => config_path('generator.php'),
+                __DIR__ . '/../config/generator.php' => config_path('generator.php'),
             ],
             'larajs-core-config',
         );
         $this->publishes(
             [
-                __DIR__.'/../config/generator-mono.php' => config_path('generator.php'),
+                __DIR__ . '/../config/generator-mono.php' => config_path('generator.php'),
             ],
             'larajs-core-config-mono',
         );
-        $this->mergeConfigFrom(__DIR__.'/../config/generator.php', 'generator');
-        $this->publishes([
-            __DIR__.'/../public' => public_path('vendor'),
-        ], 'larajs-core-public');
+        $this->mergeConfigFrom(__DIR__ . '/../config/generator.php', 'generator');
         $this->publishes(
             [
-                __DIR__.'/../database/migrations' => database_path('migrations'),
+                __DIR__ . '/../public' => public_path('vendor'),
+            ],
+            'larajs-core-public',
+        );
+        $this->publishes(
+            [
+                __DIR__ . '/../database/migrations' => database_path('migrations'),
             ],
             'larajs-core-migrations',
         );
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
     }
 
     public function register()
@@ -117,23 +122,61 @@ class LaraJSCoreServiceProvider extends ServiceProvider
                     [$relation, $column] = explode('.', $searchColumn);
                     $relation = $this->getRelation($relation);
                     if ($relation instanceof BelongsToMany) {
+                        $mainModel = $this->getModel();
+                        $mainTable = $mainModel->getTable();
                         $tableThrough = $relation->getTable();
                         $relationForeignKey = $relation->getForeignPivotKeyName();
                         $relationRelatedKey = $relation->getRelatedPivotKeyName();
-                        $queryTable = $this->getModel()->getTable();
-                        $queryTableRelated = $relation->getModel()->getTable();
+                        $relationModel = $relation->getModel();
+                        $relationTable = $relationModel->getTable();
 
-                        return $this->select("$queryTable.*")
-                            ->leftJoin($tableThrough, "$tableThrough.$relationForeignKey", "$queryTable.id")
-                            ->leftJoin($queryTableRelated, "$queryTableRelated.id", "$tableThrough.$relationRelatedKey")
-                            ->orderBy("$queryTableRelated.$column", $direction);
+                        return $this->select("$mainTable.*")
+                            ->leftJoin(
+                                $tableThrough,
+                                "$tableThrough.$relationForeignKey",
+                                $mainModel->getQualifiedKeyName(),
+                            )
+                            ->leftJoin(
+                                $relationTable,
+                                "$tableThrough.$relationRelatedKey",
+                                $relationModel->getQualifiedKeyName(),
+                            )
+                            ->orderBy("$relationTable.$column", $direction);
+                    } elseif ($relation instanceof BelongsToThrough) {
+                        $queryTable = $this->getModel()->getTable();
+                        $joins = array_reverse($relation->getQuery()->getQuery()->joins);
+                        $queryTableRelated = $relation->getRelated()->getTable();
+                        $query = $this->select("$queryTable.*");
+                        foreach ($joins as $i => $join) {
+                            $where = $join->wheres[0];
+                            if ($i === 0) {
+                                $modelParent = $relation->getParent();
+                                $modelFirst = \Arr::first(
+                                    $relation->getThroughParents(),
+                                    fn(Model $model) => $model->getTable() === $join->table,
+                                );
+                                $query->leftJoin(
+                                    $join->table,
+                                    $modelParent->qualifyColumn($relation->getForeignKeyName($modelFirst)),
+                                    $modelFirst->getQualifiedKeyName(),
+                                );
+                            }
+                            $query->leftJoin(explode('.', $where['second'])[0], $where['first'], '=', $where['second']);
+                        }
+
+                        return $query->orderBy("$queryTableRelated.$column", $direction);
                     } else {
-                        $relationTable = $relation->getModel()->getTable();
+                        $mainTable = $this->getModel()->getTable();
                         $relationForeignKey = $relation->getForeignKeyName();
-                        $queryTable = $this->getModel()->getTable();
+                        $relationModel = $relation->getModel();
+                        $relationTable = $relationModel->getTable();
 
-                        return $this->select("$queryTable.*")
-                            ->leftJoin($relationTable, "$queryTable.$relationForeignKey", "$relationTable.id")
+                        return $this->select("$mainTable.*")
+                            ->leftJoin(
+                                $relationTable,
+                                "$mainTable.$relationForeignKey",
+                                $relationModel->getQualifiedKeyName(),
+                            )
                             ->orderBy("$relationTable.$column", $direction);
                     }
                 }

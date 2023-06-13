@@ -23,4 +23,6 @@ interface BaseLaraJSRepositoryInterface
     public function all(array $relationship): Collection;
 
     public function queryBuilder(Request $request, array $options): Builder;
+
+    public function handleFilters(Request $request, array $options): array;
 }

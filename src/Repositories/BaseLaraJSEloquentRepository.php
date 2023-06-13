@@ -88,20 +88,28 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
         return $this->model->with($relationship)->get();
     }
 
+    public function getQueryService(): QueryService
+    {
+        return new QueryService($this->model);
+    }
+
     public function queryBuilder(Request $request, array $options): Builder
     {
-        $queryService = new QueryService($this->model);
+        return $this->getQueryService()->filters($this->handleFilters($request, $options))->query();
+    }
 
-        return $queryService->filters([
-            'select' => $options['select'] ?? [],
-            'columnSearch' => $request->get('column_search') ?? $options['columnSearch'] ?? [],
-            'withRelationship' => $request->get('relationship') ?? $options['withRelationship'] ?? [],
-            'columnDate' => $request->get('column_date') ?? $options['columnDate'] ?? '',
+    public function handleFilters(Request $request, array $options): array
+    {
+        return [
+            'select' => $request->get('select') ?? ($options['select'] ?? []),
+            'columnSearch' => $request->get('column_search') ?? ($options['columnSearch'] ?? []),
+            'withRelationship' => $request->get('relationship') ?? ($options['withRelationship'] ?? []),
+            'columnDate' => $request->get('column_date') ?? ($options['columnDate'] ?? ''),
             'search' => $request->get('search'),
             'betweenDate' => $request->get('between_date'),
             'direction' => $request->get('direction'),
             'orderBy' => $request->get('orderBy'),
             'limit' => $request->get('limit'),
-        ])->query();
+        ];
     }
 }
