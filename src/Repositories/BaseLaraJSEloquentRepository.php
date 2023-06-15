@@ -95,7 +95,9 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
 
     public function queryBuilder(Request $request, array $options): Builder
     {
-        return $this->getQueryService()->filters($this->handleFilters($request, $options))->query();
+        return $this->getQueryService()
+            ->filters($this->handleFilters($request, $options))
+            ->query();
     }
 
     public function handleFilters(Request $request, array $options): array
@@ -104,6 +106,7 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
             'select' => $request->get('select') ?? ($options['select'] ?? []),
             'columnSearch' => $request->get('column_search') ?? ($options['columnSearch'] ?? []),
             'withRelationship' => $request->get('relationship') ?? ($options['withRelationship'] ?? []),
+            'withAggregate' => $request->get('aggregate') ?? ($options['withAggregate'] ?? []),
             'columnDate' => $request->get('column_date') ?? ($options['columnDate'] ?? ''),
             'search' => $request->get('search'),
             'betweenDate' => $request->get('between_date'),

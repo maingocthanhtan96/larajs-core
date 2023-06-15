@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class QueryService
 {
@@ -23,6 +24,11 @@ class QueryService
      * Relationship with other tables
      */
     public array $withRelationship = [];
+
+    /**
+     * Aggregate with other tables
+     */
+    public array $withAggregate = [];
 
     /**
      * Paragraph search in column
@@ -73,7 +79,21 @@ class QueryService
         $query = $this->model::query();
         $query->when($this->select, fn(Builder $q) => $q->select($this->select));
         $query->when($this->search, fn(Builder $q) => $q->whereLike($this->columnSearch, $this->search));
-        $query->with(Arr::wrap($this->withRelationship));
+        $query->when($this->withRelationship, fn(Builder $q) => $q->with(Arr::wrap($this->withRelationship)));
+        $query->when($this->withAggregate, function (Builder $q) {
+            foreach (Arr::wrap($this->withAggregate) as $withSum) {
+                if (Str::contains($withSum, '|')) {
+                    [$relationColumn, $function] = explode('|', $withSum);
+                    $relationColumn = explode('.', $relationColumn);
+                    $function = strtolower($function);
+                    $q->withAggregate(
+                        $relationColumn[0],
+                        in_array($function, ['count', 'exists']) ? '*' : $relationColumn[1],
+                        $function,
+                    );
+                }
+            }
+        });
         $query->when(isset($this->betweenDate[0]) && isset($this->betweenDate[1]), function (Builder $q) {
             $startDate = Carbon::parse($this->betweenDate[0])->startOfDay();
             $endDate = Carbon::parse($this->betweenDate[1])->endOfDay();
@@ -95,6 +115,8 @@ class QueryService
      * @property string $orderBy
      * @property array $columnSearch
      * @property array $betweenDate
+     * @property array $withRelationship
+     * @property array $withAggregate
      */
     public function filters(array $filters): static
     {
