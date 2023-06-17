@@ -198,9 +198,11 @@ class RelationshipGenerator extends BaseGenerator
             : $this->serviceGenerator->tableNameNotPlural($model);
         $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->jsType('form')}", [
             'key' => 'uses.form:item',
+            'variable' => 'form',
             'items' => [
                 $field => [
-                    'type' => $isMTM ? 'array' : ': null',
+                    'type' => $isMTM ? 'array' : 'null',
+                    'value' => [],
                 ],
             ],
         ], $templateDataReal);

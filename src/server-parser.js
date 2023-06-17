@@ -400,5 +400,5 @@ try {
 
   console.log(formattedCode); // eslint-disable-line no-console
 } catch (error) {
-  // console.log(error);
+  // console.log(error);  // eslint-disable-line no-console
 }

@@ -297,8 +297,8 @@ class GeneratorController extends BaseLaraJSController
             $pathRouteVueJSReal = config('generator.path.vue.router').'index.ts';
             $templateDataRouteVueJSReal = $this->serviceGenerator->getFile('router', 'vue', 'index.ts');
             $replace = "import {$generatorService->modelNameNotPluralFe(
-                    $model['name'],
-                )} from '{$this->baseGenerator->getImportJsOrTs()}/router/modules/{$generatorService->nameAttribute($model['name'])}';";
+                $model['name'],
+            )} from '{$this->baseGenerator->getImportJsOrTs()}/router/modules/{$generatorService->nameAttribute($model['name'])}';";
             $templateDataRouteVueJSReal = str_replace(
                 [$replace . PHP_EOL, $replace],
                 '',
