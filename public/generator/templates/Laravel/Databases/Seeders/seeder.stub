@@ -1,10 +1,5 @@
 <?php
 
-/**
- * Created by: Tanmnt
- * Email: maingocthanhan96@gmail.com
- * Date Time: {{DATE_TIME}}
- */
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
