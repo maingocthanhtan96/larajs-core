@@ -8,21 +8,32 @@ use App\Http\Requests\Store{{MODAL_CLASS}}Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+/**
+ * @group {{CONTROLLER_CLASS}}
+ * @authenticated
+ */
 class {{CONTROLLER_CLASS}}Controller extends Controller
 {
-    /**
-     * {{CONTROLLER_CLASS}} constructor.
-     *
-     * @author tanmnt
-     */
     public function __construct(private readonly {{MODAL_CLASS}}Interface ${{MODAL_CLASS_PARAM}}Repository)
     {
         permission_handle($this);
     }
 
-	/**
-	 * List
-	 */
+    /**
+     * List
+     *
+     * @queryParam search string Search columns specified by column_search. No-example
+     * @queryParam limit number Limit. Example: 25.
+     * @queryParam page number Page. Example: 1
+     * @queryParam direction string Direction (asc, desc). No-example
+     * @queryParam orderBy string Field order. No-example
+     * @queryParam column_date string Field default order. No-example
+     * @queryParam between_date string[] Start date and End date. No-example
+     * @queryParam select string[] Select column. No-example
+     * @queryParam column_search string[] Specify columns search. No-example
+     * @queryParam relationship string[] Specify relationships. Example: No-example
+     * @queryParam aggregate string[] Specify functions(count, exists, sum, min, max, avg). No-example
+     */
 	public function index(Request $request): JsonResponse
 	{
 		try {
@@ -34,9 +45,9 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
 		}
 	}
 
-	/**
-	 * Create
-	 */
+    /**
+     * Create
+     */
 	public function store(Store{{MODAL_CLASS}}Request $request): JsonResponse
 	{
 		try {

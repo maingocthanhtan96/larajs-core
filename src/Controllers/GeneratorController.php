@@ -559,6 +559,7 @@ class GeneratorController extends BaseLaraJSController
             Artisan::call('migrate');
         }
         Artisan::call('vue-i18n:generate');
+        Artisan::call('scribe:generate');
         $this->__runPrettier();
     }
 
