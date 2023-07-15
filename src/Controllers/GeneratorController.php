@@ -685,11 +685,11 @@ class GeneratorController extends BaseLaraJSController
     private function _generateRelationship($relationships, $model): void
     {
         foreach ($relationships as $relationship) {
-            new RelationshipGenerator($relationship['db_type'], $model['name'], $model['model_relationship'], $relationship['field_name'], '', [
+            new RelationshipGenerator($relationship['db_type'], $model['name'], $relationship['model_relationship'], $relationship['field_name'], '', [
                 $relationship['show'] && 'Show',
                 $relationship['search'] && 'Search',
                 $relationship['sort'] && 'Sort',
-            ], '');
+            ], null, $relationship['field_name']);
         }
     }
 }

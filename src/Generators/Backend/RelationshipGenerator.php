@@ -18,17 +18,21 @@ class RelationshipGenerator extends BaseGenerator
 
     protected array $relationship;
 
-    public function __construct($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName)
+    public function __construct($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName, $columnChildren)
     {
         parent::__construct();
         $this->path = config('generator.path.laravel.migration');
         $this->notDelete = config('generator.not_delete.laravel.model');
         $this->relationship = config('generator.relationship.relationship');
 
-        return $this->_generate($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName);
+        if (!$columnChildren) {
+            $columnChildren = Str::snake($modelCurrent).self::_ID;
+        }
+
+        return $this->_generate($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName, $columnChildren);
     }
 
-    private function _generate($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName): string
+    private function _generate($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName, $columnChildren): string
     {
         $pathTemplate = 'Models/';
         $fileRelationship =
@@ -91,17 +95,17 @@ class RelationshipGenerator extends BaseGenerator
         } else {
             $templateModel = str_replace(
                 '{{FIELD_RELATIONSHIP}}',
-                "'".Str::snake($modelCurrent).self::_ID."'",
+                "'".$columnChildren."'",
                 $templateModel,
             );
             $templateInverse = str_replace(
                 '{{FIELD_RELATIONSHIP}}',
-                "'".Str::snake($modelCurrent).self::_ID."'",
+                "'".$columnChildren."'",
                 $templateInverse,
             );
             $templateInverse = str_replace('{{RELATION}}', 'belongsTo', $templateInverse);
         }
-        $migrateFile = $this->_migrateRelationship($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName);
+        $migrateFile = $this->_migrateRelationship($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName, $columnChildren);
         //replace file model real
         $templateModelReal = $this->serviceGenerator->getFile('model', 'laravel', $model.'.php');
         $this->_replaceFile($model, $templateInverse, $templateModelReal);
@@ -112,7 +116,7 @@ class RelationshipGenerator extends BaseGenerator
         return $migrateFile;
     }
 
-    private function _migrateRelationship($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName): string
+    private function _migrateRelationship($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName, $columnChildren): string
     {
         $now = Carbon::now();
         $pathTemplate = 'Databases/Migrations/';
@@ -122,14 +126,14 @@ class RelationshipGenerator extends BaseGenerator
             //belongsToMany
             $templateData = $this->serviceGenerator->get_template('migrationRelationshipMTM', $pathTemplate);
             //if belongsToMany replace table to create
-            $templateData = $this->_replaceTemplateRelationshipMTM($model, $modelCurrent, $templateData, $modelName);
+            $templateData = $this->_replaceTemplateRelationshipMTM($model, $columnChildren, $templateData, $modelName);
             $fileName = date('Y_m_d_His')."_relationship_{$this->serviceGenerator->tableName($modelName)}_table.php";
             $this->_generateModelMTM($model, $modelCurrent, $modelName);
             $this->_generateSeeder($modelCurrent, $model, $relationship);
             $this->_generateRoute($modelCurrent);
             $this->_generateRoute($model);
-            $this->_generateRequest($modelCurrent, $model, $relationship);
-            $this->_generateRequest($model, $modelCurrent, $relationship);
+            $this->_generateRequest($model, $relationship, Str::snake($modelCurrent) . self::_IDS);
+            $this->_generateRequest($modelCurrent, $relationship, Str::snake($model) . self::_IDS);
             $this->_generateController($modelCurrent, $model);
             $this->_generateController($model, $modelCurrent);
             $this->_generateTests($model);
@@ -139,15 +143,15 @@ class RelationshipGenerator extends BaseGenerator
             $this->_generateObserver($modelCurrent, $model);
             $this->_generateObserver($model, $modelCurrent);
             //generate frontend
-            $this->_generateFormFe($modelCurrent, $model, $column, $options, $relationship);
-            $this->_generateFormFe($model, $modelCurrent, $column2, $options, $relationship);
+            $this->_generateFormFe($modelCurrent, $model, $column, $options, $relationship, Str::snake($modelCurrent).self::_ID);
+            $this->_generateFormFe($model, $modelCurrent, $column2, $options, $relationship, Str::snake($model).self::_ID);
             if (!$this->jsType()) {
-                $this->_generateInterfaceCommon($modelCurrent, $model, $relationship);
-                $this->_generateInterfaceCommon($model, $modelCurrent, $relationship);
+                $this->_generateInterfaceCommon($modelCurrent, $model, $relationship, Str::snake($model).self::_IDS);
+                $this->_generateInterfaceCommon($model, $modelCurrent, $relationship, Str::snake($modelCurrent).self::_IDS);
             }
         } else {
             //hasOne or hasMany
-            $templateData = $this->_replaceTemplateRelationship($model, $modelCurrent, $templateData);
+            $templateData = $this->_replaceTemplateRelationship($model, $columnChildren, $templateData);
             $fileName =
                 date('Y_m_d_His').
                 '_relationship_'.
@@ -155,16 +159,16 @@ class RelationshipGenerator extends BaseGenerator
                 '_'.
                 $this->serviceGenerator->tableName($model).
                 '_table.php';
-            $this->_generateModel($modelCurrent, $model);
+            $this->_generateModel($model, $columnChildren);
             $this->_generateSeeder($modelCurrent, $model, $relationship);
             $this->_generateRoute($modelCurrent);
-            $this->_generateRequest($modelCurrent, $model, $relationship);
+            $this->_generateRequest($columnChildren, $model, $relationship);
             $this->_generateController($modelCurrent, $model);
             $this->_generateTests($modelCurrent);
             //generate frontend
-            $this->_generateFormFe($modelCurrent, $model, $column, $options, $relationship);
+            $this->_generateFormFe($modelCurrent, $model, $column, $options, $relationship, $columnChildren);
             if (!$this->jsType()) {
-                $this->_generateInterfaceCommon($modelCurrent, $model, $relationship);
+                $this->_generateInterfaceCommon($modelCurrent, $model, $relationship, $columnChildren);
             }
         }
 
@@ -173,7 +177,7 @@ class RelationshipGenerator extends BaseGenerator
         return $fileName;
     }
 
-    private function _generateFormFe($model, $modelRelationship, $columnRelationship, $options, $relationship)
+    private function _generateFormFe($model, $modelRelationship, $columnRelationship, $options, $relationship, $columnChildren)
     {
         $notDelete = config('generator.not_delete.vue.form');
         $isMTM = $relationship === $this->relationship['belongs_to_many'];
@@ -187,17 +191,17 @@ class RelationshipGenerator extends BaseGenerator
         }
         if (!$isMTM) {
             $templateRules = $this->_getHandlerTemplate();
-            $templateRules = str_replace('{{$FIELD$}}', Str::snake($model).self::_ID, $templateRules);
+            $templateRules = str_replace('{{$FIELD$}}', $columnChildren, $templateRules);
             $templateRules = str_replace('{{$ATTRIBUTE_FIELD$}}', 't(\'route.'.Str::snake($model).'\')', $templateRules);
             $templateRules = str_replace('{{$TRIGGER$}}', 'change', $templateRules);
             $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->jsType('form')}", [
                 'key' => 'uses.form:rules',
                 'items' => [
-                    Str::snake($model).self::_ID => $templateRules,
+                    $columnChildren => $templateRules,
                 ],
             ]);
         }
-        $field = $isMTM ? Str::snake($model).self::_IDS : Str::snake($model).self::_ID;
+        $field = $isMTM ? "{$columnChildren}s" : $columnChildren;
         $tableFunctionRelationship = $isMTM
             ? $this->serviceGenerator->tableName($model)
             : $this->serviceGenerator->tableNameNotPlural($model);
@@ -223,7 +227,7 @@ class RelationshipGenerator extends BaseGenerator
             'items' => [
                 $this->_generateSelect(
                     Str::snake($model),
-                    Str::snake($model).($isMTM ? self::_IDS : self::_ID),
+                    $field,
                     $columnRelationship,
                     $relationship,
                 ),
@@ -447,101 +451,7 @@ class RelationshipGenerator extends BaseGenerator
         $this->serviceFile->createFile(config('generator.path.vue.api'), $fileName, $templateDataReal);
     }
 
-    private function _generateIndexTableFe($modelRelationship, $columnRelationship, $options, $funcName, $relationship)
-    {
-        $configOptions = config('generator.relationship.options');
-        $notDelete = config('generator.not_delete.vue.views');
-        $fileName = $this->serviceGenerator->folderPages($modelRelationship).'/index.vue';
-        $templateDataReal = $this->serviceGenerator->getFile('views', 'vue', $fileName);
-        $pathTemplate = 'Handler/';
-
-        if (in_array($configOptions['show'], $options)) {
-            if ($relationship === $this->relationship['belongs_to_many']) {
-                $templateTableColumn = $this->serviceGenerator->get_template(
-                    'tableTagRelationshipMTM',
-                    $pathTemplate,
-                    'vue',
-                );
-                $fileNameTag = $funcName.'.'.$columnRelationship;
-                $templateTableColumn = str_replace('{{$FIELD_NAME$}}', $fileNameTag, $templateTableColumn);
-                $templateTableColumn = str_replace('{{$TABLE_MODEL_CLASS$}}', $funcName, $templateTableColumn);
-                $templateTableColumn = str_replace('{{$ALIGN$}}', 'left', $templateTableColumn);
-                $templateTableColumn = str_replace(
-                    '{{$MODEL_RELATIONSHIP$}}',
-                    $this->serviceGenerator->tableName($funcName),
-                    $templateTableColumn,
-                );
-                $templateTableColumn = str_replace('{{$COLUMN_DISPLAY$}}', $columnRelationship, $templateTableColumn);
-            } else {
-                $templateTableColumn = $this->serviceGenerator->get_template(
-                    'tableColumnRelationship',
-                    $pathTemplate,
-                    'vue',
-                );
-                $templateTableColumn = str_replace(
-                    '{{$FIELD_NAME_RELATIONSHIP$}}',
-                    $funcName.self::_ID,
-                    $templateTableColumn,
-                );
-                $templateTableColumn = str_replace(
-                    '{{$MODEL_RELATIONSHIP$}}',
-                    $this->serviceGenerator->tableNameNotPlural($funcName),
-                    $templateTableColumn,
-                );
-                $templateTableColumn = str_replace('{{$FIELD_NAME$}}', $columnRelationship, $templateTableColumn);
-                $templateTableColumn = str_replace('{{$TABLE_MODEL_CLASS$}}', $funcName, $templateTableColumn);
-                $templateTableColumn = str_replace('{{$ALIGN$}}', 'left', $templateTableColumn);
-            }
-
-            if (in_array($configOptions['sort'], $options)) {
-                $templateTableColumn = str_replace('{{$SORT$}}', self::SORT_COLUMN, $templateTableColumn);
-            } else {
-                $templateTableColumn = str_replace('{{$SORT$}}', '', $templateTableColumn);
-            }
-            $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-                $notDelete['templates'],
-                $templateTableColumn,
-                6,
-                $templateDataReal,
-                2,
-            );
-            // replace file
-            $fileName = config('generator.path.vue.views').$fileName;
-            $this->serviceFile->createFileReal($fileName, $templateDataReal);
-        }
-    }
-
-    private function _generateOptions($model, $modelRelationship, $templateDataReal, $relationship)
-    {
-        if ($relationship === $this->relationship['belongs_to_many']) {
-            $modelName = $this->serviceGenerator->modelNameNotPluralFe($model);
-            $functionShow = "this->{$modelName}Repository->show($$modelName, [";
-            $templateFunctionShow = $this->serviceGenerator->searchTemplate(
-                $functionShow,
-                ']);',
-                0,
-                0,
-                $templateDataReal,
-            );
-            if (!$templateFunctionShow) {
-                return $templateDataReal;
-            }
-            $commaFunctionShow = ',';
-            if (Str::endsWith($templateFunctionShow, ',') || strlen($templateFunctionShow) === strlen($functionShow)) {
-                $commaFunctionShow = '';
-            }
-            $withRelationship = "'{$this->serviceGenerator->modelNamePluralFe($modelRelationship)}'";
-            $templateDataReal = str_replace(
-                "$templateFunctionShow]);",
-                "{$templateFunctionShow}{$commaFunctionShow}{$withRelationship}]);",
-                $templateDataReal,
-            );
-        }
-
-        return $templateDataReal;
-    }
-
-    private function _generateRequest($modelRelationship, $model, $relationship)
+    private function _generateRequest($model, $relationship, $field)
     {
         $notDelete = config('generator.not_delete.laravel.request');
         $fileNameFunc = "Store{$model}Request.php";
@@ -553,7 +463,7 @@ class RelationshipGenerator extends BaseGenerator
         $rule = $isMTM ? "['array']" : "['integer', 'required']";
         $templateDataRealFunc = $this->serviceGenerator->replaceNotDelete(
             $notDelete['rule'],
-            "'".Str::snake($modelRelationship).($isMTM ? self::_IDS : self::_ID)."'".' => '."$rule,",
+            "'".$field."'".' => '."$rule,",
             3,
             $templateDataRealFunc,
         );
@@ -608,112 +518,6 @@ class RelationshipGenerator extends BaseGenerator
         $templateDataReal = $this->serviceGenerator->replaceEndFile($templateDataReal, $templateDataFunc, 0);
         $fileNameFunc = config('generator.path.laravel.tests.feature').$fileName;
         $this->serviceFile->createFileReal($fileNameFunc, $templateDataReal);
-    }
-
-    private function _generateRepository($modelRelationship, $model)
-    {
-        $notDelete = config('generator.not_delete.laravel.repository');
-        $pathTemplate = 'Repositories/';
-        $fileName = "$model/{$model}Repository.php";
-        $templateDataReal = $this->serviceGenerator->getFile('repository', 'laravel', $fileName);
-        if (!$templateDataReal) {
-            return;
-        }
-        if (stripos($templateDataReal, $notDelete['relationship_mtm'])) {
-            $templateFunction = $this->serviceGenerator->get_template('functionRelationship', $pathTemplate);
-            $templateDataReal = str_replace($notDelete['relationship_mtm'], $templateFunction, $templateDataReal);
-            $templateDataReal = str_replace(
-                '{{MODEL}}',
-                $this->serviceGenerator->modelNameNotPluralFe($model),
-                $templateDataReal,
-            );
-            $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-                $notDelete['use_class'],
-                'use Illuminate\Database\Eloquent\Model;',
-                0,
-                $templateDataReal,
-            );
-            $templateDataReal = str_replace($notDelete['use_class'], 'use Illuminate\Http\Request;', $templateDataReal);
-        }
-        $templateCreateUpdate = $this->serviceGenerator->get_template('createUpdateRelationship', $pathTemplate);
-        //replace create or update
-        //        $paramCreateUpdateStub = "{$this->serviceGenerator->modelNameNotPluralFe($modelRelationship)}Id";
-        //        $templateCreateUpdate = str_replace('{{FIELD_MODEL_ID}}', $paramCreateUpdateStub, $templateCreateUpdate);
-        $templateCreateUpdate = str_replace(
-            '{{SNAKE_FIELD_MODEL_ID}}',
-            $this->serviceGenerator->tableNameNotPlural($modelRelationship).self::_IDS,
-            $templateCreateUpdate,
-        );
-        $templateCreateUpdate = str_replace(
-            '{{SNAKE_FIELD_MODEL_ID}}',
-            $this->serviceGenerator->tableNameNotPlural($modelRelationship).self::_IDS,
-            $templateCreateUpdate,
-        );
-        $templateCreateUpdate = str_replace(
-            '{{MODEL}}',
-            $this->serviceGenerator->modelNameNotPluralFe($model),
-            $templateCreateUpdate,
-        );
-        $templateCreateUpdate = str_replace(
-            '{{MODEL_RELATIONSHIP}}',
-            $this->serviceGenerator->modelNamePluralFe($modelRelationship),
-            $templateCreateUpdate,
-        );
-        $templateCreate = str_replace('{{ATTACH_ASYNC}}', 'attach', $templateCreateUpdate);
-        $templateUpdate = str_replace('{{ATTACH_ASYNC}}', 'sync', $templateCreateUpdate);
-        //replace create
-        $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-            $notDelete['relationship_mtm_create'],
-            $templateCreate,
-            2,
-            $templateDataReal,
-        );
-        //replace update
-        $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-            $notDelete['relationship_mtm_update'],
-            $templateUpdate,
-            2,
-            $templateDataReal,
-        );
-        //replace show
-        $templateShow = $this->serviceGenerator->get_template('showRelationship', $pathTemplate);
-        $templateShow = str_replace('{{MODEL}}', $this->serviceGenerator->modelNameNotPluralFe($model), $templateShow);
-        $templateShow = str_replace(
-            '{{SNAKE_MODEL_RELATIONSHIP_ID}}',
-            $this->serviceGenerator->tableNameNotPlural($modelRelationship).self::_IDS,
-            $templateShow,
-        );
-        $templateShow = str_replace(
-            '{{MODEL_RELATIONSHIP}}',
-            $this->serviceGenerator->modelNamePluralFe($modelRelationship),
-            $templateShow,
-        );
-        $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-            $notDelete['relationship_mtm_show'],
-            $templateShow,
-            2,
-            $templateDataReal,
-        );
-        //replace delete
-        $templateDelete = $this->serviceGenerator->get_template('deleteRelationship', $pathTemplate);
-        $templateDelete = str_replace(
-            '{{MODEL}}',
-            $this->serviceGenerator->modelNameNotPluralFe($model),
-            $templateDelete,
-        );
-        $templateDelete = str_replace(
-            '{{MODEL_RELATIONSHIP}}',
-            $this->serviceGenerator->modelNamePluralFe($modelRelationship),
-            $templateDelete,
-        );
-        $templateDataReal = $this->serviceGenerator->replaceNotDelete(
-            $notDelete['relationship_mtm_delete'],
-            $templateDelete,
-            2,
-            $templateDataReal,
-        );
-        $path = config('generator.path.laravel.repository');
-        $this->serviceFile->createFileReal("$path/$fileName", $templateDataReal);
     }
 
     private function _generateObserver($modelRelationship, $model): void
@@ -816,7 +620,7 @@ class RelationshipGenerator extends BaseGenerator
     private function _replaceTemplateRelationship($model, $modelDif, $templateData): string
     {
         $templateData = str_replace('{{TABLE_NAME}}', $this->serviceGenerator->tableName($model), $templateData);
-        $templateData = str_replace('{{FOREIGN_KEY}}', Str::snake($modelDif).self::_ID, $templateData);
+        $templateData = str_replace('{{FOREIGN_KEY}}', $modelDif, $templateData);
 
         return str_replace('{{TABLE_FOREIGN_KEY}}', $this->serviceGenerator->tableName($modelDif), $templateData);
     }
@@ -841,14 +645,13 @@ class RelationshipGenerator extends BaseGenerator
         return str_replace('{{TABLE_FOREIGN_KEY_2}}', $this->serviceGenerator->tableName($modelCurrent), $templateData);
     }
 
-    private function _generateModel($model, $modelRelationship): void
+    private function _generateModel($modelRelationship, $columnChildren): void
     {
         $templateDataReal = $this->serviceGenerator->getFile('model', 'laravel', $modelRelationship.'.php');
         if (!$templateDataReal) {
             return;
         }
-        $field = Str::snake($model).self::_ID;
-        $templateDataReal = $this->phpParserService->addStringToArray($templateDataReal, $field, 'fillable');
+        $templateDataReal = $this->phpParserService->addStringToArray($templateDataReal, $columnChildren, 'fillable');
         $this->_createFileAll('model', $modelRelationship, $templateDataReal);
     }
 
@@ -946,14 +749,14 @@ class RelationshipGenerator extends BaseGenerator
         return $this->serviceGenerator->get_template('rules', 'Handler/', 'vue');
     }
 
-    private function _generateInterfaceCommon($modelCurrent, $model, $relationship)
+    private function _generateInterfaceCommon($modelCurrent, $model, $relationship, $field)
     {
         $path = config('generator.path.package.model');
         if ($relationship === $this->relationship['belongs_to_many']) {
             $fileName = "/{$this->serviceGenerator->folderPages($modelCurrent)}.{$this->jsType('ext')}";
             $nameColumnRelationship = Str::snake(Str::plural($model));
             $templateDataReal = $this->serviceGenerator->getFile('model', 'package', $fileName);
-            $modelIds = Str::snake($model).self::_IDS;
+            $modelIds = $field;
             $templateDataReal = $this->phpParserService->runParserJS(
                 $path.$fileName,
                 [
@@ -999,7 +802,7 @@ class RelationshipGenerator extends BaseGenerator
             // belongsTo
             $fileName = $this->serviceGenerator->folderPages($model).".{$this->jsType('ext')}";
             $templateDataReal = $this->serviceGenerator->getFile('model', 'package', $fileName);
-            $fieldModelCurrent = Str::snake($modelCurrent).self::_ID;
+            $fieldModelCurrent = $field;
             $nameColumnRelationship = Str::snake($modelCurrent);
             $templateDataReal = $this->phpParserService->runParserJS(
                 $path.$fileName,
