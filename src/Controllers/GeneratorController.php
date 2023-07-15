@@ -4,6 +4,7 @@ namespace LaraJS\Core\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
@@ -94,17 +95,19 @@ class GeneratorController extends BaseLaraJSController
             $model = $request->get('model', []);
             // git commit
             $this->_gitCommit($model['name']);
+            [$relationships, $fieldIgnoreRelationship] = $this->_handleFieldRelationship($fields);
             if (
                 $this->serviceGenerator->getOptions(config('generator.model.options.only_migrate'), $model['options'])
             ) {
-                $migrationGenerator = new MigrationGenerator($fields, $model);
-                new ModelGenerator($fields, $model);
+                $migrationGenerator = new MigrationGenerator($fieldIgnoreRelationship, $model);
+                new ModelGenerator($fieldIgnoreRelationship, $model);
                 $files['migration']['file'] = $migrationGenerator->file;
             } else {
-                $generateBackend = $this->_generateBackend($fields, $model);
-                $this->_generateFrontend($fields, $model);
+                $generateBackend = $this->_generateBackend($fieldIgnoreRelationship, $model);
+                $this->_generateFrontend($fieldIgnoreRelationship, $model);
                 $files = $this->_generateFile($model, $generateBackend);
             }
+            $this->_generateRelationship($relationships, $model);
             Generator::create([
                 'field' => json_encode($fields),
                 'model' => json_encode($model),
@@ -129,8 +132,9 @@ class GeneratorController extends BaseLaraJSController
             $renameFields = $request->get('rename', []);
             $changeFields = $request->get('change', []);
             $dropFields = $request->get('drop', []);
+            [$relationships, $fieldIgnoreRelationship] = $this->_handleFieldRelationship($updateFields);
             $updateFields = [
-                'updateFields' => $updateFields,
+                'updateFields' => $fieldIgnoreRelationship,
                 'renameFields' => $renameFields,
                 'changeFields' => $changeFields,
                 'dropFields' => $dropFields,
@@ -146,6 +150,7 @@ class GeneratorController extends BaseLaraJSController
                 $this->_generateBackendUpdate($generator, $model, $updateFields);
                 $this->_generateFrontendUpdate($model, $updateFields);
             }
+            $this->_generateRelationship($relationships, $model);
             $generator->update([
                 'field' => json_encode($fields),
             ]);
@@ -666,5 +671,25 @@ class GeneratorController extends BaseLaraJSController
                 'index' => false,
             ],
         ];
+    }
+
+    private function _handleFieldRelationship($fields): array
+    {
+        $dbType = config('generator.db_type');
+        $relationships = Arr::where($fields, fn ($field) => in_array($field['db_type'], [$dbType['hasOne'], $dbType['hasMany']]));
+        $fieldIgnoreRelationship = Arr::where($fields, fn ($field) => !in_array($field['db_type'], [$dbType['hasOne'], $dbType['hasMany']]));
+
+        return [$relationships, $fieldIgnoreRelationship];
+    }
+
+    private function _generateRelationship($relationships, $model): void
+    {
+        foreach ($relationships as $relationship) {
+            new RelationshipGenerator($relationship['db_type'], $model['name'], $model['model_relationship'], $relationship['field_name'], '', [
+                $relationship['show'] && 'Show',
+                $relationship['search'] && 'Search',
+                $relationship['sort'] && 'Sort',
+            ], '');
+        }
     }
 }

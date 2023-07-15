@@ -127,6 +127,9 @@ return [
         'longtext' => 'LONGTEXT',
         'enum' => 'ENUM',
         'json' => 'JSON',
+        // relationship
+        'hasOne' => 'hasOne',
+        'hasMany' => 'hasMany',
     ],
 
     /*
