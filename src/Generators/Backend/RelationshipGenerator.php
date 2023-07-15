@@ -24,10 +24,11 @@ class RelationshipGenerator extends BaseGenerator
         $this->path = config('generator.path.laravel.migration');
         $this->notDelete = config('generator.not_delete.laravel.model');
         $this->relationship = config('generator.relationship.relationship');
-        $this->_generate($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName);
+
+        return $this->_generate($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName);
     }
 
-    private function _generate($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName)
+    private function _generate($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName): string
     {
         $pathTemplate = 'Models/';
         $fileRelationship =
@@ -100,16 +101,18 @@ class RelationshipGenerator extends BaseGenerator
             );
             $templateInverse = str_replace('{{RELATION}}', 'belongsTo', $templateInverse);
         }
-        $this->_migrateRelationship($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName);
+        $migrateFile = $this->_migrateRelationship($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName);
         //replace file model real
         $templateModelReal = $this->serviceGenerator->getFile('model', 'laravel', $model.'.php');
         $this->_replaceFile($model, $templateInverse, $templateModelReal);
         //replace file model current real
         $templateModelCurrentReal = $this->serviceGenerator->getFile('model', 'laravel', $modelCurrent.'.php');
         $this->_replaceFile($modelCurrent, $templateModel, $templateModelCurrentReal);
+
+        return $migrateFile;
     }
 
-    private function _migrateRelationship($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName)
+    private function _migrateRelationship($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName): string
     {
         $now = Carbon::now();
         $pathTemplate = 'Databases/Migrations/';
@@ -166,6 +169,8 @@ class RelationshipGenerator extends BaseGenerator
         }
 
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
+
+        return $fileName;
     }
 
     private function _generateFormFe($model, $modelRelationship, $columnRelationship, $options, $relationship)

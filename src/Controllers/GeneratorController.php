@@ -381,7 +381,34 @@ class GeneratorController extends BaseLaraJSController
             $options = $request->get('options', []);
             // git commit
             $this->_gitCommit($model);
-            new RelationshipGenerator($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName);
+            $migrateFile = new RelationshipGenerator($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName);
+            if ($relationship === config('generator.relationship.relationship.belongs_to_many')) {
+                $fields = [
+                    $this->_mockField(1, $modelCurrent),
+                    $this->_mockField(2, $model),
+                ];
+                $model = [
+                    'name' => $modelName,
+                    'name_trans' => $modelName,
+                    'limit' => 25,
+                    'relationship' => $relationship,
+                    'options' => [
+                        config('generator.model.options.timestamps'),
+                        config('generator.model.options.only_migrate'),
+                    ],
+                ];
+                $files = [];
+                $configGeneratorLaravel = config('generator')['path']['delete_files']['laravel'];
+                $files['model'] = $configGeneratorLaravel['model'].$model['name'].'.php';
+                $files['migration']['file'] = $migrateFile;
+                Generator::create([
+                    'field' => json_encode($fields),
+                    'model' => json_encode($model),
+                    'table' => $this->serviceGenerator->tableName($modelName),
+                    'files' => json_encode($files),
+                ]);
+                $this->_exportDataGenerator();
+            }
             $this->_runCommand();
 
             return $this->jsonMessage(trans('messages.success'));
@@ -615,5 +642,29 @@ class GeneratorController extends BaseLaraJSController
         $gitAdd->run();
         $gitCommit = new Process(['git', 'commit', '-m', $commit, '--no-verify'], $basePath);
         $gitCommit->run();
+    }
+
+    private function _mockField($id, $model): array
+    {
+        return [
+            'id' => $id,
+            'field_name' => Str::snake($model).'_id',
+            'field_name_trans' => 'Foreign key',
+            'db_type' => 'BIGINT',
+            'enum' => [],
+            'length_varchar' => 0,
+            'default_value' => 'None',
+            'position_column' => 24,
+            'as_define' => null,
+            'after_column' => null,
+            'search' => false,
+            'sort' => false,
+            'show' => false,
+            'options' => [
+                'comment' => null,
+                'unique' => false,
+                'index' => false,
+            ],
+        ];
     }
 }
