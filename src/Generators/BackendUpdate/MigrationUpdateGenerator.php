@@ -79,7 +79,7 @@ class MigrationUpdateGenerator extends BaseGenerator
         $timeName = date('YmdHis');
         $pathTemplate = 'Databases/Migrations/';
         $templateData = $this->serviceGenerator->get_template('migrationUpdate', $pathTemplate);
-        $generateFileUp = $this->_generateFieldsUp($updateFields);
+        $generateFileUp = $this->_generateFieldsUp($updateFields, $model);
         $templateData = str_replace('{{FIELDS_UP}}', $generateFileUp, $templateData);
         $templateData = str_replace(
             '{{FIELDS_DOWN}}',
@@ -127,7 +127,7 @@ class MigrationUpdateGenerator extends BaseGenerator
         }
     }
 
-    private function _generateFieldsUp($updateFields): string
+    private function _generateFieldsUp($updateFields, $model): string
     {
         $fieldsGenerate = [];
 
@@ -147,6 +147,7 @@ class MigrationUpdateGenerator extends BaseGenerator
                     $configDBType,
                     $typeDB,
                     $typeLaravel,
+                    $model
                 );
                 if ($migrationField) {
                     $table = $migrationField;

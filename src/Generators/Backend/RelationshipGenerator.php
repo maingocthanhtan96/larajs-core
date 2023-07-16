@@ -18,7 +18,7 @@ class RelationshipGenerator extends BaseGenerator
 
     protected array $relationship;
 
-    public function __construct($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName, $columnChildren)
+    public function __construct($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName, $columnChildren = '', $ignoreMigrate = false)
     {
         parent::__construct();
         $this->path = config('generator.path.laravel.migration');
@@ -29,10 +29,10 @@ class RelationshipGenerator extends BaseGenerator
             $columnChildren = Str::snake($modelCurrent).self::_ID;
         }
 
-        return $this->_generate($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName, $columnChildren);
+        return $this->_generate($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName, $columnChildren, $ignoreMigrate);
     }
 
-    private function _generate($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName, $columnChildren): string
+    private function _generate($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName, $columnChildren, $ignoreMigrate): string
     {
         $pathTemplate = 'Models/';
         $fileRelationship =
@@ -105,7 +105,7 @@ class RelationshipGenerator extends BaseGenerator
             );
             $templateInverse = str_replace('{{RELATION}}', 'belongsTo', $templateInverse);
         }
-        $migrateFile = $this->_migrateRelationship($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName, $columnChildren);
+        $migrateFile = $this->_migrateRelationship($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName, $columnChildren, $ignoreMigrate);
         //replace file model real
         $templateModelReal = $this->serviceGenerator->getFile('model', 'laravel', $model.'.php');
         $this->_replaceFile($model, $templateInverse, $templateModelReal);
@@ -116,7 +116,7 @@ class RelationshipGenerator extends BaseGenerator
         return $migrateFile;
     }
 
-    private function _migrateRelationship($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName, $columnChildren): string
+    private function _migrateRelationship($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName, $columnChildren, $ignoreMigrate): string
     {
         $now = Carbon::now();
         $pathTemplate = 'Databases/Migrations/';
@@ -126,7 +126,7 @@ class RelationshipGenerator extends BaseGenerator
             //belongsToMany
             $templateData = $this->serviceGenerator->get_template('migrationRelationshipMTM', $pathTemplate);
             //if belongsToMany replace table to create
-            $templateData = $this->_replaceTemplateRelationshipMTM($model, $columnChildren, $templateData, $modelName);
+            $templateData = $this->_replaceTemplateRelationshipMTM($model, $modelCurrent, $templateData, $modelName);
             $fileName = date('Y_m_d_His')."_relationship_{$this->serviceGenerator->tableName($modelName)}_table.php";
             $this->_generateModelMTM($model, $modelCurrent, $modelName);
             $this->_generateSeeder($modelCurrent, $model, $relationship);
@@ -151,7 +151,7 @@ class RelationshipGenerator extends BaseGenerator
             }
         } else {
             //hasOne or hasMany
-            $templateData = $this->_replaceTemplateRelationship($model, $columnChildren, $templateData);
+            $templateData = $this->_replaceTemplateRelationship($model, $columnChildren, $templateData, $columnChildren);
             $fileName =
                 date('Y_m_d_His').
                 '_relationship_'.
@@ -162,7 +162,7 @@ class RelationshipGenerator extends BaseGenerator
             $this->_generateModel($model, $columnChildren);
             $this->_generateSeeder($modelCurrent, $model, $relationship);
             $this->_generateRoute($modelCurrent);
-            $this->_generateRequest($columnChildren, $model, $relationship);
+            $this->_generateRequest($model, $relationship, $columnChildren);
             $this->_generateController($modelCurrent, $model);
             $this->_generateTests($modelCurrent);
             //generate frontend
@@ -171,8 +171,9 @@ class RelationshipGenerator extends BaseGenerator
                 $this->_generateInterfaceCommon($modelCurrent, $model, $relationship, $columnChildren);
             }
         }
-
-        $this->serviceFile->createFile($this->path, $fileName, $templateData);
+        if (!$ignoreMigrate) {
+            $this->serviceFile->createFile($this->path, $fileName, $templateData);
+        }
 
         return $fileName;
     }
@@ -617,10 +618,10 @@ class RelationshipGenerator extends BaseGenerator
         $this->serviceFile->createFileReal(config('generator.path.laravel.model')."$model.php", $templateReal);
     }
 
-    private function _replaceTemplateRelationship($model, $modelDif, $templateData): string
+    private function _replaceTemplateRelationship($model, $modelDif, $templateData, $columnChildren): string
     {
         $templateData = str_replace('{{TABLE_NAME}}', $this->serviceGenerator->tableName($model), $templateData);
-        $templateData = str_replace('{{FOREIGN_KEY}}', $modelDif, $templateData);
+        $templateData = str_replace('{{FOREIGN_KEY}}', $columnChildren, $templateData);
 
         return str_replace('{{TABLE_FOREIGN_KEY}}', $this->serviceGenerator->tableName($modelDif), $templateData);
     }

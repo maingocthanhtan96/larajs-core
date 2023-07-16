@@ -679,9 +679,8 @@ class GeneratorService
     }
 
     // START - MIGRATION
-    public function migrationFields($field, $configDBType, $typeDB, $typeLaravel): string
+    public function migrationFields($field, $configDBType, $typeDB, $typeLaravel, $model): string
     {
-        $table = '';
         if ($field['db_type'] === $configDBType['enum']) {
             $enum = '';
             foreach ($field['enum'] as $keyEnum => $value) {
@@ -691,13 +690,28 @@ class GeneratorService
                     $enum .= "'$value',";
                 }
             }
-            $table = '$table->enum("'.trim($field['field_name']).'", ['.$enum.'])';
+
+            return '$table->enum("'.trim($field['field_name']).'", ['.$enum.'])';
         }
-        if ($field['db_type'] === $typeDB) {
-            $table = '$table->'.$typeLaravel.'("'.trim($field['field_name']).'")';
+        if (in_array($typeDB, [$configDBType['hasOne'], $configDBType['hasMany']])) {
+            $table = '$table';
+
+            return <<<MIGRATE
+$table
+                ->foreignId('{$field['field_name']}')
+                ->index()
+                ->constrained('{$this->tableName($field['model_relationship'])}')
+                ->onUpdate('cascade')
+                ->onDelete('cascade')
+MIGRATE;
+
         }
 
-        return $table;
+        if ($field['db_type'] === $typeDB) {
+            return '$table->'.$typeLaravel.'("'.trim($field['field_name']).'")';
+        }
+
+        return '';
     }
 
     public function migrationDefaultValue($field, $configDefaultValue): string

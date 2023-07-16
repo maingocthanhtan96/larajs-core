@@ -54,6 +54,7 @@ class MigrationGenerator extends BaseGenerator
                     $configDBType,
                     $typeDB,
                     $typeLaravel,
+                    $model,
                 );
                 if ($migrationField) {
                     $table = $migrationField;

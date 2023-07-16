@@ -99,14 +99,15 @@ class GeneratorController extends BaseLaraJSController
             if (
                 $this->serviceGenerator->getOptions(config('generator.model.options.only_migrate'), $model['options'])
             ) {
-                $migrationGenerator = new MigrationGenerator($fieldIgnoreRelationship, $model);
+                $migrationGenerator = new MigrationGenerator($fields, $model);
                 new ModelGenerator($fieldIgnoreRelationship, $model);
-                $files['migration']['file'] = $migrationGenerator->file;
             } else {
-                $generateBackend = $this->_generateBackend($fieldIgnoreRelationship, $model);
+                $migrationGenerator = new MigrationGenerator($fields, $model);
+                $this->_generateBackend($fieldIgnoreRelationship, $model);
                 $this->_generateFrontend($fieldIgnoreRelationship, $model);
-                $files = $this->_generateFile($model, $generateBackend);
+                $files = $this->_generateFile($model);
             }
+            $files['migration']['file'] = $migrationGenerator->file;
             $this->_generateRelationship($relationships, $model);
             Generator::create([
                 'field' => json_encode($fields),
@@ -133,7 +134,7 @@ class GeneratorController extends BaseLaraJSController
             $changeFields = $request->get('change', []);
             $dropFields = $request->get('drop', []);
             [$relationships, $fieldIgnoreRelationship] = $this->_handleFieldRelationship($updateFields);
-            $updateFields = [
+            $allFields = [
                 'updateFields' => $fieldIgnoreRelationship,
                 'renameFields' => $renameFields,
                 'changeFields' => $changeFields,
@@ -144,11 +145,12 @@ class GeneratorController extends BaseLaraJSController
             if (
                 $this->serviceGenerator->getOptions(config('generator.model.options.only_migrate'), $model['options'])
             ) {
-                new MigrationUpdateGenerator($generator, $model, $updateFields);
-                new ModelUpdateGenerator($model, $updateFields);
+                new MigrationUpdateGenerator($generator, $model, [...$allFields, 'updateFields' => $updateFields]);
+                new ModelUpdateGenerator($model, $allFields);
             } else {
-                $this->_generateBackendUpdate($generator, $model, $updateFields);
-                $this->_generateFrontendUpdate($model, $updateFields);
+                new MigrationUpdateGenerator($generator, $model, [...$allFields, 'updateFields' => $updateFields]);
+                $this->_generateBackendUpdate($generator, $model, $allFields);
+                $this->_generateFrontendUpdate($model, $allFields);
             }
             $this->_generateRelationship($relationships, $model);
             $generator->update([
@@ -489,9 +491,8 @@ class GeneratorController extends BaseLaraJSController
         }
     }
 
-    private function _generateBackend($fields, $model): array
+    private function _generateBackend($fields, $model): void
     {
-        $migrationGenerator = new MigrationGenerator($fields, $model);
         new ControllerGenerator($model);
         new SeederGenerator($model);
         new FactoryGenerator($fields, $model);
@@ -503,12 +504,6 @@ class GeneratorController extends BaseLaraJSController
         if ($this->serviceGenerator->getOptions(config('generator.model.options.test_cases'), $model['options'])) {
             new TestsGenerator($fields, $model);
         }
-
-        return [
-            'migration' => [
-                'file' => $migrationGenerator->file,
-            ],
-        ];
     }
 
     private function _generateFrontend($fields, $model): void
@@ -523,7 +518,7 @@ class GeneratorController extends BaseLaraJSController
         }
     }
 
-    private function _generateFile($model, $generateBackend): array
+    private function _generateFile($model): array
     {
         $files = [];
         $configGeneratorLaravel = config('generator')['path']['delete_files']['laravel'];
@@ -538,7 +533,6 @@ class GeneratorController extends BaseLaraJSController
         $files['repositories']['repository'] =
             $configGeneratorLaravel['repository'].$model['name'].'/'.$model['name'].'Repository.php';
         $files['observer'] = $configGeneratorLaravel['observer'].$model['name'].'Observer.php';
-        $files['migration'] = $configGeneratorLaravel['migration'].$generateBackend['migration']['file'];
         $files['seeder'] = $configGeneratorLaravel['seeder'].$model['name'].'Seeder.php';
         $files['factory'] = $configGeneratorLaravel['factory'].$model['name'].'Factory.php';
         $files['tests'] = $configGeneratorLaravel['tests']['feature'].$model['name'].'Test.php';
@@ -563,7 +557,6 @@ class GeneratorController extends BaseLaraJSController
 
     private function _generateBackendUpdate($generator, $model, $updateFields): void
     {
-        new MigrationUpdateGenerator($generator, $model, $updateFields);
         new ModelUpdateGenerator($model, $updateFields);
         new SeederUpdateGenerator($generator, $model, $updateFields);
         new FactoryUpdateGenerator($model, $updateFields);
@@ -685,11 +678,11 @@ class GeneratorController extends BaseLaraJSController
     private function _generateRelationship($relationships, $model): void
     {
         foreach ($relationships as $relationship) {
-            new RelationshipGenerator($relationship['db_type'], $model['name'], $relationship['model_relationship'], $relationship['field_name'], '', [
+            new RelationshipGenerator($relationship['db_type'], $model['name'], $relationship['model_relationship'], $relationship['model_column'], '', [
                 $relationship['show'] && 'Show',
                 $relationship['search'] && 'Search',
                 $relationship['sort'] && 'Sort',
-            ], null, $relationship['field_name']);
+            ], null, $relationship['field_name'], true);
         }
     }
 }

@@ -15,15 +15,16 @@ return new class extends Migration {
         Schema::create('{{TABLE_NAME}}', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->foreignId('{{FOREIGN_KEY_1}}')
+                ->index()
                 ->constrained('{{TABLE_FOREIGN_KEY_1}}')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             $table->foreignId('{{FOREIGN_KEY_2}}')
+                ->index()
                 ->constrained('{{TABLE_FOREIGN_KEY_2}}')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             $table->timestamps();
-            $table->index(['{{FOREIGN_KEY_1}}', '{{FOREIGN_KEY_2}}'], '{{FOREIGN_KEY_1}}_{{FOREIGN_KEY_2}}_index');
         });
     }
 
