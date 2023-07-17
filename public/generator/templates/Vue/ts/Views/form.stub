@@ -11,18 +11,14 @@ const coreStore = useCoreStore();
 const cancelToken = useCancelToken();
 
 onBeforeMount(async () => {
-  try {
-    coreStore.setLoading(true);
-    if (id) {
-      const {
-        data: { data: {{$CONST_MODEL_CLASS$}} },
-      } = await show(id, { cancelToken });
-      Object.assign(form, {{$CONST_MODEL_CLASS$}});
-    }
-    coreStore.setLoading(false);
-  } catch {
-    coreStore.setLoading(false);
+  coreStore.setLoading(true);
+  if (id) {
+    const {
+      data: { data: {{$CONST_MODEL_CLASS$}} },
+    } = await show(id, { cancelToken });
+    Object.assign(form, {{$CONST_MODEL_CLASS$}});
   }
+  coreStore.setLoading(false);
 });
 </script>
 
