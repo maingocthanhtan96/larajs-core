@@ -374,7 +374,7 @@ try {
     }
   }
   const { code } = generate(ast);
-  let formattedCode = prettier.format(code, {
+  let formattedCode = await prettier.format(code, {
     parser: 'typescript',
     semi: true,
     singleQuote: true,
@@ -400,5 +400,5 @@ try {
 
   console.log(formattedCode); // eslint-disable-line no-console
 } catch (error) {
-  // console.log(error);  // eslint-disable-line no-console
+  // console.log(error); // eslint-disable-line no-console
 }

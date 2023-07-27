@@ -1,3 +1,5 @@
+import { Permission } from '@larajs/permission';
+
 const {{$NAME_CONST$}} = {
   path: '/{{$PATH_ROUTE_MODEL_CLASS$}}',
   name: '{{$NAME_ROUTE_MODEL_CLASS$}}',
@@ -16,7 +18,7 @@ const {{$NAME_CONST$}} = {
         title: '{{$TITLE_ROUTE_MODEL_CLASS$}}_overview',
         icon: 'list',
         activeMenu: '/{{$PATH_ROUTE_MODEL_CLASS$}}',
-        permissions: ['VISIT'],
+        permissions: [Permission.VISIT],
       },
       hidden: true,
     },
@@ -29,7 +31,7 @@ const {{$NAME_CONST$}} = {
         activeMenu: '/{{$PATH_ROUTE_MODEL_CLASS$}}',
         title: '{{$TITLE_ROUTE_MODEL_CLASS$}}_create',
         icon: 'record_create',
-        permissions: ['CREATE'],
+        permissions: [Permission.CREATE],
       },
     },
     {
@@ -40,7 +42,7 @@ const {{$NAME_CONST$}} = {
       meta: {
         activeMenu: '/{{$PATH_ROUTE_MODEL_CLASS$}}',
         title: '{{$TITLE_ROUTE_MODEL_CLASS$}}_edit',
-        permissions: ['EDIT'],
+        permissions: [Permission.EDIT],
         icon: 'edit',
       },
     },
