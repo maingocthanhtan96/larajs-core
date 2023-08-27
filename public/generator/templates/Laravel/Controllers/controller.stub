@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Store{{MODAL_CLASS}}Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @group {{CONTROLLER_CLASS}}
@@ -53,7 +54,7 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
 		try {
             ${{MODAL_CLASS_PARAM}} = $this->{{MODAL_CLASS_PARAM}}Repository->store($request->validated());
 
-			return $this->jsonData(${{MODAL_CLASS_PARAM}}, trans('messages.create'));
+			return $this->jsonData(${{MODAL_CLASS_PARAM}}, trans('messages.create'), Response::HTTP_CREATED);
 		} catch (\Exception $e) {
 			return $this->jsonError($e);
 		}

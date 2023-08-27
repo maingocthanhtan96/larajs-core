@@ -14,7 +14,6 @@ class BaseLaraJSController extends BaseController
     {
         return response()->json(
             [
-                'success' => true,
                 'message' => $message,
                 'data' => $data,
             ],
@@ -29,7 +28,6 @@ class BaseLaraJSController extends BaseController
     {
         return response()->json(
             [
-                'success' => true,
                 'data' => [
                     'items' => $paginator->items(),
                     'total' => $paginator->total(),
@@ -53,8 +51,7 @@ class BaseLaraJSController extends BaseController
         if (app()->isProduction()) {
             return response()->json(
                 [
-                    'success' => false,
-                    'message' => trans('errors.unexpected_error'),
+                    'message' => $status >= Response::HTTP_INTERNAL_SERVER_ERROR ? trans('errors.unexpected_error') : $error->getMessage(),
                 ],
                 $status,
             );
@@ -62,7 +59,6 @@ class BaseLaraJSController extends BaseController
 
         return response()->json(
             [
-                'success' => false,
                 'message' => $error->getMessage(),
                 'file' => $error->getFile(),
                 'line' => $error->getLine(),
@@ -76,13 +72,11 @@ class BaseLaraJSController extends BaseController
      */
     public function jsonMessage(
         $message,
-        bool $success = true,
         bool $showMessage = true,
         int $status = Response::HTTP_OK,
     ): JsonResponse {
         return response()->json(
             [
-                'success' => $success,
                 'message' => $message,
                 'show_message' => $showMessage,
             ],
@@ -94,18 +88,16 @@ class BaseLaraJSController extends BaseController
     {
         return response()->json(
             [
-                'success' => false,
                 'errors' => $errors,
             ],
             Response::HTTP_UNPROCESSABLE_ENTITY,
         );
     }
 
-    public function jsonMetadata($data, $meta, bool $success = true, int $status = Response::HTTP_OK): JsonResponse
+    public function jsonMetadata($data, $meta, int $status = Response::HTTP_OK): JsonResponse
     {
         return response()->json(
             [
-                'success' => $success,
                 'data' => $data,
                 'meta' => $meta,
             ],
