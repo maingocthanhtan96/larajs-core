@@ -13,8 +13,7 @@ export function use{{$NAME_MODEL$}}Tables() {
       destroy,
     },
     query: {
-      orderBy: 'id',
-      direction: 'desc',
+      $orderBy: 'id desc',
       column_search: [],
       relationship: [],
     },

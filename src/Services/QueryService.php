@@ -43,16 +43,9 @@ class QueryService
     public array $betweenDate = [];
 
     /**
-     * ascending, descending
-     *
-     * @var ?string
-     */
-    public ?string $direction = '';
-
-    /**
      * Column to order
      */
-    public string $orderBy = '';
+    public array $orderBy = [];
 
     /**
      * Always order this column
@@ -99,10 +92,14 @@ class QueryService
             $endDate = Carbon::parse($this->betweenDate[1])->endOfDay();
             $q->whereBetween($this->columnDate, [$startDate, $endDate]);
         });
-        $query->when(
-            $this->orderBy && $this->direction,
-            fn(Builder $q) => $q->orderByRelationship($this->orderBy, convert_direction($this->direction)),
-        );
+
+        foreach ($this->orderBy as [$field, $direction]) {
+            $query->when(
+                $field,
+                fn(Builder $q) => $q->orderByRelationship($field, $direction),
+            );
+        }
+
 
         return $query;
     }
@@ -120,10 +117,22 @@ class QueryService
      */
     public function filters(array $filters): static
     {
-        foreach ($filters as $field => $filter) {
-            $filter && ($this->{$field} = $filter);
+        foreach ($filters as $field => $query) {
+            if (!$query) continue;
+            $this->{$field} = match ($field) {
+                'orderBy' => $this->parseOrderBy($query),
+                default => $query,
+            };
         }
 
         return $this;
+    }
+
+    protected function parseOrderBy(string $query): array
+    {
+        return Str::of($query)->explode(',')->map(function ($pair) {
+            [$field, $direction] = explode(' ', $pair) + ['', 'asc'];
+            return [trim($field), convert_direction($direction)];
+        })->all();
     }
 }

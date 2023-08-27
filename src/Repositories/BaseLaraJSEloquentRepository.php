@@ -110,9 +110,7 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
             'columnDate' => $request->get('column_date') ?? ($options['columnDate'] ?? ''),
             'search' => $request->get('search'),
             'betweenDate' => $request->get('between_date'),
-            'direction' => $request->get('direction'),
-            'orderBy' => $request->get('orderBy'),
-            'limit' => $request->get('limit'),
+            'orderBy' => $request->get('$orderBy'),
         ];
     }
 }
