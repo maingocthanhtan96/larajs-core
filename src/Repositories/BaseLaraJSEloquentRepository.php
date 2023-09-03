@@ -2,19 +2,22 @@
 
 namespace LaraJS\Core\Repositories;
 
+use Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use LaraJS\Core\Services\QueryService;
+use LaraJS\QueryParser\LaraJSQueryParser;
 
 abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInterface
 {
-    protected Model $model;
+    use LaraJSQueryParser;
 
+    protected Model $model;
     protected int $limit;
+    protected int $maxLimit;
 
     /**
      * @throws BindingResolutionException
@@ -23,34 +26,50 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
     {
         $this->setModel();
         $this->setLimit();
+        $this->setMaxLimit();
     }
 
     abstract public function getModel(): string;
 
     abstract public function getLimit(): int;
 
+    abstract public function getMaxLimit(): int;
+
     /**
      * @throws BindingResolutionException
      */
-    public function setModel()
+    public function setModel(): void
     {
         $this->model = app()->make($this->getModel());
     }
 
-    public function setLimit()
+    public function setLimit(): void
     {
         $this->limit = $this->getLimit();
     }
 
-    public function index(Request $request, array $options = []): Builder|LengthAwarePaginator
+    public function setMaxLimit(): void
+    {
+        $this->maxLimit = $this->getMaxLimit();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function index(Request $request, array $options = []): Builder|LengthAwarePaginator|Collection
     {
         $queryBuilder = $this->queryBuilder($request, $options);
         $isBuilder = $options['isBuilder'] ?? false;
         if ($isBuilder) {
             return $queryBuilder;
         }
+        $queryBuilder = $this->applyQueryBuilder($queryBuilder, $request);
 
-        return $queryBuilder->paginate($request->get('limit', $this->limit));
+        if ($request->get('page') === "-1") {
+            return $queryBuilder->take($this->maxLimit)->get();
+        }
+
+        return $queryBuilder->paginate(min($request->get('limit', $this->limit), $this->maxLimit));
     }
 
     public function store(array $data): Model
@@ -88,29 +107,8 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
         return $this->model->with($relationship)->get();
     }
 
-    public function getQueryService(): QueryService
-    {
-        return new QueryService($this->model);
-    }
-
     public function queryBuilder(Request $request, array $options): Builder
     {
-        return $this->getQueryService()
-            ->filters($this->handleFilters($request, $options))
-            ->query();
-    }
-
-    public function handleFilters(Request $request, array $options): array
-    {
-        return [
-            'select' => $request->get('select') ?? ($options['select'] ?? []),
-            'columnSearch' => $request->get('column_search') ?? ($options['columnSearch'] ?? []),
-            'withRelationship' => $request->get('relationship') ?? ($options['withRelationship'] ?? []),
-            'withAggregate' => $request->get('aggregate') ?? ($options['withAggregate'] ?? []),
-            'columnDate' => $request->get('column_date') ?? ($options['columnDate'] ?? ''),
-            'search' => $request->get('search'),
-            'betweenDate' => $request->get('between_date'),
-            'orderBy' => $request->get('$orderBy'),
-        ];
+        return $this->model->query();
     }
 }

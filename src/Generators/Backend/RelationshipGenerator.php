@@ -299,14 +299,14 @@ class RelationshipGenerator extends BaseGenerator
                     ? $this->serviceGenerator->modelNamePluralFe($model)
                     : $this->serviceGenerator->modelNameNotPluralFe($model);
             $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->jsType('table')}", [
-                'key' => 'uses.table:relationship',
+                'key' => 'uses.table:include',
                 'items' => [$withRelationship],
             ], $templateDataReal);
         }
         if (in_array($configOptions['search'], $options)) {
             $columnDidGenerate = Str::camel($model).".$columnRelationship";
             $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->jsType('table')}", [
-                'key' => 'uses.table:column_search',
+                'key' => 'uses.table:search:column',
                 'items' => [$columnDidGenerate],
             ], $templateDataReal);
         }

@@ -73,7 +73,7 @@ class GeneratorController extends BaseLaraJSController
             $query = $queryService->query();
             $generators = $query->paginate($queryService->limit);
 
-            return $this->jsonTable($generators);
+            return $this->jsonData($generators);
         } catch (\Exception $e) {
             return $this->jsonError($e);
         }
@@ -359,9 +359,11 @@ class GeneratorController extends BaseLaraJSController
                     //table exist
                     return $this->jsonData(1);
                 }
+
                 // table not exist
                 return $this->jsonData(2);
             }
+
             //name null
             return $this->jsonData(3);
         } catch (\Exception $e) {

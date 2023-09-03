@@ -67,7 +67,7 @@ class UsesGenerator extends BaseGenerator
             'items' => $this->serviceGenerator->generateColumns($fields, $model),
         ], $templateData);
         $templateData = $this->phpParserService->runParserJS("$path{$this->jsType('table')}", [
-            'key' => 'uses.table:column_search',
+            'key' => 'uses.table:search:column',
             'items' => $this->serviceGenerator->generateColumnSearch($fields),
         ], $templateData);
         $this->serviceFile->createFile($path, $this->jsType('table'), $templateData);

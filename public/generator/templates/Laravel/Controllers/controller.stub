@@ -23,24 +23,23 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
     /**
      * List
      *
-     * @queryParam search string Search columns specified by column_search. No-example
+     * @queryParam search[value] string The search value. No-example
+     * @queryParam search[column] string The search column. No-example
+     * @queryParam date[value] string[] The date value. No-example
+     * @queryParam date[column] string The date column. No-example
+     * @queryParam include string[] Specify relationships and aggregate. No-example
+     * @queryParam filter string https://www.jsonapi.net/usage/reading/filtering.html. No-example
+     * @queryParam select string Select column. Example: id,name,email,avatar,updated_at
+     * @queryParam orderBy string The sort records. Example: id desc
      * @queryParam limit number Limit. Example: 25.
      * @queryParam page number Page. Example: 1
-     * @queryParam direction string Direction (asc, desc). No-example
-     * @queryParam orderBy string Field order. No-example
-     * @queryParam column_date string Field default order. No-example
-     * @queryParam between_date string[] Start date and End date. No-example
-     * @queryParam select string[] Select column. No-example
-     * @queryParam column_search string[] Specify columns search. No-example
-     * @queryParam relationship string[] Specify relationships. Example: No-example
-     * @queryParam aggregate string[] Specify functions(count, exists, sum, min, max, avg). No-example
      */
 	public function index(Request $request): JsonResponse
 	{
 		try {
             ${{MODAL_CLASS_PARAM_LIST}} = $this->{{MODAL_CLASS_PARAM}}Repository->index($request);
 
-			return $this->jsonTable(${{MODAL_CLASS_PARAM_LIST}});
+			return $this->jsonData(${{MODAL_CLASS_PARAM_LIST}});
 		} catch (\Exception $e) {
 			return $this->jsonError($e);
 		}

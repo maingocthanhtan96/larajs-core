@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 interface BaseLaraJSRepositoryInterface
 {
-    public function index(Request $request, array $options): Builder|LengthAwarePaginator;
+    public function index(Request $request, array $options): Builder|LengthAwarePaginator|Collection;
 
     public function store(array $data): Model;
 
@@ -20,9 +20,6 @@ interface BaseLaraJSRepositoryInterface
 
     public function destroy(int $id): bool;
 
-    public function all(array $relationship): Collection;
-
     public function queryBuilder(Request $request, array $options): Builder;
 
-    public function handleFilters(Request $request, array $options): array;
 }

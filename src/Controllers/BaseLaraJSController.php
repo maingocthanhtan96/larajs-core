@@ -12,26 +12,22 @@ class BaseLaraJSController extends BaseController
 {
     public function jsonData($data, string $message = '', int $status = Response::HTTP_OK): JsonResponse
     {
+        if ($data instanceof LengthAwarePaginator) {
+            return response()->json(
+                [
+                    'data' => [
+                        'items' => $data->items(),
+                        'total' => $data->total(),
+                    ],
+                ],
+                $status,
+            );
+        }
+
         return response()->json(
             [
                 'message' => $message,
                 'data' => $data,
-            ],
-            $status,
-        );
-    }
-
-    /**
-     * @author tanmnt
-     */
-    public function jsonTable(LengthAwarePaginator $paginator, int $status = Response::HTTP_OK): JsonResponse
-    {
-        return response()->json(
-            [
-                'data' => [
-                    'items' => $paginator->items(),
-                    'total' => $paginator->total(),
-                ],
             ],
             $status,
         );

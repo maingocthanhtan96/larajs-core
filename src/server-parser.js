@@ -39,6 +39,15 @@ const addImport = (hasImportExist, data, lastImport, ast, isImportDefault = fals
     }
   }
 };
+// Trim specific characters from the beginning and end of a string
+const trimCharacters = (inputString, charactersToTrim) => {
+  // Create a regular expression pattern to match the specified characters
+  const pattern = `^[${charactersToTrim}]+|[${charactersToTrim}]+$`;
+  // eslint-disable-next-line security/detect-non-literal-regexp
+  const regex = new RegExp(pattern, 'g');
+  // Use replace() to remove the matched characters
+  return inputString.replace(regex, '');
+};
 
 try {
   const codeContent = readFileSync(process.argv[2], 'utf8');
@@ -208,30 +217,47 @@ try {
       });
       break;
     }
-    case 'uses.table:column_search':
-    case 'uses.table:relationship':
+    case 'uses.table:search:column':
+    case 'uses.table:include':
     case 'uses.table:columns': {
       traverse(ast, {
         VariableDeclarator(path) {
           if (t.isIdentifier(path.node.id, { name: 'table' })) {
             let astItems;
-            const name = data.key.split(':')[1];
+            const key = data.key.split(':');
+            const name = key[1];
             if (['columns'].includes(name)) {
               astItems = path.node.init?.arguments?.[0]?.properties?.find(property =>
                 t.isIdentifier(property.key, { name: name })
               );
             } else {
-              astItems = path.node.init?.arguments?.[0]?.properties?.find(property =>
+              const queryAstItems = path.node.init?.arguments?.[0]?.properties?.find(property =>
                 t.isIdentifier(property.key, { name: 'query' })
               );
-              astItems = astItems?.value?.properties?.find(property => t.isIdentifier(property.key, { name: name }));
+              const findAstItem = () => {
+                return queryAstItems?.value?.properties?.find(property => t.isIdentifier(property.key, { name: name }));
+              };
+              astItems = findAstItem();
+              if (!astItems) {
+                queryAstItems.value.properties.push(
+                  t.objectProperty(
+                    t.identifier(name),
+                    t.objectExpression([t.objectProperty(t.identifier('column'), t.stringLiteral(''))])
+                  )
+                );
+                astItems = findAstItem();
+              }
+              if (key.length === 3) {
+                astItems = astItems?.value?.properties?.find(property =>
+                  t.isIdentifier(property.key, { name: key[2] })
+                );
+              }
             }
 
             if (astItems?.value?.elements) {
               (data.items || []).forEach(item => {
                 switch (name) {
-                  case 'column_search':
-                  case 'relationship': {
+                  case 'include': {
                     astItems.value.elements.push(t.stringLiteral(item));
                     break;
                   }
@@ -240,6 +266,11 @@ try {
                   }
                 }
               });
+            } else if (astItems?.value?.value !== undefined) {
+              astItems.value.value = trimCharacters(
+                trimCharacters(astItems.value.value, ',') + ',' + data.items.join(','),
+                ','
+              );
             }
           }
         },
