@@ -16,7 +16,9 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
     use LaraJSQueryParser;
 
     protected Model $model;
+
     protected int $limit;
+
     protected int $maxLimit;
 
     /**
@@ -65,7 +67,7 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
         }
         $queryBuilder = $this->applyQueryBuilder($queryBuilder, $request);
 
-        if ($request->get('page') === "-1") {
+        if ($request->get('page') === '-1') {
             return $queryBuilder->take($this->maxLimit)->get();
         }
 

@@ -21,5 +21,4 @@ interface BaseLaraJSRepositoryInterface
     public function destroy(int $id): bool;
 
     public function queryBuilder(Request $request, array $options): Builder;
-
 }

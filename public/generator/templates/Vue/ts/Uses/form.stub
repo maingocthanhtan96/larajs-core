@@ -18,7 +18,7 @@ export function use{{$NAME_MODEL$}}Forms() {
   const state = reactive<{{$NAME_MODEL$}}Root>({});
   const rules = computed<FormRules>(() => ({}));
 
-  const formElement = reactive<FormElementType>({
+  const formElement: FormElementType ={
     name: '{{$NAME_TABLE$}}',
     ref: {{$CONST_NAME_MODEL$}}Ref,
     form: {
@@ -30,7 +30,7 @@ export function use{{$NAME_MODEL$}}Forms() {
       store,
       update
     },
-  });
+  };
 
   return {
     id,

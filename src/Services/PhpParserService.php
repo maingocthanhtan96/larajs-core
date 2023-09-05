@@ -12,6 +12,8 @@ use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter;
 use PhpParser\PrettyPrinter\Standard;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 class PhpParserService
 {
@@ -161,14 +163,19 @@ class PhpParserService
             file_put_contents($file, $templateDataReal);
         }
         $node = __DIR__ . '/../server-parser.js';
-        $cmd = "node $node $file " . base64_encode(json_encode($data));
-        exec($cmd, $output);
+        $cmd = ['/usr/local/bin/node', $node, $file, base64_encode(json_encode($data))];
+        $process = new Process($cmd);
+        $process->run();
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        $output =  $process->getOutput();
         if (!$output) {
-            \Log::error($cmd, $data);
+            \Log::error(implode(' ', $cmd), $data);
             abort(Response::HTTP_FORBIDDEN, 'Node parser output empty!');
         }
 
-        return implode(PHP_EOL, $output);
+        return $output;
     }
 
     public function itemFakers($fields): array

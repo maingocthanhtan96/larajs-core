@@ -130,12 +130,8 @@ class RelationshipGenerator extends BaseGenerator
             $fileName = date('Y_m_d_His')."_relationship_{$this->serviceGenerator->tableName($modelName)}_table.php";
             $this->_generateModelMTM($model, $modelCurrent, $modelName);
             $this->_generateSeeder($modelCurrent, $model, $relationship);
-            $this->_generateRoute($modelCurrent);
-            $this->_generateRoute($model);
             $this->_generateRequest($model, $relationship, Str::snake($modelCurrent) . self::_IDS);
             $this->_generateRequest($modelCurrent, $relationship, Str::snake($model) . self::_IDS);
-            $this->_generateController($modelCurrent, $model);
-            $this->_generateController($model, $modelCurrent);
             $this->_generateTests($model);
             $this->_generateTests($modelCurrent);
             //            $this->_generateRepository($modelCurrent, $model);
@@ -161,9 +157,7 @@ class RelationshipGenerator extends BaseGenerator
                 '_table.php';
             $this->_generateModel($model, $columnChildren);
             $this->_generateSeeder($modelCurrent, $model, $relationship);
-            $this->_generateRoute($modelCurrent);
             $this->_generateRequest($model, $relationship, $columnChildren);
-            $this->_generateController($modelCurrent, $model);
             $this->_generateTests($modelCurrent);
             //generate frontend
             $this->_generateFormFe($modelCurrent, $model, $column, $options, $relationship, $columnChildren);
@@ -280,9 +274,6 @@ class RelationshipGenerator extends BaseGenerator
             );
             $this->serviceFile->createFileReal("$path/{$this->jsType('table')}", $templateDataReal);
         }
-        //generate api
-        $this->_generateApi($model);
-        $this->_generateFunctionAll($model);
         //generate form item
         $this->_generateFormItem($model, $modelRelationship, $isMTM);
     }
@@ -347,33 +338,6 @@ class RelationshipGenerator extends BaseGenerator
         }
     }
 
-    // crate function "all" in file use
-    private function _generateFunctionAll($model): void
-    {
-        $fileName = "{$this->serviceGenerator->folderPages($model)}/{$this->jsType('index')}";
-        $templateDataRealRelationship = $this->serviceGenerator->getFile('uses', 'vue', $fileName);
-        $stubAddData = $this->serviceGenerator->get_template('addDataRelationship', 'Handler/', 'vue');
-        $nameFunctionAll = "all{$model}";
-        $stubAddData = str_replace(
-            '{{$USE_MODEL_RELATIONSHIP$}}',
-            $this->serviceGenerator->modelNamePluralFe($nameFunctionAll),
-            $stubAddData,
-        );
-        $stubAddData = str_replace(
-            '{{$MODEL_RELATIONSHIP$}}',
-            $this->serviceGenerator->modelNameNotPlural($model),
-            $stubAddData,
-        );
-        $fileName = config('generator.path.vue.uses').$fileName;
-        $templateDataRealRelationship = $this->phpParserService->runParserJS($fileName, [
-            'name' => "use{$this->serviceGenerator->modelNamePlural($model)}",
-            'key' => 'uses.index',
-            'value' => $stubAddData,
-            'property' => $this->serviceGenerator->modelNamePluralFe($nameFunctionAll),
-        ], $templateDataRealRelationship);
-        $this->serviceFile->createFileReal($fileName, $templateDataRealRelationship);
-    }
-
     private function _generateAddApi($model, $modelRelationship, $templateDataReal, $notDelete, $relationship): string
     {
         $path = config('generator.path.vue.uses');
@@ -414,7 +378,7 @@ class RelationshipGenerator extends BaseGenerator
             'name' => $useModel,
             'path' => "{$this->getImportJsOrTs()}/uses",
             'useName' => $useModel,
-            'useKey' => $this->serviceGenerator->modelNamePluralFe("all$model"),
+            'useKey' => "list: {$this->serviceGenerator->modelNameNotPluralFe($model)}List",
         ], $templateDataRealForm);
         if ($relationship === $this->relationship['belongs_to_many']) {
             $stubGetData = $this->serviceGenerator->get_template('getDataRelationshipMTM', 'Handler/', 'vue');
@@ -424,7 +388,7 @@ class RelationshipGenerator extends BaseGenerator
         }
         $stubGetData = str_replace(
             '{{$USE_MODEL_RELATIONSHIP$}}',
-            $this->serviceGenerator->modelNamePluralFe("all{$model}"),
+            "{$this->serviceGenerator->modelNameNotPluralFe($model)}List",
             $stubGetData,
         );
         $stubGetData = str_replace('{{$MODEL_RELATIONSHIP$}}', $nameModelRelationship, $stubGetData);
@@ -436,20 +400,6 @@ class RelationshipGenerator extends BaseGenerator
         $this->serviceFile->createFileReal($pathFile, $templateDataRealForm);
 
         return $templateDataReal;
-    }
-
-    private function _generateApi($model): void
-    {
-        $path = config('generator.path.vue.api');
-        $fileName = $this->serviceGenerator->folderPages($model).".{$this->jsType('ext')}";
-        $templateDataReal = $this->phpParserService->runParserJS($path.$fileName, [
-            'key' => 'api.import',
-            'name' => 'request',
-            'path' => "{$this->getImportJsOrTs()}/services",
-            'class_name' => "{$model}Resource",
-        ]);
-
-        $this->serviceFile->createFile(config('generator.path.vue.api'), $fileName, $templateDataReal);
     }
 
     private function _generateRequest($model, $relationship, $field)
@@ -470,40 +420,6 @@ class RelationshipGenerator extends BaseGenerator
         );
         $fileNameFunc = config('generator.path.laravel.request').$fileNameFunc;
         $this->serviceFile->createFileReal($fileNameFunc, $templateDataRealFunc);
-    }
-
-    private function _generateController($modelRelationship, $model)
-    {
-        $pathTemplate = 'Controllers/';
-        $fileName = $model.'Controller.php';
-        $templateDataReal = $this->serviceGenerator->getFile('api_controller', 'laravel', $fileName);
-        if (!$templateDataReal) {
-            return;
-        }
-        //generate options
-        $path = config('generator.path.laravel.api_controller');
-        $fileName = $path.$fileName;
-        $this->serviceFile->createFileReal($fileName, $templateDataReal);
-        //generate controller
-        $fileNameFunc = $modelRelationship.'Controller.php';
-        $templateDataRealFunc = $this->serviceGenerator->getFile('api_controller', 'laravel', $fileNameFunc);
-        if (!stripos($templateDataRealFunc, 'function all()')) {
-            $templateDataFunc = $this->serviceGenerator->get_template('relationship', $pathTemplate);
-            $templateDataFunc = str_replace('{{MODEL_RELATIONSHIP}}', $modelRelationship, $templateDataFunc);
-            $templateDataFunc = str_replace(
-                '{{PARAM_MODEL_RELATIONSHIP_LIST}}',
-                $this->serviceGenerator->modelNamePluralFe($modelRelationship),
-                $templateDataFunc,
-            );
-            $templateDataFunc = str_replace(
-                '{{PARAM_MODEL_RELATIONSHIP}}',
-                $this->serviceGenerator->modelNameNotPluralFe($modelRelationship),
-                $templateDataFunc,
-            );
-            $templateDataRealFunc = $this->serviceGenerator->replaceEndFile($templateDataRealFunc, $templateDataFunc, 1);
-            $fileNameFunc = $path.$fileNameFunc;
-            $this->serviceFile->createFileReal($fileNameFunc, $templateDataRealFunc);
-        }
     }
 
     private function _generateTests($modelRelationship)
@@ -579,37 +495,6 @@ class RelationshipGenerator extends BaseGenerator
         $templateDataRegisterEvent = $this->phpParserService->addCodeToFunction($templateDataRegisterEvent, "$model::observe({$model}Observer::class);\n", 'boot');
         $pathProvider = config('generator.path.laravel.provider');
         $this->serviceFile->createFileReal("$pathProvider/$fileName", $templateDataRegisterEvent);
-    }
-
-    private function _generateRoute($modelRelationship)
-    {
-        $templateDataReal = $this->serviceGenerator->getFile('api_routes', 'laravel');
-        if (!$templateDataReal) {
-            return;
-        }
-        if (!stripos($templateDataReal, "{$this->serviceGenerator->urlResource($modelRelationship)}/all")) {
-            $stubResource = "Route::apiResource('{{RESOURCE}}', '{{MODEL_CLASS}}Controller');";
-            $stubRoute = "Route::get('/{{MODEL}}/all', '{{CONTROLLER}}Controller@all')->name('{{MODEL}}.all');";
-            $templateResource = str_replace(
-                '{{RESOURCE}}',
-                $this->serviceGenerator->urlResource($modelRelationship),
-                $stubResource,
-            );
-            $templateResource = str_replace('{{MODEL_CLASS}}', $modelRelationship, $templateResource);
-            $templateRoute = str_replace(
-                '{{MODEL}}',
-                $this->serviceGenerator->urlResource($modelRelationship),
-                $stubRoute,
-            );
-            $templateRoute = str_replace('{{CONTROLLER}}', $modelRelationship, $templateRoute);
-            $templateDataReal = str_replace(
-                $templateResource,
-                $templateRoute.$this->serviceGenerator->infy_nl_tab(1, 3).$templateResource,
-                $templateDataReal,
-            );
-            $path = config('generator.path.laravel.api_routes');
-            $this->serviceFile->createFileReal($path, $templateDataReal);
-        }
     }
 
     private function _replaceFile($model, $templateModel, $templateReal)

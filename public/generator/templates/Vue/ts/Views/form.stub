@@ -27,5 +27,6 @@ onBeforeMount(async () => {
     <template #header>
       <h3>{{ id ? $t('route.{{$LANG_MODEL_CLASS$}}_edit') : $t('route.{{$LANG_MODEL_CLASS$}}_create') }}</h3>
     </template>
-    <form-element :form-element="formElement" />
+    <FormElement :form-element="formElement" />
+  </el-card>
 </template>

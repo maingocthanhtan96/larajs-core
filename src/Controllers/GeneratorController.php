@@ -40,11 +40,13 @@ use LaraJS\Core\Generators\FrontendUpdate\UsesUpdateGenerator;
 use LaraJS\Core\Models\Generator;
 use LaraJS\Core\Services\FileService;
 use LaraJS\Core\Services\GeneratorService;
-use LaraJS\Core\Services\QueryService;
+use LaraJS\QueryParser\LaraJSQueryParser;
 use Symfony\Component\Process\Process;
 
 class GeneratorController extends BaseLaraJSController
 {
+    use LaraJSQueryParser;
+
     /*@var service*/
     private GeneratorService $serviceGenerator;
 
@@ -59,19 +61,8 @@ class GeneratorController extends BaseLaraJSController
     public function index(Request $request): JsonResponse
     {
         try {
-            $queryService = new QueryService(new Generator());
-            $queryService->filters([
-                'select' => [],
-                'columnSearch' => ['table'],
-                'withRelationship' => [],
-                'search' => $request->get('search'),
-                'betweenDate' => $request->get('between_date'),
-                'direction' => $request->get('direction'),
-                'orderBy' => $request->get('orderBy'),
-                'limit' => $request->get('limit'),
-            ]);
-            $query = $queryService->query();
-            $generators = $query->paginate($queryService->limit);
+            $query = $this->applyQueryBuilder(Generator::query(), $request);
+            $generators = $query->paginate($request->get('limit'));
 
             return $this->jsonData($generators);
         } catch (\Exception $e) {
@@ -586,7 +577,6 @@ class GeneratorController extends BaseLaraJSController
             Artisan::call('migrate');
         }
         Artisan::call('vue-i18n:generate');
-        Artisan::call('scribe:generate');
         $this->__runPrettier();
     }
 
