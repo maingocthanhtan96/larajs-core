@@ -10,15 +10,15 @@ use Illuminate\Http\Request;
 
 interface BaseLaraJSRepositoryInterface
 {
-    public function index(Request $request, array $options): Builder|LengthAwarePaginator|Collection;
+    public function index(Request $request, array $options): LengthAwarePaginator|Collection;
 
     public function store(array $data): Model;
 
-    public function show(int $id, array $relationship): ?Model;
+    public function show(int $id, Request $request, array $options): ?Model;
 
     public function update(int $id, array $data): Model;
 
     public function destroy(int $id): bool;
 
-    public function queryBuilder(Request $request, array $options): Builder;
+    public function queryBuilder(): Builder;
 }

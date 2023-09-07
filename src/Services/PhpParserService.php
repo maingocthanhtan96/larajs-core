@@ -163,13 +163,13 @@ class PhpParserService
             file_put_contents($file, $templateDataReal);
         }
         $node = __DIR__ . '/../server-parser.js';
-        $cmd = ['/usr/local/bin/node', $node, $file, base64_encode(json_encode($data))];
+        $cmd = [config('generator.node_path'), $node, $file, base64_encode(json_encode($data))];
         $process = new Process($cmd);
         $process->run();
         if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
-        $output =  $process->getOutput();
+        $output = $process->getOutput();
         if (!$output) {
             \Log::error(implode(' ', $cmd), $data);
             abort(Response::HTTP_FORBIDDEN, 'Node parser output empty!');

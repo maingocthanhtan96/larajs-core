@@ -58,14 +58,9 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
     /**
      * @throws Exception
      */
-    public function index(Request $request, array $options = []): Builder|LengthAwarePaginator|Collection
+    public function index(Request $request, array $options = []): LengthAwarePaginator|Collection
     {
-        $queryBuilder = $this->queryBuilder($request, $options);
-        $isBuilder = $options['isBuilder'] ?? false;
-        if ($isBuilder) {
-            return $queryBuilder;
-        }
-        $queryBuilder = $this->applyQueryBuilder($queryBuilder, $request);
+        $queryBuilder = $this->applyQueryBuilder($this->queryBuilder(), $request, $options);
 
         if ($request->get('page') === '-1') {
             return $queryBuilder->take($this->maxLimit)->get();
@@ -83,9 +78,9 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
         return $model;
     }
 
-    public function show(int $id, array $relationship = []): Model
+    public function show(int $id, Request $request, array $options = []): Model
     {
-        return $this->model->with($relationship)->findOrFail($id);
+        return $this->applyQueryBuilder($this->queryBuilder(), $request, $options)->findOrFail($id);
     }
 
     public function update(int $id, array $data): Model
@@ -99,17 +94,12 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
 
     public function destroy(int $id): bool
     {
-        $model = $this->show($id);
+        $model = $this->model->findOrFail($id);
 
         return $model->delete();
     }
 
-    public function all(array $relationship = []): Collection
-    {
-        return $this->model->with($relationship)->get();
-    }
-
-    public function queryBuilder(Request $request, array $options): Builder
+    public function queryBuilder(): Builder
     {
         return $this->model->query();
     }
