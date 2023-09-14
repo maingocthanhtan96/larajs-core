@@ -68,13 +68,11 @@ class BaseLaraJSController extends BaseController
      */
     public function jsonMessage(
         $message,
-        bool $showMessage = true,
         int $status = Response::HTTP_OK,
     ): JsonResponse {
         return response()->json(
             [
                 'message' => $message,
-                'show_message' => $showMessage,
             ],
             $status,
         );

@@ -23,16 +23,16 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
     /**
      * List
      *
-     * @queryParam search[value] string The search value. No-example
-     * @queryParam search[column] string The search column. No-example
-     * @queryParam date[value] string[] The date value. No-example
-     * @queryParam date[column] string The date column. No-example
-     * @queryParam include string[] Specify relationships and aggregate. No-example
-     * @queryParam filter string https://www.jsonapi.net/usage/reading/filtering.html. No-example
-     * @queryParam select string Select column. No-example
-     * @queryParam orderBy string The sort records. Example: id desc
+     * @queryParam search[value] string The search value. No-example.
+     * @queryParam search[column] string The search column. No-example.
+     * @queryParam date[value] string[] The date value. No-example.
+     * @queryParam date[column] string The date column. No-example.
+     * @queryParam include string[] Specify relationships and aggregate. No-example.
+     * @queryParam filter string https://www.jsonapi.net/usage/reading/filtering.html. No-example.
+     * @queryParam select string Select column. No-example.
+     * @queryParam orderBy string The sort records. Example: id desc.
      * @queryParam limit number Limit. Example: 25.
-     * @queryParam page number Page. Example: 1
+     * @queryParam page number Page. Example: 1.
      */
 	public function index(Request $request): JsonResponse
 	{

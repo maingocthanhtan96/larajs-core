@@ -11,7 +11,7 @@ export interface {{$NAME_MODEL$}}Root {}
 export function use{{$NAME_MODEL$}}Forms() {
   const route = useRoute();
   const { t } = useI18n(); // eslint-disable-line
-  const { id } = route.params;
+  const id = route.params.id as string;
   const { store, update } = use{{$NAME_USES$}}();
   const {{$CONST_NAME_MODEL$}}Ref = ref<FormInstance>();
   const form = reactive<{{$NAME_MODEL$}}>({});

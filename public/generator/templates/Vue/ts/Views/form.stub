@@ -5,6 +5,7 @@ import { use{{$NAME_MODEL$}}Forms, use{{$NAME_USES$}} } from '@larajs/cms/uses';
 import { useCancelToken } from '@larajs/uses';
 import { useCoreStore } from '@larajs/core';
 
+// eslint-disable-next-line unused-imports/no-unused-vars
 const { id, form, state, formElement } = use{{$NAME_MODEL$}}Forms();
 const { show } = use{{$NAME_USES$}}();
 const coreStore = useCoreStore();
