@@ -1,6 +1,7 @@
 import { Resource } from '@larajs/cms/api';
+import { {{$MODEL_CLASS$}} } from '@larajs/common';
 
-class {{$MODEL_CLASS$}}Resource extends Resource {
+class {{$MODEL_CLASS$}}Resource extends Resource<{{$MODEL_CLASS$}}> {
   constructor() {
     super('/{{$MODEL_CLASS_URI$}}');
   }

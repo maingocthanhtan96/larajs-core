@@ -1,6 +1,10 @@
 <?php
 
 use App\Models\{{MODEL}};
+use Database\Seeders\{{MODEL}}Seeder;
+use Illuminate\Foundation\Testing\WithFaker;
+
+uses(WithFaker::class);
 
 beforeEach(function () {
     $faker = $this->faker;
@@ -10,31 +14,35 @@ beforeEach(function () {
     ];
 });
 
-test('get table {{MODEL_TEST}}', function () {
-    $response = $this->signIn()
-        ->get(route('{{ROUTE_RESOURCE}}.index', $this->query))
+test('get list {{{ROUTE_RESOURCE}} -> 200', function () {
+    {{MODEL}}Seeder::run(3);
+    $response = asAdmin()
+        ->get(route('{{ROUTE_RESOURCE}}.index', []))
         ->assertOK()
         ->json('data');
 
     expect($response)
-        ->toHaveKey('total')
-        ->total->toBeInt()
+        ->toHaveKeys(['total', 'items'])
+        ->and($response['total'])
+        ->toBeInt()
+        ->toBe(3)
         ->and($response['items'])
-        ->toBeArray();
+        ->toBeArray()
+        ->toHaveCount(3);
 });
 
-test('store a {{MODEL_TEST}}', function () {
-    $response = $this->signIn()
+test('store a {{MODEL_TEST}} -> 201', function () {
+    $response = asAdmin()
         ->post(route('{{ROUTE_RESOURCE}}.store'), $this->data)
-        ->assertOK()
+        ->assertCreated()
         ->json('data');
 
     expect($response)->not->toBeEmpty();
 });
 
-test('show a {{MODEL_TEST}}', function () {
-    ${{MODEL_VARIABLE}} = {{MODEL}}::factory()->create();
-    $response = $this->signIn()
+test('show a {{MODEL_TEST}} -> 200', function () {
+    ${{MODEL_VARIABLE}} = {{MODEL}}Seeder::run(1);
+    $response = asAdmin()
         ->get(route('{{ROUTE_RESOURCE}}.show', ['{{MODEL_SINGULAR}}' => ${{MODEL_VARIABLE}}->id]))
         ->assertOK()
         ->json('data');
@@ -42,9 +50,9 @@ test('show a {{MODEL_TEST}}', function () {
     expect($response)->id->toBe(${{MODEL_VARIABLE}}->id);
 });
 
-test('update a {{MODEL_TEST}}', function () {
-    ${{MODEL_VARIABLE}} = {{MODEL}}::factory()->create();
-    $response = $this->signIn()
+test('update a {{MODEL_TEST}} -> 200', function () {
+    ${{MODEL_VARIABLE}} = {{MODEL}}Seeder::run(1);
+    $response = asAdmin()
         ->put(route('{{ROUTE_RESOURCE}}.update', ['{{MODEL_SINGULAR}}' => ${{MODEL_VARIABLE}}->id]), $this->data)
         ->assertOK()
         ->json('data');
@@ -52,9 +60,9 @@ test('update a {{MODEL_TEST}}', function () {
     expect($response)->id->toBe(${{MODEL_VARIABLE}}->id);
 });
 
-test('destroy a {{MODEL_TEST}}', function () {
-    ${{MODEL_VARIABLE}} = {{MODEL}}::factory()->create();
-    $response = $this->signIn()
+test('destroy a {{MODEL_TEST}} -> 200', function () {
+    ${{MODEL_VARIABLE}} = {{MODEL}}Seeder::run(1);
+    $response = asAdmin()
         ->delete(route('{{ROUTE_RESOURCE}}.destroy', ['{{MODEL_SINGULAR}}' => ${{MODEL_VARIABLE}}->id]))
         ->assertOK()
         ->json();

@@ -575,7 +575,7 @@ class RelationshipGenerator extends BaseGenerator
                     ? $this->serviceGenerator->modelNameNotPlural($modelRelationship)
                     : $this->serviceGenerator->modelNamePlural($modelRelationship);
             $hasMethod = "has$nameModelRelationship";
-            $templateDataReal = $this->phpParserService->addNewMethod($templateDataReal, $hasMethod, 5);
+            $templateDataReal = $this->phpParserService->addNewMethod($templateDataReal, $hasMethod, 1);
             $this->_createFileAll('seeder', $fileName, $templateDataReal);
         }
 
@@ -586,7 +586,7 @@ class RelationshipGenerator extends BaseGenerator
             $forMethod = $relationship === $this->relationship['belongs_to_many']
                 ? "has{$this->serviceGenerator->modelNamePlural($model)}"
                 : "for{$this->serviceGenerator->modelNameNotPlural($model)}";
-            $templateDataReal = $this->phpParserService->addNewMethod($templateDataReal, $forMethod, $relationship === $this->relationship['belongs_to_many'] ? 5 : 0);
+            $templateDataReal = $this->phpParserService->addNewMethod($templateDataReal, $forMethod, $relationship === $this->relationship['belongs_to_many'] ? 1 : 0);
             $this->_createFileAll('seeder', $fileName, $templateDataReal);
         }
     }

@@ -9,7 +9,6 @@ use PhpParser\NodeFinder;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\ParserFactory;
-use PhpParser\PrettyPrinter;
 use PhpParser\PrettyPrinter\Standard;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -34,9 +33,8 @@ class PhpParserService
                 $fillableProperty->default = new Node\Expr\Array_([new Node\Scalar\String_($field)]);
             }
         }
-        $prettyPrinter = new PrettyPrinter\Standard();
 
-        return $prettyPrinter->prettyPrintFile($ast);
+        return $this->prettyPrintFile($ast);
     }
 
     public function addItemToArray(string $template, string $arrayParent, array $items): string
@@ -58,9 +56,8 @@ class PhpParserService
                 );
             }
         }
-        $prettyPrinter = new Standard();
 
-        return $prettyPrinter->prettyPrintFile($ast);
+        return $this->prettyPrintFile($ast);
     }
 
     public function addTemplateToArrayWithReturn(string $template, string $code): string
@@ -87,9 +84,8 @@ class PhpParserService
             return $node instanceof Node\Stmt\ClassMethod && $node->name->name === $functionName;
         });
         $node->stmts[] = $parser->parse('<?php ' . $code . ' ?>')[0];
-        $prettyPrinter = new Standard();
 
-        return $prettyPrinter->prettyPrintFile($ast);
+        return $this->prettyPrintFile($ast);
     }
 
     public function usePackage(string $template, string $code): string
@@ -105,9 +101,7 @@ class PhpParserService
             $namespace->stmts,
         );
 
-        $printer = new Standard();
-
-        return $printer->prettyPrintFile($stmts);
+        return $this->prettyPrintFile($stmts);
     }
 
     public function addFakerToFactory(string $template, array $fields, $isSignature = false): string
@@ -134,9 +128,8 @@ class PhpParserService
                 ),
             ]);
         }
-        $printer = new PrettyPrinter\Standard();
 
-        return $printer->prettyPrintFile($ast);
+        return $this->prettyPrintFile($ast);
     }
 
     public function addNewMethod(string $template, string $methodName, $argNumber = 0): string
@@ -265,5 +258,12 @@ class PhpParserService
         }
 
         return $itemFakers;
+    }
+
+    private function prettyPrintFile($ast): string
+    {
+        $printer = new Standard();
+
+        return $printer->prettyPrintFile($ast);
     }
 }
