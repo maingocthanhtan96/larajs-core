@@ -18,10 +18,9 @@ class RequestGenerator extends BaseGenerator
 
     private function _generate($fields, $model)
     {
-        $now = Carbon::now();
         $pathTemplate = 'Requests/';
         $templateData = $this->serviceGenerator->get_template('store', $pathTemplate);
-        $templateData = str_replace('{{DATE}}', $now->toDateTimeString(), $templateData);
+        $templateData = str_replace('{{VERSION}}', config('generator-mono.api_version'), $templateData);
         $templateData = str_replace('{{MODEL_CLASS}}', $model['name'], $templateData);
         $templateData = $this->serviceGenerator->replaceNotDelete(
             $this->notDelete['rule'],

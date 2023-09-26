@@ -1,10 +1,10 @@
 <?php
 
-$API_VERSION = env('API_VERSION_GENERATOR', 'v1') . '/';
+$API_VERSION = env('API_VERSION_GENERATOR', 'V1') . '/';
 
 return [
     'js_language' => 'ts',
-    'api_version' => env('API_VERSION_GENERATOR', 'v1'),
+    'api_version' => env('API_VERSION_GENERATOR', 'V1'),
     'node_path' => env('NODE_PATH', '/usr/local/bin/node'),
     'permission' => [
         'view_menu' => 'VIEW_MENU',
@@ -36,10 +36,10 @@ return [
             'repository' => app_path('Repositories/'),
             'observer' => app_path('Observers/'),
             'provider' => app_path('Providers/'),
-            'api_routes' => base_path('routes/api-' . env('API_VERSION_GENERATOR', 'v1') . '.php'),
+            'api_routes' => base_path('routes/api-' . strtolower(env('API_VERSION_GENERATOR', 'V1')) . '.php'),
             'api_controller' => app_path('Http/Controllers/Api/' . $API_VERSION),
             'lang' => base_path('lang/'),
-            'request' => app_path('Http/Requests/'),
+            'request' => app_path('Http/Requests/' . $API_VERSION),
             'tests' => [
                 'feature' => base_path('tests/Feature/'),
             ],
@@ -56,7 +56,7 @@ return [
                 'api_routes' => '/routes/api-v1.php',
                 'api_controller' => '/app/Http/Controllers/Api/' . $API_VERSION,
                 'lang' => '/lang/',
-                'request' => '/app/Http/Requests/',
+                'request' => '/app/Http/Requests/' . $API_VERSION,
                 'tests' => [
                     'feature' => '/tests/Feature/',
                 ],
@@ -157,7 +157,7 @@ return [
     'namespace' => [
         'model' => 'App\Models',
         'repository' => 'App\Repositories',
-        'api_controller' => 'App\Http\Controllers\Api\\' . env('API_VERSION_GENERATOR', 'v1'),
+        'api_controller' => 'App\Http\Controllers\Api\\' . env('API_VERSION_GENERATOR', 'V1'),
     ],
 
     /*

@@ -20,9 +20,8 @@ class ControllerGenerator extends BaseGenerator
 
     private function _generate($model): void
     {
-        $now = Carbon::now();
         $templateData = $this->serviceGenerator->get_template('controller', 'Controllers/');
-        $templateData = str_replace('{{DATE}}', $now->toDateTimeString(), $templateData);
+        $templateData = str_replace('{{VERSION}}', config('generator-mono.api_version'), $templateData);
         $templateData = str_replace('{{CONTROLLER_CLASS}}', $model['name'], $templateData);
         $templateData = str_replace('{{MODAL_CLASS}}', $model['name'], $templateData);
         $templateData = str_replace(
