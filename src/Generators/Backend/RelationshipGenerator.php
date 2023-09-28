@@ -132,10 +132,6 @@ class RelationshipGenerator extends BaseGenerator
             $this->_generateSeeder($modelCurrent, $model, $relationship);
             $this->_generateRequest($model, $relationship, Str::snake($modelCurrent) . self::_IDS);
             $this->_generateRequest($modelCurrent, $relationship, Str::snake($model) . self::_IDS);
-            $this->_generateTests($model);
-            $this->_generateTests($modelCurrent);
-            //            $this->_generateRepository($modelCurrent, $model);
-            //            $this->_generateRepository($model, $modelCurrent);
             $this->_generateObserver($modelCurrent, $model);
             $this->_generateObserver($model, $modelCurrent);
             //generate frontend
@@ -158,7 +154,6 @@ class RelationshipGenerator extends BaseGenerator
             $this->_generateModel($model, $columnChildren);
             $this->_generateSeeder($modelCurrent, $model, $relationship);
             $this->_generateRequest($model, $relationship, $columnChildren);
-            $this->_generateTests($modelCurrent);
             //generate frontend
             $this->_generateFormFe($modelCurrent, $model, $column, $options, $relationship, $columnChildren);
             if (!$this->jsType()) {
@@ -420,21 +415,6 @@ class RelationshipGenerator extends BaseGenerator
         );
         $fileNameFunc = config('generator.path.laravel.request').$fileNameFunc;
         $this->serviceFile->createFileReal($fileNameFunc, $templateDataRealFunc);
-    }
-
-    private function _generateTests($modelRelationship)
-    {
-        $fileName = "{$modelRelationship}Test.php";
-        $templateDataReal = $this->serviceGenerator->getFile('tests.feature', 'laravel', $fileName);
-        if (!$templateDataReal) {
-            return;
-        }
-        $templateDataFunc = $this->serviceGenerator->get_template('Relationship', 'Tests/');
-        $templateDataFunc = str_replace('{{MODEL_TEST}}', $this->serviceGenerator->modelNameTitle($modelRelationship), $templateDataFunc);
-        $templateDataFunc = str_replace('{{ROUTE_RESOURCE}}', $this->serviceGenerator->urlResource($modelRelationship), $templateDataFunc);
-        $templateDataReal = $this->serviceGenerator->replaceEndFile($templateDataReal, $templateDataFunc, 0);
-        $fileNameFunc = config('generator.path.laravel.tests.feature').$fileName;
-        $this->serviceFile->createFileReal($fileNameFunc, $templateDataReal);
     }
 
     private function _generateObserver($modelRelationship, $model): void

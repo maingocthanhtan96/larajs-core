@@ -17,32 +17,27 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
 {
     public function __construct(private readonly {{MODAL_CLASS}}Interface ${{MODAL_CLASS_PARAM}}Repository)
     {
-        permission_handle($this);
+        parent::permissions();
     }
 
     /**
      * List
-     *
+     * @queryParam select string Select column. No-example.
+     * @queryParam include string[] Specify relationships and aggregate. No-example.
+     * @queryParam filter string https://www.jsonapi.net/usage/reading/filtering.html. No-example.
      * @queryParam search[value] string The search value. No-example.
      * @queryParam search[column] string The search column. No-example.
      * @queryParam date[value] string[] The date value. No-example.
      * @queryParam date[column] string The date column. No-example.
-     * @queryParam include string[] Specify relationships and aggregate. No-example.
-     * @queryParam filter string https://www.jsonapi.net/usage/reading/filtering.html. No-example.
-     * @queryParam select string Select column. No-example.
      * @queryParam orderBy string The sort records. Example: id desc.
      * @queryParam limit number Limit. Example: 25.
      * @queryParam page number Page. Example: 1.
      */
 	public function index(Request $request): JsonResponse
 	{
-		try {
-            ${{MODAL_CLASS_PARAM_LIST}} = $this->{{MODAL_CLASS_PARAM}}Repository->index($request);
+        ${{MODAL_CLASS_PARAM_LIST}} = $this->{{MODAL_CLASS_PARAM}}Repository->index($request);
 
-			return $this->jsonData(${{MODAL_CLASS_PARAM_LIST}});
-		} catch (\Exception $e) {
-			return $this->jsonError($e);
-		}
+        return $this->jsonData(${{MODAL_CLASS_PARAM_LIST}});
 	}
 
     /**
@@ -50,27 +45,22 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
      */
 	public function store(Store{{MODAL_CLASS}}Request $request): JsonResponse
 	{
-		try {
-            ${{MODAL_CLASS_PARAM}} = $this->{{MODAL_CLASS_PARAM}}Repository->store($request->validated());
+        ${{MODAL_CLASS_PARAM}} = $this->{{MODAL_CLASS_PARAM}}Repository->store($request->validated());
 
-			return $this->jsonData(${{MODAL_CLASS_PARAM}}, trans('messages.create'), Response::HTTP_CREATED);
-		} catch (\Exception $e) {
-			return $this->jsonError($e);
-		}
+        return $this->jsonData(${{MODAL_CLASS_PARAM}}, trans('messages.create'), Response::HTTP_CREATED);
 	}
 
 	/**
 	 * Get
+	 *
+	 * @queryParam select string Select column. No-example.
+	 * @queryParam include string[] Specify relationships and aggregate. No-example.
 	 */
 	public function show(int ${{MODAL_CLASS_PARAM}}, Request $request): JsonResponse
 	{
-		try {
-		    ${{MODAL_CLASS_PARAM}} = $this->{{MODAL_CLASS_PARAM}}Repository->show(${{MODAL_CLASS_PARAM}}, $request);
+        ${{MODAL_CLASS_PARAM}} = $this->{{MODAL_CLASS_PARAM}}Repository->show(${{MODAL_CLASS_PARAM}}, $request);
 
-			return $this->jsonData(${{MODAL_CLASS_PARAM}});
-		} catch (\Exception $e) {
-			return $this->jsonError($e);
-		}
+        return $this->jsonData(${{MODAL_CLASS_PARAM}});
 	}
 
 	/**
@@ -78,13 +68,9 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
 	 */
 	public function update(int ${{MODAL_CLASS_PARAM}}, Store{{MODAL_CLASS}}Request $request): JsonResponse
 	{
-		try {
-		    ${{MODAL_CLASS_PARAM}} = $this->{{MODAL_CLASS_PARAM}}Repository->update(${{MODAL_CLASS_PARAM}}, $request->validated());
+        ${{MODAL_CLASS_PARAM}} = $this->{{MODAL_CLASS_PARAM}}Repository->update(${{MODAL_CLASS_PARAM}}, $request->validated());
 
-			return $this->jsonData(${{MODAL_CLASS_PARAM}}, trans('messages.update'));
-		} catch (\Exception $e) {
-			return $this->jsonError($e);
-		}
+        return $this->jsonData(${{MODAL_CLASS_PARAM}}, trans('messages.update'));
 	}
 
 	/**
@@ -92,12 +78,8 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
 	 */
     public function destroy(int ${{MODAL_CLASS_PARAM}}): JsonResponse
     {
-	    try {
-			$this->{{MODAL_CLASS_PARAM}}Repository->destroy(${{MODAL_CLASS_PARAM}});
+        $this->{{MODAL_CLASS_PARAM}}Repository->destroy(${{MODAL_CLASS_PARAM}});
 
-		    return $this->jsonMessage(trans('messages.delete'));
-	    } catch (\Exception $e) {
-	    	return $this->jsonError($e);
-	    }
+        return $this->jsonMessage(trans('messages.delete'));
     }
 }

@@ -35,9 +35,14 @@ test('store a {{MODEL_TEST}} -> 201', function () {
     $response = asAdmin()
         ->post(route('{{ROUTE_RESOURCE}}.store'), $this->data)
         ->assertCreated()
-        ->json('data');
+        ->json();
 
-    expect($response)->not->toBeEmpty();
+    expect($response)
+        ->toHaveKeys(['message', 'data'])
+        ->and($response['message'])
+        ->toBe(trans('messages.create'))
+        ->and($response['data'])
+        ->not->toBeEmpty();
 });
 
 test('show a {{MODEL_TEST}} -> 200', function () {
@@ -45,9 +50,14 @@ test('show a {{MODEL_TEST}} -> 200', function () {
     $response = asAdmin()
         ->get(route('{{ROUTE_RESOURCE}}.show', ['{{MODEL_SINGULAR}}' => ${{MODEL_VARIABLE}}->id]))
         ->assertOK()
-        ->json('data');
+        ->json();
 
-    expect($response)->id->toBe(${{MODEL_VARIABLE}}->id);
+    expect($response)
+        ->toHaveKeys(['message', 'data'])
+        ->and($response['message'])
+        ->toBeEmpty()
+        ->and($response['data'])
+        ->id->toBe(${{MODEL_VARIABLE}}->id);
 });
 
 test('update a {{MODEL_TEST}} -> 200', function () {
@@ -55,9 +65,14 @@ test('update a {{MODEL_TEST}} -> 200', function () {
     $response = asAdmin()
         ->put(route('{{ROUTE_RESOURCE}}.update', ['{{MODEL_SINGULAR}}' => ${{MODEL_VARIABLE}}->id]), $this->data)
         ->assertOK()
-        ->json('data');
+        ->json();
 
-    expect($response)->id->toBe(${{MODEL_VARIABLE}}->id);
+    expect($response)
+        ->toHaveKeys(['message', 'data'])
+        ->and($response['message'])
+        ->toBe(trans('messages.update'))
+        ->and($response['data'])
+        ->id->toBe(${{MODEL_VARIABLE}}->id);
 });
 
 test('destroy a {{MODEL_TEST}} -> 200', function () {
@@ -67,5 +82,8 @@ test('destroy a {{MODEL_TEST}} -> 200', function () {
         ->assertOK()
         ->json();
 
-    expect($response)->message->toBeString();
+    expect($response)
+        ->toHaveKey('message')
+        ->message->toBeString()
+        ->toBe(trans('messages.delete'))
 });

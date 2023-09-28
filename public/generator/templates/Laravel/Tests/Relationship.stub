@@ -1,6 +1,0 @@
-test('all {{MODEL_TEST}}', function () {
-    $response = $this->signIn()
-        ->get(route('{{ROUTE_RESOURCE}}.all')
-        ->assertOK()
-        ->json();
-});

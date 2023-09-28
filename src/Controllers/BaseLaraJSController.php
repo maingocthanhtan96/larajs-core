@@ -36,36 +36,6 @@ class BaseLaraJSController extends BaseController
     /**
      * @author tanmnt
      */
-    public function jsonError($error, int $status = Response::HTTP_INTERNAL_SERVER_ERROR): JsonResponse
-    {
-        if ($error instanceof HttpException) {
-            $status = $error->getStatusCode();
-        }
-        if ($error instanceof \Exception) {
-            write_log_exception($error);
-        }
-        if (app()->isProduction()) {
-            return response()->json(
-                [
-                    'message' => $status >= Response::HTTP_INTERNAL_SERVER_ERROR ? trans('errors.unexpected_error') : $error->getMessage(),
-                ],
-                $status,
-            );
-        }
-
-        return response()->json(
-            [
-                'message' => $error->getMessage(),
-                'file' => $error->getFile(),
-                'line' => $error->getLine(),
-            ],
-            $status,
-        );
-    }
-
-    /**
-     * @author tanmnt
-     */
     public function jsonMessage(
         $message,
         int $status = Response::HTTP_OK,

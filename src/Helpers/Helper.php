@@ -43,7 +43,7 @@ if (!function_exists('storage_exist_file')) {
             return false;
         }
 
-        return \Illuminate\Support\Facades\Storage::disk()->exists(parse_url($url, PHP_URL_PATH));
+        return \Illuminate\Support\Facades\Storage::disk()->fileExists(parse_url($url, PHP_URL_PATH));
     }
 }
 
