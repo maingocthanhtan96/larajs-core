@@ -11,11 +11,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use LaraJS\QueryParser\LaraJSQueryParser;
 
-abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInterface
+/**
+ * @template TModel
+ * @template-implements BaseLaraJSRepositoryInterface<TModel>
+ */
+abstract class  BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInterface
 {
     use LaraJSQueryParser;
 
-    protected Model $model;
+    public Model $model;
 
     protected int $limit;
 
@@ -45,20 +49,28 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
         $this->model = app()->make($this->getModel());
     }
 
+    /**
+     * @return void
+     */
     public function setLimit(): void
     {
         $this->limit = $this->getLimit();
     }
 
+    /**
+     * @return void
+     */
     public function setMaxLimit(): void
     {
         $this->maxLimit = $this->getMaxLimit();
     }
 
     /**
-     * @throws Exception
+     * @param Request $request
+     * @param array $options
+     * @return LengthAwarePaginator|TModel[]
      */
-    public function index(Request $request, array $options = []): LengthAwarePaginator|Collection
+    public function list(Request $request, array $options = []): LengthAwarePaginator|Collection
     {
         $queryBuilder = $this->applyQueryBuilder($this->queryBuilder(), $request, $options);
 
@@ -69,36 +81,56 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
         return $queryBuilder->paginate(min($request->get('limit', $this->limit), $this->maxLimit));
     }
 
-    public function store(array $data): Model
+    /**
+     * @param array $data
+     * @return TModel
+     */
+    public function create(array $data): Model
     {
-        $model = new $this->model();
-        $model->fill($data);
-        $model->save();
-
-        return $model;
+        return $this->save(new $this->model(), $data);
     }
 
-    public function show(int $id, Request $request, array $options = []): Model
+    /**
+     * @param int $id
+     * @param Request $request
+     * @param array $options
+     * @return TModel
+     */
+    public function find(int $id, Request $request, array $options = []): Model
     {
         return $this->applyQueryBuilder($this->queryBuilder(), $request, $options)->findOrFail($id);
     }
 
+    /**
+     * @param int $id
+     * @param array $data
+     * @return TModel
+     */
     public function update(int $id, array $data): Model
     {
-        $model = $this->model->findOrFail($id);
-        $model->fill($data);
-        $model->save();
+        return $this->save($this->model->findOrFail($id), $data);
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function destroy(int $id): bool
+    {
+        return $this->model->findOrFail($id)->delete();
+    }
+
+
+    public function save(Model $model, array $data): Model
+    {
+        $model->fill($data)->save();
 
         return $model;
     }
 
-    public function destroy(int $id): bool
-    {
-        $model = $this->model->findOrFail($id);
-
-        return $model->delete();
-    }
-
+    /**
+     * @return Builder
+     */
     public function queryBuilder(): Builder
     {
         return $this->model->query();
