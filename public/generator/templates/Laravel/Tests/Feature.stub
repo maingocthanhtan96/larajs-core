@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\{{MODEL}};
 use Database\Seeders\{{MODEL}}Seeder;
 use Illuminate\Foundation\Testing\WithFaker;
 
@@ -85,5 +84,5 @@ test('destroy a {{MODEL_TEST}} -> 200', function () {
     expect($response)
         ->toHaveKey('message')
         ->message->toBeString()
-        ->toBe(trans('messages.delete'))
+        ->toBe(trans('messages.delete'));
 });

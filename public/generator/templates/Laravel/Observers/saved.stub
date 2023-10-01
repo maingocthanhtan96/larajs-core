@@ -1,1 +1,1 @@
-request()->has('{{FIELD_NAME}}') && ${{MODAL_CLASS_PARAM}}->{{FUNCTION_NAME}}()->sync(request()->get('{{FIELD_NAME}}', []));
+request()->has('{{FIELD_NAME}}') && ${{MODEL_CLASS_PARAM}}->{{FUNCTION_NAME}}()->sync(request()->get('{{FIELD_NAME}}', []));

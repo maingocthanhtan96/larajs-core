@@ -2,7 +2,6 @@
 
 namespace LaraJS\Core\Generators\Backend;
 
-use Carbon\Carbon;
 use LaraJS\Core\Generators\BaseGenerator;
 
 class RequestGenerator extends BaseGenerator
@@ -20,7 +19,7 @@ class RequestGenerator extends BaseGenerator
     {
         $pathTemplate = 'Requests/';
         $templateData = $this->serviceGenerator->get_template('store', $pathTemplate);
-        $templateData = str_replace('{{VERSION}}', config('generator-mono.api_version'), $templateData);
+        $templateData = str_replace('{{VERSION}}', config('generator.api_version'), $templateData);
         $templateData = str_replace('{{MODEL_CLASS}}', $model['name'], $templateData);
         $templateData = $this->serviceGenerator->replaceNotDelete(
             $this->notDelete['rule'],

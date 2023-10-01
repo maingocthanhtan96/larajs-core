@@ -10,21 +10,21 @@ class {{MODEL_CLASS}}Observer
     /**
      * Handle the {{MODEL_CLASS}} "saved" event.
      *
-     * @param  {{MODEL_CLASS}}  ${{MODAL_CLASS_PARAM}}
+     * @param  {{MODEL_CLASS}}  ${{MODEL_CLASS_PARAM}}
      * @return void
      * @throws Throwable
      */
-    public function saved({{MODEL_CLASS}} ${{MODAL_CLASS_PARAM}}): void
+    public function saved({{MODEL_CLASS}} ${{MODEL_CLASS_PARAM}}): void
     {
     }
 
     /**
      * Handle the {{MODEL_CLASS}} "deleted" event.
      *
-     * @param  {{MODEL_CLASS}}  ${{MODAL_CLASS_PARAM}}
+     * @param  {{MODEL_CLASS}}  ${{MODEL_CLASS_PARAM}}
      * @return void
      */
-    public function deleted({{MODEL_CLASS}} ${{MODAL_CLASS_PARAM}}): void
+    public function deleted({{MODEL_CLASS}} ${{MODEL_CLASS_PARAM}}): void
     {
     }
 }

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\{{VERSION}};
 
-use App\Repositories\{{MODAL_CLASS}}\{{MODAL_CLASS}}Interface;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Store{{MODAL_CLASS}}Request;
+use App\Http\Requests\{{VERSION}}\Store{{MODEL_CLASS}}Request;
+use App\Services\{{VERSION}}\{{MODEL_CLASS}}\{{MODEL_CLASS}}Service;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class {{CONTROLLER_CLASS}}Controller extends Controller
 {
-    public function __construct(private readonly {{MODAL_CLASS}}Interface ${{MODAL_CLASS_PARAM}}Repository)
+    public function __construct(private readonly {{MODEL_CLASS}}Service ${{MODEL_CLASS_PARAM}}Service)
     {
         parent::permissions();
     }
@@ -35,19 +35,19 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
      */
 	public function index(Request $request): JsonResponse
 	{
-        ${{MODAL_CLASS_PARAM_LIST}} = $this->{{MODAL_CLASS_PARAM}}Repository->index($request);
+        ${{MODEL_CLASS_PARAM_LIST}} = $this->{{MODEL_CLASS_PARAM}}Service->list($request);
 
-        return $this->jsonData(${{MODAL_CLASS_PARAM_LIST}});
+        return $this->jsonData(${{MODEL_CLASS_PARAM_LIST}});
 	}
 
     /**
      * Create
      */
-	public function store(Store{{MODAL_CLASS}}Request $request): JsonResponse
+	public function store(Store{{MODEL_CLASS}}Request $request): JsonResponse
 	{
-        ${{MODAL_CLASS_PARAM}} = $this->{{MODAL_CLASS_PARAM}}Repository->store($request->validated());
+        ${{MODEL_CLASS_PARAM}} = $this->{{MODEL_CLASS_PARAM}}Service->create($request->validated());
 
-        return $this->jsonData(${{MODAL_CLASS_PARAM}}, trans('messages.create'), Response::HTTP_CREATED);
+        return $this->jsonData(${{MODEL_CLASS_PARAM}}, trans('messages.create'), Response::HTTP_CREATED);
 	}
 
 	/**
@@ -56,29 +56,29 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
 	 * @queryParam select string Select column. No-example.
 	 * @queryParam include string[] Specify relationships and aggregate. No-example.
 	 */
-	public function show(int ${{MODAL_CLASS_PARAM}}, Request $request): JsonResponse
+	public function show(int ${{MODEL_CLASS_PARAM}}, Request $request): JsonResponse
 	{
-        ${{MODAL_CLASS_PARAM}} = $this->{{MODAL_CLASS_PARAM}}Repository->show(${{MODAL_CLASS_PARAM}}, $request);
+        ${{MODEL_CLASS_PARAM}} = $this->{{MODEL_CLASS_PARAM}}Service->find(${{MODEL_CLASS_PARAM}}, $request);
 
-        return $this->jsonData(${{MODAL_CLASS_PARAM}});
+        return $this->jsonData(${{MODEL_CLASS_PARAM}});
 	}
 
 	/**
 	 * Update
 	 */
-	public function update(int ${{MODAL_CLASS_PARAM}}, Store{{MODAL_CLASS}}Request $request): JsonResponse
+	public function update(int ${{MODEL_CLASS_PARAM}}, Store{{MODEL_CLASS}}Request $request): JsonResponse
 	{
-        ${{MODAL_CLASS_PARAM}} = $this->{{MODAL_CLASS_PARAM}}Repository->update(${{MODAL_CLASS_PARAM}}, $request->validated());
+        ${{MODEL_CLASS_PARAM}} = $this->{{MODEL_CLASS_PARAM}}Service->update(${{MODEL_CLASS_PARAM}}, $request->validated());
 
-        return $this->jsonData(${{MODAL_CLASS_PARAM}}, trans('messages.update'));
+        return $this->jsonData(${{MODEL_CLASS_PARAM}}, trans('messages.update'));
 	}
 
 	/**
 	 * Delete
 	 */
-    public function destroy(int ${{MODAL_CLASS_PARAM}}): JsonResponse
+    public function destroy(int ${{MODEL_CLASS_PARAM}}): JsonResponse
     {
-        $this->{{MODAL_CLASS_PARAM}}Repository->destroy(${{MODAL_CLASS_PARAM}});
+        $this->{{MODEL_CLASS_PARAM}}Service->destroy(${{MODEL_CLASS_PARAM}});
 
         return $this->jsonMessage(trans('messages.delete'));
     }

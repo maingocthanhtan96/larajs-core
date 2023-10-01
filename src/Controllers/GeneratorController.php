@@ -20,6 +20,7 @@ use LaraJS\Core\Generators\Backend\RepositoryGenerator;
 use LaraJS\Core\Generators\Backend\RequestGenerator;
 use LaraJS\Core\Generators\Backend\RouteGenerator;
 use LaraJS\Core\Generators\Backend\SeederGenerator;
+use LaraJS\Core\Generators\Backend\ServiceGenerator;
 use LaraJS\Core\Generators\Backend\TestsGenerator;
 use LaraJS\Core\Generators\BackendUpdate\FactoryUpdateGenerator;
 use LaraJS\Core\Generators\BackendUpdate\LangUpdateGenerator;
@@ -60,306 +61,282 @@ class GeneratorController extends BaseLaraJSController
 
     public function index(Request $request): JsonResponse
     {
-        try {
-            $query = $this->applyQueryBuilder(Generator::query(), $request);
-            $generators = $query->paginate($request->get('limit'));
+        $query = $this->applyQueryBuilder(Generator::query(), $request);
+        $generators = $query->paginate($request->get('limit'));
 
-            return $this->jsonData($generators);
-        } catch (\Exception $e) {
-            return $this->jsonError($e);
-        }
+        return $this->jsonData($generators);
     }
 
     public function show(Generator $generator): JsonResponse
     {
-        try {
-            return $this->jsonData($generator);
-        } catch (\Exception $e) {
-            return $this->jsonError($e);
-        }
+        return $this->jsonData($generator);
     }
 
     public function store(Request $request): JsonResponse
     {
-        try {
-            $fields = $request->get('fields', []);
-            $model = $request->get('model', []);
-            // git commit
-            $this->_gitCommit($model['name']);
-            [$relationships, $fieldIgnoreRelationship] = $this->_handleFieldRelationship($fields);
-            if (
-                $this->serviceGenerator->getOptions(config('generator.model.options.only_migrate'), $model['options'])
-            ) {
-                $migrationGenerator = new MigrationGenerator($fields, $model);
-                new ModelGenerator($fieldIgnoreRelationship, $model);
-            } else {
-                $migrationGenerator = new MigrationGenerator($fields, $model);
-                $this->_generateBackend($fieldIgnoreRelationship, $model);
-                $this->_generateFrontend($fieldIgnoreRelationship, $model);
-                $files = $this->_generateFile($model);
-            }
-            $files['migration']['file'] = $migrationGenerator->file;
-            $this->_generateRelationship($relationships, $model);
-            Generator::create([
-                'field' => json_encode($fields),
-                'model' => json_encode($model),
-                'table' => $this->serviceGenerator->tableName($model['name']),
-                'files' => json_encode($files),
-            ]);
-            $this->_exportDataGenerator();
-            $this->_runCommand($model);
-
-            return $this->jsonMessage(trans('messages.success'));
-        } catch (\Exception $e) {
-            return $this->jsonError($e);
+        $fields = $request->get('fields', []);
+        $model = $request->get('model', []);
+        // git commit
+        $this->_gitCommit($model['name']);
+        [$relationships, $fieldIgnoreRelationship] = $this->_handleFieldRelationship($fields);
+        if (
+            $this->serviceGenerator->getOptions(config('generator.model.options.only_migrate'), $model['options'])
+        ) {
+            $migrationGenerator = new MigrationGenerator($fields, $model);
+            new ModelGenerator($fieldIgnoreRelationship, $model);
+        } else {
+            $migrationGenerator = new MigrationGenerator($fields, $model);
+            $this->_generateBackend($fieldIgnoreRelationship, $model);
+            $this->_generateFrontend($fieldIgnoreRelationship, $model);
+            $files = $this->_generateFile($model);
         }
+        $files['migration']['file'] = $migrationGenerator->file;
+        $this->_generateRelationship($relationships, $model);
+        Generator::create([
+            'field' => json_encode($fields),
+            'model' => json_encode($model),
+            'table' => $this->serviceGenerator->tableName($model['name']),
+            'files' => json_encode($files),
+        ]);
+        $this->_exportDataGenerator();
+        $this->_runCommand($model);
+
+        return $this->jsonMessage(trans('messages.success'));
     }
 
     public function update(Request $request, Generator $generator): JsonResponse
     {
-        try {
-            $fields = $request->get('fields', []);
-            $updateFields = $request->get('fields_update', []);
-            $model = $request->get('model', []);
-            $renameFields = $request->get('rename', []);
-            $changeFields = $request->get('change', []);
-            $dropFields = $request->get('drop', []);
-            [$relationships, $fieldIgnoreRelationship] = $this->_handleFieldRelationship($updateFields);
-            $allFields = [
-                'updateFields' => $fieldIgnoreRelationship,
-                'renameFields' => $renameFields,
-                'changeFields' => $changeFields,
-                'dropFields' => $dropFields,
-            ];
-            // git commit
-            $this->_gitCommit($model['name']);
-            if (
-                $this->serviceGenerator->getOptions(config('generator.model.options.only_migrate'), $model['options'])
-            ) {
-                new MigrationUpdateGenerator($generator, $model, [...$allFields, 'updateFields' => $updateFields]);
-                new ModelUpdateGenerator($model, $allFields);
-            } else {
-                new MigrationUpdateGenerator($generator, $model, [...$allFields, 'updateFields' => $updateFields]);
-                $this->_generateBackendUpdate($generator, $model, $allFields);
-                $this->_generateFrontendUpdate($model, $allFields);
-            }
-            $this->_generateRelationship($relationships, $model);
-            $generator->update([
-                'field' => json_encode($fields),
-            ]);
-            $this->_exportDataGenerator();
-            $this->_runCommand();
-
-            return $this->jsonMessage(trans('messages.success'));
-        } catch (\Exception $e) {
-            return $this->jsonError($e);
+        $fields = $request->get('fields', []);
+        $updateFields = $request->get('fields_update', []);
+        $model = $request->get('model', []);
+        $renameFields = $request->get('rename', []);
+        $changeFields = $request->get('change', []);
+        $dropFields = $request->get('drop', []);
+        [$relationships, $fieldIgnoreRelationship] = $this->_handleFieldRelationship($updateFields);
+        $allFields = [
+            'updateFields' => $fieldIgnoreRelationship,
+            'renameFields' => $renameFields,
+            'changeFields' => $changeFields,
+            'dropFields' => $dropFields,
+        ];
+        // git commit
+        $this->_gitCommit($model['name']);
+        if (
+            $this->serviceGenerator->getOptions(config('generator.model.options.only_migrate'), $model['options'])
+        ) {
+            new MigrationUpdateGenerator($generator, $model, [...$allFields, 'updateFields' => $updateFields]);
+            new ModelUpdateGenerator($model, $allFields);
+        } else {
+            new MigrationUpdateGenerator($generator, $model, [...$allFields, 'updateFields' => $updateFields]);
+            $this->_generateBackendUpdate($generator, $model, $allFields);
+            $this->_generateFrontendUpdate($model, $allFields);
         }
+        $this->_generateRelationship($relationships, $model);
+        $generator->update([
+            'field' => json_encode($fields),
+        ]);
+        $this->_exportDataGenerator();
+        $this->_runCommand();
+
+        return $this->jsonMessage(trans('messages.success'));
     }
 
     public function destroy(Generator $generator): JsonResponse
     {
-        try {
-            $model = json_decode($generator->model, true);
-            $files = json_decode($generator->files, true);
-            $generatorService = new GeneratorService();
-            $fileService = new FileService();
+        $model = json_decode($generator->model, true);
+        $files = json_decode($generator->files, true);
+        $generatorService = new GeneratorService();
+        $fileService = new FileService();
 
-            $this->_gitCommit($model['name']);
-            // START - Remove File
-            foreach ($files as $file) {
-                if (is_array($file)) {
-                    foreach ($file as $fileInside) {
-                        if (file_exists(base_path($fileInside))) {
-                            unlink(base_path($fileInside));
-                        }
-                    }
-                } else {
-                    if (file_exists(base_path($file))) {
-                        unlink(base_path($file));
+        $this->_gitCommit($model['name']);
+        // START - Remove File
+        foreach ($files as $file) {
+            if (is_array($file)) {
+                foreach ($file as $fileInside) {
+                    if (file_exists(base_path($fileInside))) {
+                        unlink(base_path($fileInside));
                     }
                 }
+            } else {
+                if (file_exists(base_path($file))) {
+                    unlink(base_path($file));
+                }
             }
-            // END - Remove File
-            // START - search route
-            $templateDataRouteReal = $this->serviceGenerator->getFile('api_routes', 'laravel');
-            $startRoute = "/*<==> {$model['name']} Route -";
-            $endRoute = "'{$model['name']}Controller');";
-            $templateDataRoute = $generatorService->searchTemplate(
-                $startRoute,
-                $endRoute,
-                0,
-                strlen($endRoute),
-                $templateDataRouteReal,
-            );
-            $templateDataRouteReal = str_replace($templateDataRoute, '', $templateDataRouteReal);
-            $fileService->createFileReal(config('generator.path.laravel.api_routes'), $templateDataRouteReal);
-            // END - search route
-            // START - search lang
-            $nameLanguages = ['route', 'table'];
-            $languages = config('generator.not_delete.laravel.lang');
-            $tableName = $this->serviceGenerator->tableNameNotPlural($model['name']);
-            foreach ($languages as $key => $langComment) {
-                foreach ($nameLanguages as $nameLang) {
-                    $templateDataLangReal = $this->serviceGenerator->getFile(
-                        'lang',
-                        'laravel',
-                        $key.'/'.$nameLang.'.php',
-                    );
-                    if ($nameLang === 'route') {
-                        $startRouteTable = "// START - {$generatorService->tableNameNotPlural($model['name'])}\n";
-                        $endRouteTable = "// END - {$generatorService->tableNameNotPlural($model['name'])}\n";
-                        $templateDataLangRoute = $generatorService->searchTemplate(
-                            $startRouteTable,
-                            $endRouteTable,
-                            0,
-                            strlen($endRouteTable),
-                            $templateDataLangReal,
-                        );
-                        $templateDataLangReal = str_replace($templateDataLangRoute, '', $templateDataLangReal);
-                    }
-
-                    if ($nameLang === 'table') {
-                        $quoteTable = "'".$tableName."' => [";
-                        $templateDataLangTable = $this->serviceGenerator->searchTemplate(
-                            $quoteTable,
-                            '],',
-                            0,
-                            4,
-                            $templateDataLangReal,
-                        );
-                        $templateDataLangReal = str_replace($templateDataLangTable, '', $templateDataLangReal);
-                    }
-                    $fileService->createFileReal(
-                        config('generator.path.laravel.lang').$key.'/'.$nameLang.'.php',
+        }
+        // END - Remove File
+        // START - search route
+        $templateDataRouteReal = $this->serviceGenerator->getFile('api_routes', 'laravel');
+        $startRoute = "/*<==> {$model['name']} Route -";
+        $endRoute = "'{$model['name']}Controller');";
+        $templateDataRoute = $generatorService->searchTemplate(
+            $startRoute,
+            $endRoute,
+            0,
+            strlen($endRoute),
+            $templateDataRouteReal,
+        );
+        $templateDataRouteReal = str_replace($templateDataRoute, '', $templateDataRouteReal);
+        $fileService->createFileReal(config('generator.path.laravel.api_routes'), $templateDataRouteReal);
+        // END - search route
+        // START - search lang
+        $nameLanguages = ['route', 'table'];
+        $languages = config('generator.not_delete.laravel.lang');
+        $tableName = $this->serviceGenerator->tableNameNotPlural($model['name']);
+        foreach ($languages as $key => $langComment) {
+            foreach ($nameLanguages as $nameLang) {
+                $templateDataLangReal = $this->serviceGenerator->getFile(
+                    'lang',
+                    'laravel',
+                    $key.'/'.$nameLang.'.php',
+                );
+                if ($nameLang === 'route') {
+                    $startRouteTable = "// START - {$generatorService->tableNameNotPlural($model['name'])}\n";
+                    $endRouteTable = "// END - {$generatorService->tableNameNotPlural($model['name'])}\n";
+                    $templateDataLangRoute = $generatorService->searchTemplate(
+                        $startRouteTable,
+                        $endRouteTable,
+                        0,
+                        strlen($endRouteTable),
                         $templateDataLangReal,
                     );
+                    $templateDataLangReal = str_replace($templateDataLangRoute, '', $templateDataLangReal);
                 }
-            }
-            // END - search lang
-            // START - repository provider
-            $fileName = 'RepositoryServiceProvider.php';
-            $templateRepositoryProviderDataReal = $this->serviceGenerator->getFile('provider', 'laravel', $fileName);
-            $model['class'] = 'Repository';
-            $templateRepositoryProviderDataReal = str_replace(
-                $this->serviceGenerator->generateRepositoryProvider('use_class', $model),
-                '',
-                $templateRepositoryProviderDataReal,
-            );
-            $model['class'] = 'Interface';
-            $templateRepositoryProviderDataReal = str_replace(
-                $this->serviceGenerator->generateRepositoryProvider('use_class', $model),
-                '',
-                $templateRepositoryProviderDataReal,
-            );
-            $templateRepositoryProviderDataReal = str_replace(
-                $this->serviceGenerator->generateRepositoryProvider('register', $model),
-                '',
-                $templateRepositoryProviderDataReal,
-            );
-            $path = config('generator.path.laravel.provider');
-            $fileService->createFileReal("$path/$fileName", $templateRepositoryProviderDataReal);
-            // END - repository provider
-            // START - event provider
-            $fileName = 'EventServiceProvider.php';
-            $templateRepositoryProviderDataReal = $this->serviceGenerator->getFile('provider', 'laravel', $fileName);
-            $templateRepositoryProviderDataReal = str_replace(
-                $this->serviceGenerator->generateObserverProvider('use_class_model', $model),
-                '',
-                $templateRepositoryProviderDataReal,
-            );
-            $templateRepositoryProviderDataReal = str_replace(
-                $this->serviceGenerator->generateObserverProvider('use_class_observer', $model),
-                '',
-                $templateRepositoryProviderDataReal,
-            );
-            $templateRepositoryProviderDataReal = str_replace(
-                $this->serviceGenerator->generateObserverProvider('register', $model),
-                '',
-                $templateRepositoryProviderDataReal,
-            );
-            $path = config('generator.path.laravel.provider');
-            $fileService->createFileReal("$path/$fileName", $templateRepositoryProviderDataReal);
-            // END - event provider
-            // START - api VueJS
-            $pathApiVueJSReal = config('generator.path.vue.api').'index.ts';
-            $templateDataApiVueJSReal = $this->serviceGenerator->getFile('api', 'vue', 'index.ts');
-            $replace = "export { default as {$model['name']}Resource } from './{$generatorService->nameAttribute($model['name'])}';";
-            $templateDataApiVueJSReal = str_replace(
-                [$replace . PHP_EOL, $replace],
-                '',
-                $templateDataApiVueJSReal,
-            );
-            $fileService->createFileReal($pathApiVueJSReal, $templateDataApiVueJSReal);
-            // END - api VueJS
-            // START - route VueJS
-            $pathRouteVueJSReal = config('generator.path.vue.router').'index.ts';
-            $templateDataRouteVueJSReal = $this->serviceGenerator->getFile('router', 'vue', 'index.ts');
-            $replace = "import {$generatorService->modelNameNotPluralFe(
-                $model['name'],
-            )} from '{$this->baseGenerator->getImportJsOrTs()}/router/modules/{$generatorService->nameAttribute($model['name'])}';";
-            $templateDataRouteVueJSReal = str_replace(
-                [$replace . PHP_EOL, $replace],
-                '',
-                $templateDataRouteVueJSReal,
-            );
-            $replace = "{$generatorService->modelNameNotPluralFe($model['name'])},";
-            $templateDataRouteVueJSReal = str_replace(
-                [$replace . PHP_EOL, $replace],
-                '',
-                $templateDataRouteVueJSReal,
-            );
-            $fileService->createFileReal($pathRouteVueJSReal, $templateDataRouteVueJSReal);
-            // END - route VueJS
-            // START - USES
-            $templateDataUsesIndex = $this->serviceGenerator->getFile('uses', 'vue', 'index.ts');
-            $fileNameUses = $this->serviceGenerator->folderPages($model['name']);
-            $templateDataUsesIndex = str_replace("export * from './$fileNameUses';", '', $templateDataUsesIndex);
-            $pathUses = config('generator.path.vue.uses');
-            $fileService->createFileReal("{$pathUses}index.ts", $templateDataUsesIndex);
-            // END - USES
-            // START - package common
-            if (config('generator.js_language') === 'ts') {
-                $pathPackageModelReal = config('generator.path.package.model').'index.ts';
-                $templateDataPackageModelReal = $this->serviceGenerator->getFile('model', 'package', 'index.ts');
-                $replace = "export * from './{$generatorService->nameAttribute($model['name'])}';";
-                $templateDataPackageModelReal = str_replace(
-                    [$replace . PHP_EOL, $replace],
-                    '',
-                    $templateDataPackageModelReal,
-                );
-                $fileService->createFileReal($pathPackageModelReal, $templateDataPackageModelReal);
-            }
-            // END - package common
-            $generator->delete();
-            $this->__runPrettier();
 
-            return $this->jsonMessage(trans('messages.success'));
-        } catch (\Exception $e) {
-            return $this->jsonError($e);
+                if ($nameLang === 'table') {
+                    $quoteTable = "'".$tableName."' => [";
+                    $templateDataLangTable = $this->serviceGenerator->searchTemplate(
+                        $quoteTable,
+                        '],',
+                        0,
+                        4,
+                        $templateDataLangReal,
+                    );
+                    $templateDataLangReal = str_replace($templateDataLangTable, '', $templateDataLangReal);
+                }
+                $fileService->createFileReal(
+                    config('generator.path.laravel.lang').$key.'/'.$nameLang.'.php',
+                    $templateDataLangReal,
+                );
+            }
         }
+        // END - search lang
+        // START - repository provider
+        $fileName = 'RepositoryServiceProvider.php';
+        $templateRepositoryProviderDataReal = $this->serviceGenerator->getFile('provider', 'laravel', $fileName);
+        $model['class'] = 'Repository';
+        $templateRepositoryProviderDataReal = str_replace(
+            $this->serviceGenerator->generateRepositoryProvider('use_class', $model),
+            '',
+            $templateRepositoryProviderDataReal,
+        );
+        $model['class'] = 'Interface';
+        $templateRepositoryProviderDataReal = str_replace(
+            $this->serviceGenerator->generateRepositoryProvider('use_class', $model),
+            '',
+            $templateRepositoryProviderDataReal,
+        );
+        $templateRepositoryProviderDataReal = str_replace(
+            $this->serviceGenerator->generateRepositoryProvider('register', $model),
+            '',
+            $templateRepositoryProviderDataReal,
+        );
+        $path = config('generator.path.laravel.provider');
+        $fileService->createFileReal("$path/$fileName", $templateRepositoryProviderDataReal);
+        // END - repository provider
+        // START - event provider
+        $fileName = 'EventServiceProvider.php';
+        $templateRepositoryProviderDataReal = $this->serviceGenerator->getFile('provider', 'laravel', $fileName);
+        $templateRepositoryProviderDataReal = str_replace(
+            $this->serviceGenerator->generateObserverProvider('use_class_model', $model),
+            '',
+            $templateRepositoryProviderDataReal,
+        );
+        $templateRepositoryProviderDataReal = str_replace(
+            $this->serviceGenerator->generateObserverProvider('use_class_observer', $model),
+            '',
+            $templateRepositoryProviderDataReal,
+        );
+        $templateRepositoryProviderDataReal = str_replace(
+            $this->serviceGenerator->generateObserverProvider('register', $model),
+            '',
+            $templateRepositoryProviderDataReal,
+        );
+        $path = config('generator.path.laravel.provider');
+        $fileService->createFileReal("$path/$fileName", $templateRepositoryProviderDataReal);
+        // END - event provider
+        // START - api VueJS
+        $pathApiVueJSReal = config('generator.path.vue.api').'index.ts';
+        $templateDataApiVueJSReal = $this->serviceGenerator->getFile('api', 'vue', 'index.ts');
+        $replace = "export { default as {$model['name']}Resource } from './{$generatorService->nameAttribute($model['name'])}';";
+        $templateDataApiVueJSReal = str_replace(
+            [$replace . PHP_EOL, $replace],
+            '',
+            $templateDataApiVueJSReal,
+        );
+        $fileService->createFileReal($pathApiVueJSReal, $templateDataApiVueJSReal);
+        // END - api VueJS
+        // START - route VueJS
+        $pathRouteVueJSReal = config('generator.path.vue.router').'index.ts';
+        $templateDataRouteVueJSReal = $this->serviceGenerator->getFile('router', 'vue', 'index.ts');
+        $replace = "import {$generatorService->modelNameNotPluralFe(
+            $model['name'],
+        )} from '{$this->baseGenerator->getImportJsOrTs()}/router/modules/{$generatorService->nameAttribute($model['name'])}';";
+        $templateDataRouteVueJSReal = str_replace(
+            [$replace . PHP_EOL, $replace],
+            '',
+            $templateDataRouteVueJSReal,
+        );
+        $replace = "{$generatorService->modelNameNotPluralFe($model['name'])},";
+        $templateDataRouteVueJSReal = str_replace(
+            [$replace . PHP_EOL, $replace],
+            '',
+            $templateDataRouteVueJSReal,
+        );
+        $fileService->createFileReal($pathRouteVueJSReal, $templateDataRouteVueJSReal);
+        // END - route VueJS
+        // START - USES
+        $templateDataUsesIndex = $this->serviceGenerator->getFile('uses', 'vue', 'index.ts');
+        $fileNameUses = $this->serviceGenerator->folderPages($model['name']);
+        $templateDataUsesIndex = str_replace("export * from './$fileNameUses';", '', $templateDataUsesIndex);
+        $pathUses = config('generator.path.vue.uses');
+        $fileService->createFileReal("{$pathUses}index.ts", $templateDataUsesIndex);
+        // END - USES
+        // START - package common
+        if (config('generator.js_language') === 'ts') {
+            $pathPackageModelReal = config('generator.path.package.model').'index.ts';
+            $templateDataPackageModelReal = $this->serviceGenerator->getFile('model', 'package', 'index.ts');
+            $replace = "export * from './{$generatorService->nameAttribute($model['name'])}';";
+            $templateDataPackageModelReal = str_replace(
+                [$replace . PHP_EOL, $replace],
+                '',
+                $templateDataPackageModelReal,
+            );
+            $fileService->createFileReal($pathPackageModelReal, $templateDataPackageModelReal);
+        }
+        // END - package common
+        $generator->delete();
+        $this->__runPrettier();
+
+        return $this->jsonMessage(trans('messages.success'));
     }
 
     public function checkModel(Request $request): JsonResponse
     {
         $serviceGenerator = new GeneratorService();
         $name = $request->get('name', '');
-        try {
-            if ($name) {
-                $name = $serviceGenerator->tableName($name);
-                if (Schema::hasTable($name)) {
-                    //table exist
-                    return $this->jsonData(1);
-                }
-
-                // table not exist
-                return $this->jsonData(2);
+        if ($name) {
+            $name = $serviceGenerator->tableName($name);
+            if (Schema::hasTable($name)) {
+                //table exist
+                return $this->jsonData(1);
             }
 
-            //name null
-            return $this->jsonData(3);
-        } catch (\Exception $e) {
-            return $this->jsonError($e);
+            // table not exist
+            return $this->jsonData(2);
         }
+
+        //name null
+        return $this->jsonData(3);
     }
 
     public function generateRelationship(Request $request): JsonResponse
@@ -371,117 +348,97 @@ class GeneratorController extends BaseLaraJSController
             'column' => 'required',
             'column2' => $request->get('relationship') === 'belongsToMany' ? 'required' : '',
         ]);
-        try {
-            $relationship = $request->get('relationship');
-            $model = $request->get('model');
-            $modelName = $request->get('model_name');
-            $modelCurrent = $request->get('model_current');
-            $column = $request->get('column');
-            $column2 = $request->get('column2');
-            $options = $request->get('options', []);
-            // git commit
-            $this->_gitCommit($model);
-            $migrateFile = new RelationshipGenerator($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName);
-            if ($relationship === config('generator.relationship.relationship.belongs_to_many')) {
-                $fields = [
-                    $this->_mockField(1, $modelCurrent),
-                    $this->_mockField(2, $model),
-                ];
-                $model = [
-                    'name' => $modelName,
-                    'name_trans' => $modelName,
-                    'limit' => 25,
-                    'relationship' => $relationship,
-                    'options' => [
-                        config('generator.model.options.timestamps'),
-                        config('generator.model.options.only_migrate'),
-                    ],
-                ];
-                $files = [];
-                $configGeneratorLaravel = config('generator')['path']['delete_files']['laravel'];
-                $files['model'] = $configGeneratorLaravel['model'].$model['name'].'.php';
-                $files['migration']['file'] = $migrateFile;
-                Generator::create([
-                    'field' => json_encode($fields),
-                    'model' => json_encode($model),
-                    'table' => $this->serviceGenerator->tableName($modelName),
-                    'files' => json_encode($files),
-                ]);
-                $this->_exportDataGenerator();
-            }
-            $this->_runCommand();
-
-            return $this->jsonMessage(trans('messages.success'));
-        } catch (\Exception $e) {
-            return $this->jsonError($e);
+        $relationship = $request->get('relationship');
+        $model = $request->get('model');
+        $modelName = $request->get('model_name');
+        $modelCurrent = $request->get('model_current');
+        $column = $request->get('column');
+        $column2 = $request->get('column2');
+        $options = $request->get('options', []);
+        // git commit
+        $this->_gitCommit($model);
+        $migrateFile = new RelationshipGenerator($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName);
+        if ($relationship === config('generator.relationship.relationship.belongs_to_many')) {
+            $fields = [
+                $this->_mockField(1, $modelCurrent),
+                $this->_mockField(2, $model),
+            ];
+            $model = [
+                'name' => $modelName,
+                'name_trans' => $modelName,
+                'limit' => 25,
+                'relationship' => $relationship,
+                'options' => [
+                    config('generator.model.options.timestamps'),
+                    config('generator.model.options.only_migrate'),
+                ],
+            ];
+            $files = [];
+            $configGeneratorLaravel = config('generator')['path']['delete_files']['laravel'];
+            $files['model'] = $configGeneratorLaravel['model'].$model['name'].'.php';
+            $files['migration']['file'] = $migrateFile;
+            Generator::create([
+                'field' => json_encode($fields),
+                'model' => json_encode($model),
+                'table' => $this->serviceGenerator->tableName($modelName),
+                'files' => json_encode($files),
+            ]);
+            $this->_exportDataGenerator();
         }
+        $this->_runCommand();
+
+        return $this->jsonMessage(trans('messages.success'));
     }
 
     public function generateDiagram(Request $request): JsonResponse
     {
-        try {
-            $model = $request->get('model');
-            $diagram = $this->serviceGenerator->getDiagram($model);
+        $model = $request->get('model');
+        $diagram = $this->serviceGenerator->getDiagram($model);
 
-            return $this->jsonData($diagram);
-        } catch (\Exception $e) {
-            return $this->jsonError($e);
-        }
+        return $this->jsonData($diagram);
     }
 
     public function getModels(Request $request): JsonResponse
     {
-        try {
-            $table = $request->get('model', []);
-            $table = json_decode($table, true);
-            $modelTable = $table['name'];
-            $pathModel = config('generator.path.laravel.model');
-            $ignoreModel = config('generator.relationship.ignore_model');
-            $models = File::files($pathModel);
-            $modelData = [];
-            foreach ($models as $model) {
-                $modelName = $model->getBasename('.php');
-                if ($modelName !== $modelTable) {
-                    if (!in_array($modelName, $ignoreModel)) {
-                        $modelData[] = $modelName;
-                    }
+        $table = $request->get('model', []);
+        $table = json_decode($table, true);
+        $modelTable = $table['name'];
+        $pathModel = config('generator.path.laravel.model');
+        $ignoreModel = config('generator.relationship.ignore_model');
+        $models = File::files($pathModel);
+        $modelData = [];
+        foreach ($models as $model) {
+            $modelName = $model->getBasename('.php');
+            if ($modelName !== $modelTable) {
+                if (!in_array($modelName, $ignoreModel)) {
+                    $modelData[] = $modelName;
                 }
             }
-
-            return $this->jsonData($modelData);
-        } catch (\Exception $e) {
-            return $this->jsonError($e);
         }
+
+        return $this->jsonData($modelData);
     }
 
     public function getAllModels(): JsonResponse
     {
-        try {
-            $whiteList = ['BaseModel', 'Generator'];
-            $allFiles = File::allFiles(app_path('Models'));
-            $files = [];
-            foreach ($allFiles as $file) {
-                $model = basename($file->getFilename(), '.php');
-                !in_array($model, $whiteList) && ($files[] = $model);
-            }
-
-            return $this->jsonData($files);
-        } catch (\Exception $e) {
-            return $this->jsonError($e);
+        $whiteList = ['BaseModel', 'Generator'];
+        $allFiles = File::allFiles(app_path('Models'));
+        $files = [];
+        foreach ($allFiles as $file) {
+            $model = basename($file->getFilename(), '.php');
+            !in_array($model, $whiteList) && ($files[] = $model);
         }
+
+        return $this->jsonData($files);
     }
 
     public function getColumns(Request $request): JsonResponse
     {
-        try {
-            $table = $request->get('table');
-            $table = Str::snake(Str::plural($table));
-            $columns = Schema::getColumnListing($table);
+        $table = $request->get('table');
+        $table = Str::snake(Str::plural($table));
+        $columns = Schema::getColumnListing($table);
 
-            return $this->jsonData($columns);
-        } catch (\Exception $e) {
-            return $this->jsonError($e);
-        }
+        return $this->jsonData($columns);
     }
 
     private function _generateBackend($fields, $model): void
@@ -491,6 +448,7 @@ class GeneratorController extends BaseLaraJSController
         new FactoryGenerator($fields, $model);
         new ModelGenerator($fields, $model);
         new RepositoryGenerator($model);
+        new ServiceGenerator($model);
         new LangGenerator($fields, $model);
         new RouteGenerator($model);
         new RequestGenerator($fields, $model);
@@ -522,9 +480,13 @@ class GeneratorController extends BaseLaraJSController
         $files['request'] = $configGeneratorLaravel['request'].'Store'.$model['name'].'Request.php';
         $files['model'] = $configGeneratorLaravel['model'].$model['name'].'.php';
         $files['repositories']['interface'] =
-            $configGeneratorLaravel['repository'].$model['name'].'/'.$model['name'].'Interface.php';
+            $configGeneratorLaravel['repository'].$model['name'].'/'.$model['name'].'RepositoryInterface.php';
         $files['repositories']['repository'] =
             $configGeneratorLaravel['repository'].$model['name'].'/'.$model['name'].'Repository.php';
+        $files['services']['service'] =
+            $configGeneratorLaravel['service'].$model['name'].'/'.$model['name'].'Service.php';
+        $files['services']['interface'] =
+            $configGeneratorLaravel['service'].$model['name'].'/'.$model['name'].'ServiceInterface.php';
         $files['observer'] = $configGeneratorLaravel['observer'].$model['name'].'Observer.php';
         $files['seeder'] = $configGeneratorLaravel['seeder'].$model['name'].'Seeder.php';
         $files['factory'] = $configGeneratorLaravel['factory'].$model['name'].'Factory.php';

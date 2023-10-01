@@ -25,7 +25,7 @@ class RepositoryGenerator extends BaseGenerator
         $templateDataRepository = str_replace('{{DATE}}', $now->toDateTimeString(), $templateDataRepository);
         $templateDataRepository = str_replace('{{MODEL_CLASS}}', $model['name'], $templateDataRepository);
         $templateDataRepository = str_replace(
-            '{{MODAL_CLASS_PARAM}}',
+            '{{MODEL_CLASS_PARAM}}',
             $this->serviceGenerator->modelNameNotPluralFe($model['name']),
             $templateDataRepository,
         );
@@ -35,18 +35,17 @@ class RepositoryGenerator extends BaseGenerator
         $templateDataInterface = $this->serviceGenerator->get_template('Interface', $pathTemplate);
         $templateDataInterface = str_replace('{{DATE}}', $now->toDateTimeString(), $templateDataInterface);
         $templateDataInterface = str_replace('{{MODEL_CLASS}}', $model['name'], $templateDataInterface);
-        $fileNameInterFace = $model['name'].'Interface.php';
+        $fileNameInterFace = $model['name'].'RepositoryInterface.php';
         $this->serviceFile->createFile($this->path.$createFolderModel, $fileNameInterFace, $templateDataInterface);
         // add bind to RepositoryServiceProvider
-        $fileName = 'RepositoryServiceProvider.php';
-        $templateDataReal = $this->serviceGenerator->getFile('provider', 'laravel', $fileName);
-        $templateDataReal = $this->phpParserService->usePackage($templateDataReal, "App\Repositories\\{$model['name']}\\{$model['name']}Interface");
-        $model['class'] = 'Repository';
-        $templateDataReal = $this->phpParserService->usePackage($templateDataReal, $this->serviceGenerator->generateRepositoryProvider('ast_use_class', $model));
-        $model['class'] = 'Interface';
-        $templateDataReal = $this->phpParserService->addCodeToFunction($templateDataReal, $this->serviceGenerator->generateRepositoryProvider('register', $model), 'register');
-
-        $path = config('generator.path.laravel.provider');
-        $this->serviceFile->createFileReal("$path/$fileName", $templateDataReal);
+        //        $fileName = 'RepositoryServiceProvider.php';
+        //        $templateDataReal = $this->serviceGenerator->getFile('provider', 'laravel', $fileName);
+        //        $templateDataReal = $this->phpParserService->usePackage($templateDataReal, "App\Repositories\\{$model['name']}\\{$model['name']}Interface");
+        //        $model['class'] = 'Repository';
+        //        $templateDataReal = $this->phpParserService->usePackage($templateDataReal, $this->serviceGenerator->generateRepositoryProvider('ast_use_class', $model));
+        //        $model['class'] = 'Interface';
+        //        $templateDataReal = $this->phpParserService->addCodeToFunction($templateDataReal, $this->serviceGenerator->generateRepositoryProvider('register', $model), 'register');
+        //        $path = config('generator.path.laravel.provider');
+        //        $this->serviceFile->createFileReal("$path/$fileName", $templateDataReal);
     }
 }

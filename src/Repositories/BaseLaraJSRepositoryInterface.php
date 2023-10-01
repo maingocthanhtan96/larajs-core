@@ -14,35 +14,35 @@ use Illuminate\Http\Request;
 interface BaseLaraJSRepositoryInterface
 {
     /**
-     * @param Request $request
-     * @param array $options
+     * @param  Request  $request
+     * @param  array  $options
      * @return LengthAwarePaginator|TModel[]
      */
     public function list(Request $request, array $options): LengthAwarePaginator|Collection;
 
     /**
-     * @param array $data
+     * @param  array  $data
      * @return TModel
      */
     public function create(array $data): Model;
 
     /**
-     * @param int $id
-     * @param Request $request
-     * @param array $options
-     * @return ?TModel
+     * @param  int  $id
+     * @param  Request  $request
+     * @param  array  $options
+     * @return TModel
      */
-    public function find(int $id, Request $request, array $options): ?Model;
+    public function find(int $id, Request $request, array $options): Model;
 
     /**
-     * @param int $id
-     * @param array $data
+     * @param  int  $id
+     * @param  array  $data
      * @return TModel
      */
     public function update(int $id, array $data): Model;
 
     /**
-     * @param int $id
+     * @param  int  $id
      * @return bool
      */
     public function destroy(int $id): bool;
@@ -53,8 +53,8 @@ interface BaseLaraJSRepositoryInterface
     public function queryBuilder(): Builder;
 
     /**
-     * @param Model $model
-     * @param array $data
+     * @param  Model  $model
+     * @param  array  $data
      * @return TModel
      */
     public function save(Model $model, array $data): Model;

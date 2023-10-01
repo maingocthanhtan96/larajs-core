@@ -1,10 +1,10 @@
 <?php
 
-$API_VERSION = env('API_VERSION_GENERATOR', 'V1') . '/';
+$API_VERSION = strtoupper(env('API_VERSION_GENERATOR', 'V1')) . '/';
 
 return [
     'js_language' => 'ts',
-    'api_version' => env('API_VERSION_GENERATOR', 'V1'),
+    'api_version' => strtoupper(env('API_VERSION_GENERATOR', 'V1')),
     'node_path' => env('NODE_PATH', '/usr/local/bin/node'),
     'permission' => [
         'view_menu' => 'VIEW_MENU',
@@ -34,6 +34,7 @@ return [
             'factory' => base_path('database/factories/'),
             'model' => app_path('Models/'),
             'repository' => app_path('Repositories/'),
+            'service' => app_path('Services/' . $API_VERSION),
             'observer' => app_path('Observers/'),
             'provider' => app_path('Providers/'),
             'api_routes' => base_path('routes/api-' . strtolower(env('API_VERSION_GENERATOR', 'V1')) . '.php'),
@@ -51,6 +52,7 @@ return [
                 'factory' => '/database/factories/',
                 'model' => '/app/Models/',
                 'repository' => '/app/Repositories/',
+                'service' => '/app/Services/' . $API_VERSION,
                 'observer' => '/app/Observers/',
                 'provider' => '/app/Providers/',
                 'api_routes' => '/routes/api-v1.php',

@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Services\{{VERSION}}\{{MODEL_CLASS}};
+
+use App\Models\{{MODEL_CLASS}};
+use App\Services\BaseServiceInterface;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
+
+interface {{MODEL_CLASS}}ServiceInterface extends BaseServiceInterface
+{
+    public function list(Request $request): LengthAwarePaginator|Collection;
+
+    public function create(array $data): {{MODEL_CLASS}};
+
+    public function find(int $id, Request $request): {{MODEL_CLASS}};
+
+    public function update(int $id, array $data): {{MODEL_CLASS}};
+
+    public function destroy(int $id): bool;
+}

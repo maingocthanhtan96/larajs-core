@@ -2,7 +2,7 @@
 
 namespace App\Repositories\{{MODEL_CLASS}};
 
-interface {{MODEL_CLASS}}Interface
+interface {{MODEL_CLASS}}RepositoryInterface
 {
 
 }

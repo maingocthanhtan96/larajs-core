@@ -430,7 +430,7 @@ class RelationshipGenerator extends BaseGenerator
         }
         $templateDataReal = str_replace('{{MODEL_CLASS}}', $model, $templateDataReal);
         $templateDataReal = str_replace(
-            '{{MODAL_CLASS_PARAM}}',
+            '{{MODEL_CLASS_PARAM}}',
             $this->serviceGenerator->modelNameNotPluralFe($model),
             $templateDataReal,
         );
@@ -442,7 +442,7 @@ class RelationshipGenerator extends BaseGenerator
             $templateSaved,
         );
         $templateSaved = str_replace(
-            '{{MODAL_CLASS_PARAM}}',
+            '{{MODEL_CLASS_PARAM}}',
             $this->serviceGenerator->modelNameNotPluralFe($model),
             $templateSaved,
         );
@@ -454,7 +454,7 @@ class RelationshipGenerator extends BaseGenerator
         // deleted
         $templateDeleted = $this->serviceGenerator->get_template('deleted', $pathTemplate);
         $templateDeleted = str_replace(
-            '{{MODAL_CLASS_PARAM}}',
+            '{{MODEL_CLASS_PARAM}}',
             $this->serviceGenerator->modelNameNotPluralFe($model),
             $templateDeleted,
         );

@@ -2,7 +2,6 @@
 
 namespace LaraJS\Core\Generators\Backend;
 
-use Carbon\Carbon;
 use LaraJS\Core\Generators\BaseGenerator;
 
 class ControllerGenerator extends BaseGenerator
@@ -21,16 +20,16 @@ class ControllerGenerator extends BaseGenerator
     private function _generate($model): void
     {
         $templateData = $this->serviceGenerator->get_template('controller', 'Controllers/');
-        $templateData = str_replace('{{VERSION}}', config('generator-mono.api_version'), $templateData);
+        $templateData = str_replace('{{VERSION}}', config('generator.api_version'), $templateData);
         $templateData = str_replace('{{CONTROLLER_CLASS}}', $model['name'], $templateData);
-        $templateData = str_replace('{{MODAL_CLASS}}', $model['name'], $templateData);
+        $templateData = str_replace('{{MODEL_CLASS}}', $model['name'], $templateData);
         $templateData = str_replace(
-            '{{MODAL_CLASS_PARAM}}',
+            '{{MODEL_CLASS_PARAM}}',
             \Str::camel(\Str::singular($model['name'])),
             $templateData,
         );
         $templateData = str_replace(
-            '{{MODAL_CLASS_PARAM_LIST}}',
+            '{{MODEL_CLASS_PARAM_LIST}}',
             \Str::camel(\Str::plural($model['name'])),
             $templateData,
         );

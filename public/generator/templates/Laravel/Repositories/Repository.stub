@@ -5,7 +5,7 @@ namespace App\Repositories\{{MODEL_CLASS}};
 use App\Models\{{MODEL_CLASS}};
 use App\Repositories\BaseEloquentRepository;
 
-class {{MODEL_CLASS}}Repository extends BaseEloquentRepository implements {{MODEL_CLASS}}Interface
+class {{MODEL_CLASS}}Repository extends BaseEloquentRepository implements {{MODEL_CLASS}}RepositoryInterface
 {
     public function getModel(): string
     {

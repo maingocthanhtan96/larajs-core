@@ -2,7 +2,6 @@
 
 namespace LaraJS\Core\Repositories;
 
-use Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -13,9 +12,10 @@ use LaraJS\QueryParser\LaraJSQueryParser;
 
 /**
  * @template TModel
+ *
  * @template-implements BaseLaraJSRepositoryInterface<TModel>
  */
-abstract class  BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInterface
+abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInterface
 {
     use LaraJSQueryParser;
 
@@ -66,8 +66,8 @@ abstract class  BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInte
     }
 
     /**
-     * @param Request $request
-     * @param array $options
+     * @param  Request  $request
+     * @param  array  $options
      * @return LengthAwarePaginator|TModel[]
      */
     public function list(Request $request, array $options = []): LengthAwarePaginator|Collection
@@ -82,7 +82,7 @@ abstract class  BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInte
     }
 
     /**
-     * @param array $data
+     * @param  array  $data
      * @return TModel
      */
     public function create(array $data): Model
@@ -91,9 +91,9 @@ abstract class  BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInte
     }
 
     /**
-     * @param int $id
-     * @param Request $request
-     * @param array $options
+     * @param  int  $id
+     * @param  Request  $request
+     * @param  array  $options
      * @return TModel
      */
     public function find(int $id, Request $request, array $options = []): Model
@@ -102,8 +102,8 @@ abstract class  BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInte
     }
 
     /**
-     * @param int $id
-     * @param array $data
+     * @param  int  $id
+     * @param  array  $data
      * @return TModel
      */
     public function update(int $id, array $data): Model
@@ -112,7 +112,7 @@ abstract class  BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInte
     }
 
     /**
-     * @param int $id
+     * @param  int  $id
      * @return bool
      */
     public function destroy(int $id): bool
@@ -120,7 +120,11 @@ abstract class  BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInte
         return $this->model->findOrFail($id)->delete();
     }
 
-
+    /**
+     * @param  Model  $model
+     * @param  array  $data
+     * @return TModel
+     */
     public function save(Model $model, array $data): Model
     {
         $model->fill($data)->save();
