@@ -37,7 +37,7 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
 	{
         ${{MODEL_CLASS_PARAM_LIST}} = $this->{{MODEL_CLASS_PARAM}}Service->list($request);
 
-        return $this->jsonData(${{MODEL_CLASS_PARAM_LIST}});
+        return $this->sendData(${{MODEL_CLASS_PARAM_LIST}});
 	}
 
     /**
@@ -47,7 +47,7 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
 	{
         ${{MODEL_CLASS_PARAM}} = $this->{{MODEL_CLASS_PARAM}}Service->create($request->validated());
 
-        return $this->jsonData(${{MODEL_CLASS_PARAM}}, trans('messages.create'), Response::HTTP_CREATED);
+        return $this->sendData(${{MODEL_CLASS_PARAM}}, trans('messages.create'), Response::HTTP_CREATED);
 	}
 
 	/**
@@ -60,7 +60,7 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
 	{
         ${{MODEL_CLASS_PARAM}} = $this->{{MODEL_CLASS_PARAM}}Service->find(${{MODEL_CLASS_PARAM}}, $request);
 
-        return $this->jsonData(${{MODEL_CLASS_PARAM}});
+        return $this->sendData(${{MODEL_CLASS_PARAM}});
 	}
 
 	/**
@@ -70,7 +70,7 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
 	{
         ${{MODEL_CLASS_PARAM}} = $this->{{MODEL_CLASS_PARAM}}Service->update(${{MODEL_CLASS_PARAM}}, $request->validated());
 
-        return $this->jsonData(${{MODEL_CLASS_PARAM}}, trans('messages.update'));
+        return $this->sendData(${{MODEL_CLASS_PARAM}}, trans('messages.update'));
 	}
 
 	/**
@@ -80,6 +80,6 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
     {
         $this->{{MODEL_CLASS_PARAM}}Service->destroy(${{MODEL_CLASS_PARAM}});
 
-        return $this->jsonMessage(trans('messages.delete'));
+        return $this->sendMessage(trans('messages.delete'));
     }
 }

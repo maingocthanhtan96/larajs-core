@@ -18,5 +18,5 @@ interface {{MODEL_CLASS}}ServiceInterface extends BaseServiceInterface
 
     public function update(int $id, array $data): {{MODEL_CLASS}};
 
-    public function destroy(int $id): bool;
+    public function delete(int $id): bool;
 }

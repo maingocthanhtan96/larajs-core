@@ -39,8 +39,8 @@ class {{MODEL_CLASS}}Service extends BaseService implements {{MODEL_CLASS}}Servi
         return $this->{{MODEL_CLASS_PARAM}}Repository->update($id, $data);
     }
 
-    public function destroy(int $id): bool
+    public function delete(int $id): bool
     {
-        return $this->{{MODEL_CLASS_PARAM}}Repository->destroy($id);
+        return $this->{{MODEL_CLASS_PARAM}}Repository->delete($id);
     }
 }

@@ -115,7 +115,7 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
      * @param  int  $id
      * @return bool
      */
-    public function destroy(int $id): bool
+    public function delete(int $id): bool
     {
         return $this->model->findOrFail($id)->delete();
     }

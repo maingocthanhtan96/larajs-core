@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class BaseLaraJSController extends BaseController
 {
-    public function jsonData($data, string $message = '', int $status = Response::HTTP_OK): JsonResponse
+    public function sendData($data, string $message = '', int $status = Response::HTTP_OK): JsonResponse
     {
         if ($data instanceof LengthAwarePaginator) {
             return response()->json(
@@ -35,34 +35,13 @@ class BaseLaraJSController extends BaseController
     /**
      * @author tanmnt
      */
-    public function jsonMessage(
+    public function sendMessage(
         $message,
         int $status = Response::HTTP_OK,
     ): JsonResponse {
         return response()->json(
             [
                 'message' => $message,
-            ],
-            $status,
-        );
-    }
-
-    public function jsonValidate($errors): JsonResponse
-    {
-        return response()->json(
-            [
-                'errors' => $errors,
-            ],
-            Response::HTTP_UNPROCESSABLE_ENTITY,
-        );
-    }
-
-    public function jsonMetadata($data, $meta, int $status = Response::HTTP_OK): JsonResponse
-    {
-        return response()->json(
-            [
-                'data' => $data,
-                'meta' => $meta,
             ],
             $status,
         );

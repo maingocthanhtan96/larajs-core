@@ -64,12 +64,12 @@ class GeneratorController extends BaseLaraJSController
         $query = $this->applyQueryBuilder(Generator::query(), $request);
         $generators = $query->paginate($request->get('limit'));
 
-        return $this->jsonData($generators);
+        return $this->sendData($generators);
     }
 
     public function show(Generator $generator): JsonResponse
     {
-        return $this->jsonData($generator);
+        return $this->sendData($generator);
     }
 
     public function store(Request $request): JsonResponse
@@ -101,7 +101,7 @@ class GeneratorController extends BaseLaraJSController
         $this->_exportDataGenerator();
         $this->_runCommand($model);
 
-        return $this->jsonMessage(trans('messages.success'));
+        return $this->sendMessage(trans('messages.success'));
     }
 
     public function update(Request $request, Generator $generator): JsonResponse
@@ -138,7 +138,7 @@ class GeneratorController extends BaseLaraJSController
         $this->_exportDataGenerator();
         $this->_runCommand();
 
-        return $this->jsonMessage(trans('messages.success'));
+        return $this->sendMessage(trans('messages.success'));
     }
 
     public function destroy(Generator $generator): JsonResponse
@@ -317,7 +317,7 @@ class GeneratorController extends BaseLaraJSController
         $generator->delete();
         $this->__runPrettier();
 
-        return $this->jsonMessage(trans('messages.success'));
+        return $this->sendMessage(trans('messages.success'));
     }
 
     public function checkModel(Request $request): JsonResponse
@@ -328,15 +328,15 @@ class GeneratorController extends BaseLaraJSController
             $name = $serviceGenerator->tableName($name);
             if (Schema::hasTable($name)) {
                 //table exist
-                return $this->jsonData(1);
+                return $this->sendData(1);
             }
 
             // table not exist
-            return $this->jsonData(2);
+            return $this->sendData(2);
         }
 
         //name null
-        return $this->jsonData(3);
+        return $this->sendData(3);
     }
 
     public function generateRelationship(Request $request): JsonResponse
@@ -387,7 +387,7 @@ class GeneratorController extends BaseLaraJSController
         }
         $this->_runCommand();
 
-        return $this->jsonMessage(trans('messages.success'));
+        return $this->sendMessage(trans('messages.success'));
     }
 
     public function generateDiagram(Request $request): JsonResponse
@@ -395,7 +395,7 @@ class GeneratorController extends BaseLaraJSController
         $model = $request->get('model');
         $diagram = $this->serviceGenerator->getDiagram($model);
 
-        return $this->jsonData($diagram);
+        return $this->sendData($diagram);
     }
 
     public function getModels(Request $request): JsonResponse
@@ -416,7 +416,7 @@ class GeneratorController extends BaseLaraJSController
             }
         }
 
-        return $this->jsonData($modelData);
+        return $this->sendData($modelData);
     }
 
     public function getAllModels(): JsonResponse
@@ -429,7 +429,7 @@ class GeneratorController extends BaseLaraJSController
             !in_array($model, $whiteList) && ($files[] = $model);
         }
 
-        return $this->jsonData($files);
+        return $this->sendData($files);
     }
 
     public function getColumns(Request $request): JsonResponse
@@ -438,7 +438,7 @@ class GeneratorController extends BaseLaraJSController
         $table = Str::snake(Str::plural($table));
         $columns = Schema::getColumnListing($table);
 
-        return $this->jsonData($columns);
+        return $this->sendData($columns);
     }
 
     private function _generateBackend($fields, $model): void
