@@ -14,7 +14,7 @@ export function use{{$NAME_MODEL$}}Tables() {
       destroy,
     },
     query: {
-      orderBy: 'id desc',
+      orderBy: '-id',
       include: [],
     },
     columns: [
