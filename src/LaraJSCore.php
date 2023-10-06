@@ -12,7 +12,6 @@ class LaraJSCore
             ['prefix' => 'generators', 'controller' => '\\LaraJS\\Core\Controllers\\GeneratorController'],
             function () {
                 Route::get('check-model', 'checkModel');
-                Route::get('check-column', 'checkColumn');
                 Route::get('get-models', 'getModels');
                 Route::get('get-all-models', 'getAllModels');
                 Route::get('get-columns', 'getColumns');

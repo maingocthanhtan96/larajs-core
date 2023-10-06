@@ -1,15 +1,15 @@
-import { {{$CONST_NAME_MODEL$}}Resource } from '@larajs/cms/api/{{$API_VERSION$}}';
+import { {{$NAME_MODEL$}}Resource } from '@larajs/cms/api/{{$API_VERSION$}}';
 import { AxiosRequestConfig } from 'axios';
-import { IQuery } from '@larajs/common';
+import { IQuery, {{$NAME_MODEL$}} } from '@larajs/common';
 
 export * from './table';
 export * from './form';
 export function use{{$NAME_USES$}}() {
-  const list = (query: IQuery, props?: AxiosRequestConfig) => {{$CONST_NAME_MODEL$}}Resource.list(query, props);
-  const store = (data: any, props?: AxiosRequestConfig) => {{$CONST_NAME_MODEL$}}Resource.store(data, props);
-  const show = (id: number | string, props?: AxiosRequestConfig) => {{$CONST_NAME_MODEL$}}Resource.show(id, props);
-  const update = (id: number | string, data: any, props?: AxiosRequestConfig) => {{$CONST_NAME_MODEL$}}Resource.update(id, data, props);
-  const destroy = (id: number | string, props?: AxiosRequestConfig) => {{$CONST_NAME_MODEL$}}Resource.destroy(id, props);
+  const list = (query: IQuery, props?: AxiosRequestConfig) => {{$NAME_MODEL$}}Resource.list(query, props);
+  const store = (data: {{$NAME_MODEL$}}, props?: AxiosRequestConfig) => {{$NAME_MODEL$}}Resource.store(data, props);
+  const show = (id: number | string, props?: AxiosRequestConfig) => {{$NAME_MODEL$}}Resource.show(id, props);
+  const update = (id: number | string, data: Partial<{{$NAME_MODEL$}}>, props?: AxiosRequestConfig) => {{$NAME_MODEL$}}Resource.update(id, data, props);
+  const destroy = (id: number | string, props?: AxiosRequestConfig) => {{$NAME_MODEL$}}Resource.destroy(id, props);
 
   return {
     list,

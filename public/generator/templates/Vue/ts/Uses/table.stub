@@ -2,13 +2,13 @@ import React from 'react';
 import { reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { use{{$NAME_USES$}} } from '@larajs/cms/uses';
-import { ManagementTableType } from '@larajs/components';
+import { LaraTableType } from '@larajs/components';
 import { {{$NAME_MODEL$}} } from '@larajs/common';
 
 export function use{{$NAME_MODEL$}}Tables() {
   const { list, destroy } = use{{$NAME_USES$}}();
   const { t } = useI18n();
-  const table: ManagementTableType<{{$NAME_MODEL$}}> = {
+  const table: LaraTableType<{{$NAME_MODEL$}}> = {
     name: '{{$NAME_TABLE$}}',
     actions: {
       list,

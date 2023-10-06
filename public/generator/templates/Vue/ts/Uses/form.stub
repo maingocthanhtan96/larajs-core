@@ -5,7 +5,7 @@ import { useRoute } from 'vue-router';
 import { FormInstance, FormRules } from 'element-plus';
 import { use{{$NAME_USES$}} } from '@larajs/cms/uses';
 import { {{$NAME_MODEL$}} } from '@larajs/common';
-import { FormElementType } from '@larajs/components';
+import { LaraFormType } from '@larajs/components';
 
 export interface {{$NAME_MODEL$}}Root {}
 
@@ -14,14 +14,14 @@ export function use{{$NAME_MODEL$}}Forms() {
   const { t } = useI18n(); // eslint-disable-line
   const id = route.params.id as string;
   const { store, update } = use{{$NAME_USES$}}();
-  const {{$CONST_NAME_MODEL$}}Ref = ref<FormInstance>();
+  const formRef = ref<FormInstance>();
   const form = reactive<{{$NAME_MODEL$}}>({});
   const state = reactive<{{$NAME_MODEL$}}Root>({});
   const rules = computed<FormRules>(() => ({}));
 
-  const formElement: FormElementType ={
+  const formElement: LaraFormType ={
     name: '{{$NAME_TABLE$}}',
-    ref: {{$CONST_NAME_MODEL$}}Ref,
+    ref: formRef,
     form: {
       model: form,
       rules: rules,
