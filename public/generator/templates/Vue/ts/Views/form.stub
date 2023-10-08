@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onBeforeMount } from 'vue';
-import { FormElement } from '@larajs/components';
+import { LaraForm } from '@larajs/components';
 import { use{{$NAME_MODEL$}}Forms, use{{$NAME_USES$}} } from '@larajs/cms/uses';
 import { useCancelToken } from '@larajs/uses';
 import { useCoreStore } from '@larajs/core';
@@ -28,6 +28,6 @@ onBeforeMount(async () => {
     <template #header>
       <h3>{{ id ? $t('route.{{$LANG_MODEL_CLASS$}}_edit') : $t('route.{{$LANG_MODEL_CLASS$}}_create') }}</h3>
     </template>
-    <FormElement :form="formElement" />
+    <LaraForm :form="formElement" />
   </el-card>
 </template>

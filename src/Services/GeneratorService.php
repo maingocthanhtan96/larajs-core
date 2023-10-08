@@ -948,7 +948,7 @@ MIGRATE;
                 ' => $faker->randomElement('.
                 json_encode($field['enum']).
                 '),',
-            $dbType['json'] => "'".$field['field_name']."'"." => '[{}]',",
+            $dbType['json'] => "'".$field['field_name']."'"." => '{}',",
             $dbType['file'] => "'".
                 $field['field_name'].
                 "'".
@@ -1259,7 +1259,7 @@ MIGRATE;
                     'key' => 'uses.form',
                     'interface' => "{$model['name']}Root",
                     'items' => [
-                        "{$field['field_name']}Options" => 'any[];',
+                        "{$field['field_name']}Options" => 'unknown[];',
                     ],
                 ], $templateDataReal);
             }
@@ -1318,10 +1318,10 @@ MIGRATE;
                     $data["{$field['field_name']}$isRequired"] = 'string;';
                     break;
                 case $dbType['enum']:
-                    $data["{$field['field_name']}$isRequired"] = 'number | string;';
+                    $data["{$field['field_name']}$isRequired"] = 'unknown;';
                     break;
                 case $dbType['json']:
-                    $data["{$field['field_name']}$isRequired"] = 'any;';
+                    $data["{$field['field_name']}$isRequired"] = 'object;';
                     break;
             }
         }

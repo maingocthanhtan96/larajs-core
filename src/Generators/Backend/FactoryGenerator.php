@@ -17,9 +17,7 @@ class FactoryGenerator extends BaseGenerator
 
     private function _generate($fields, $model): void
     {
-        $now = Carbon::now();
         $templateData = $this->serviceGenerator->get_template('factory', 'Databases/Factories/');
-        $templateData = str_replace('{{DATE_TIME}}', $now->toDateTimeString(), $templateData);
         $templateData = str_replace('{{TABLE_NAME_TITLE}}', $model['name'], $templateData);
         $templateData = $this->phpParserService->addFakerToFactory($templateData, $fields, $this->serviceGenerator->getOptions(config('generator.model.options.user_signature'), $model['options']));
 

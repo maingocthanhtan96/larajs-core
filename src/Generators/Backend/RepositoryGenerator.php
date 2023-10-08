@@ -17,12 +17,10 @@ class RepositoryGenerator extends BaseGenerator
 
     private function _generate($model)
     {
-        $now = Carbon::now();
         $createFolderModel = '/'.$model['name'].'/';
         $pathTemplate = 'Repositories/';
         //template Repository
         $templateDataRepository = $this->serviceGenerator->get_template('Repository', $pathTemplate);
-        $templateDataRepository = str_replace('{{DATE}}', $now->toDateTimeString(), $templateDataRepository);
         $templateDataRepository = str_replace('{{MODEL_CLASS}}', $model['name'], $templateDataRepository);
         $templateDataRepository = str_replace(
             '{{MODEL_CLASS_PARAM}}',
@@ -33,7 +31,6 @@ class RepositoryGenerator extends BaseGenerator
         $this->serviceFile->createFile($this->path.$createFolderModel, $fileNameRepository, $templateDataRepository);
         //template Interface
         $templateDataInterface = $this->serviceGenerator->get_template('Interface', $pathTemplate);
-        $templateDataInterface = str_replace('{{DATE}}', $now->toDateTimeString(), $templateDataInterface);
         $templateDataInterface = str_replace('{{MODEL_CLASS}}', $model['name'], $templateDataInterface);
         $fileNameInterFace = $model['name'].'RepositoryInterface.php';
         $this->serviceFile->createFile($this->path.$createFolderModel, $fileNameInterFace, $templateDataInterface);

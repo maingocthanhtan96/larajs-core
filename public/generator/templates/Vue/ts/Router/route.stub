@@ -1,6 +1,7 @@
 import { Permission } from '@larajs/permission';
+import { RouterMapping } from '@larajs/common';
 
-const {{$NAME_CONST$}} = {
+const {{$NAME_CONST$}}: RouterMapping = {
   path: '/{{$PATH_ROUTE_MODEL_CLASS$}}',
   name: '{{$NAME_ROUTE_MODEL_CLASS$}}',
   component: () => import('@larajs/cms/layout/index.vue'),

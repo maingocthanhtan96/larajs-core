@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\{{VERSION}};
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\{{VERSION}}\Store{{MODEL_CLASS}}Request;
+use App\Http\Resources\{{VERSION}}\{{MODEL_CLASS}}Resource;
 use App\Services\{{VERSION}}\{{MODEL_CLASS}}\{{MODEL_CLASS}}Service;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -29,57 +30,79 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
      * @queryParam search[column] string The search column. No-example.
      * @queryParam date[value] string[] The date value. No-example.
      * @queryParam date[column] string The date column. No-example.
-     * @queryParam orderBy string The sort records. Example: id desc.
+     * @queryParam orderBy string https://www.jsonapi.net/usage/reading/sorting.html. Example: -id.
      * @queryParam limit number Limit. Example: 25.
-     * @queryParam page number Page. Example: 1.
+     * @queryParam page number Page equals -1 get all records. Example: 1
+     *
+     * @apiResourceCollection App\Http\Resources\V1\{{MODEL_CLASS}}Resource
+     *
+     * @apiResourceModel App\Models\{{MODEL_CLASS}} paginate=5
      */
 	public function index(Request $request): JsonResponse
 	{
         ${{MODEL_CLASS_PARAM_LIST}} = $this->{{MODEL_CLASS_PARAM}}Service->list($request);
 
-        return $this->sendData(${{MODEL_CLASS_PARAM_LIST}});
+        return $this->responseResource({{MODEL_CLASS}}Resource::collection(${{MODEL_CLASS_PARAM_LIST}}));
 	}
 
     /**
      * Create
+     *
+     * @apiResource App\Http\Resources\V1\{{MODEL_CLASS}}Resource status=201
+     *
+     * @apiResourceModel App\Models\{{MODEL_CLASS}}
+     *
+     * @apiResourceAdditional message="Create successfully!"
      */
 	public function store(Store{{MODEL_CLASS}}Request $request): JsonResponse
 	{
         ${{MODEL_CLASS_PARAM}} = $this->{{MODEL_CLASS_PARAM}}Service->create($request->validated());
 
-        return $this->sendData(${{MODEL_CLASS_PARAM}}, trans('messages.create'), Response::HTTP_CREATED);
+        return $this->responseResource({{MODEL_CLASS}}Resource::make(${{MODEL_CLASS_PARAM}}), trans('messages.create'), Response::HTTP_CREATED);
 	}
 
-	/**
-	 * Get
-	 *
-	 * @queryParam select string Select column. No-example.
-	 * @queryParam include string[] Specify relationships and aggregate. No-example.
-	 */
+    /**
+     * Get
+     *
+     * @queryParam select string Select column. No-example.
+     * @queryParam include string[] Specify relationships and aggregate. No-example.
+     *
+     * @apiResource App\Http\Resources\V1\{{MODEL_CLASS}}Resource
+     *
+     * @apiResourceModel App\Models\{{MODEL_CLASS}}
+     */
 	public function show(int ${{MODEL_CLASS_PARAM}}, Request $request): JsonResponse
 	{
         ${{MODEL_CLASS_PARAM}} = $this->{{MODEL_CLASS_PARAM}}Service->find(${{MODEL_CLASS_PARAM}}, $request);
 
-        return $this->sendData(${{MODEL_CLASS_PARAM}});
+        return $this->responseResource({{MODEL_CLASS}}Resource::make(${{MODEL_CLASS_PARAM}}));
 	}
 
-	/**
-	 * Update
-	 */
+    /**
+     * Update
+     *
+     * @apiResource App\Http\Resources\{{VERSION}}\{{MODEL_CLASS}}Resource
+     *
+     * @apiResourceModel App\Models\{{MODEL_CLASS}}
+     *
+     * @apiResourceAdditional message="Update successfully!"
+     */
 	public function update(int ${{MODEL_CLASS_PARAM}}, Store{{MODEL_CLASS}}Request $request): JsonResponse
 	{
         ${{MODEL_CLASS_PARAM}} = $this->{{MODEL_CLASS_PARAM}}Service->update(${{MODEL_CLASS_PARAM}}, $request->validated());
 
-        return $this->sendData(${{MODEL_CLASS_PARAM}}, trans('messages.update'));
+        return $this->responseResource({{MODEL_CLASS}}Resource::make(${{MODEL_CLASS_PARAM}}), trans('messages.update'));
 	}
 
-	/**
-	 * Delete
-	 */
+    /**
+     * Delete
+     *
+     * @response 200 {"message": "Delete successfully!"}
+     */
     public function destroy(int ${{MODEL_CLASS_PARAM}}): JsonResponse
     {
-        $this->{{MODEL_CLASS_PARAM}}Service->destroy(${{MODEL_CLASS_PARAM}});
+        $this->{{MODEL_CLASS_PARAM}}Service->delete(${{MODEL_CLASS_PARAM}});
 
-        return $this->sendMessage(trans('messages.delete'));
+        return $this->responseMessage(trans('messages.delete'));
     }
 }

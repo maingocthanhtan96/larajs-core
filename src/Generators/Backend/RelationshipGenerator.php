@@ -118,10 +118,8 @@ class RelationshipGenerator extends BaseGenerator
 
     private function _migrateRelationship($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName, $columnChildren, $ignoreMigrate): string
     {
-        $now = Carbon::now();
         $pathTemplate = 'Databases/Migrations/';
         $templateData = $this->serviceGenerator->get_template('migrationRelationship', $pathTemplate);
-        $templateData = str_replace('{{DATE_TIME}}', $now->toDateTimeString(), $templateData);
         if ($relationship === $this->relationship['belongs_to_many']) {
             //belongsToMany
             $templateData = $this->serviceGenerator->get_template('migrationRelationshipMTM', $pathTemplate);
@@ -493,8 +491,6 @@ class RelationshipGenerator extends BaseGenerator
 
     private function _replaceTemplateRelationshipMTM($model, $modelCurrent, $templateData, $modelName): string
     {
-        $now = Carbon::now();
-        $templateData = str_replace('{{DATE_TIME}}', $now->toDateTimeString(), $templateData);
         $templateData = str_replace(
             '{{TABLE_NAME}}',
             $this->serviceGenerator->tableName($modelName),
@@ -525,10 +521,8 @@ class RelationshipGenerator extends BaseGenerator
     {
         $fieldModel = Str::snake($model).self::_ID;
         $fieldModelCurrent = Str::snake($modelCurrent).self::_ID;
-        $now = Carbon::now();
         $pathTemplate = 'Models/';
         $templateData = $this->serviceGenerator->get_template('model', $pathTemplate);
-        $templateData = str_replace('{{DATE}}', $now->toDateTimeString(), $templateData);
         $templateData = str_replace('{{MODEL_CLASS}}', $modelName, $templateData);
         $templateData = str_replace(['//{{USE_CLASS}}', '//{{USE}}', '//{{TIMESTAMPS}}'], '', $templateData);
         $arFields = ["'".$fieldModel."',", "'".$fieldModelCurrent."',"];

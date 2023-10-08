@@ -18,6 +18,7 @@ use LaraJS\Core\Generators\Backend\ModelGenerator;
 use LaraJS\Core\Generators\Backend\RelationshipGenerator;
 use LaraJS\Core\Generators\Backend\RepositoryGenerator;
 use LaraJS\Core\Generators\Backend\RequestGenerator;
+use LaraJS\Core\Generators\Backend\ResourceGenerator;
 use LaraJS\Core\Generators\Backend\RouteGenerator;
 use LaraJS\Core\Generators\Backend\SeederGenerator;
 use LaraJS\Core\Generators\Backend\ServiceGenerator;
@@ -39,6 +40,7 @@ use LaraJS\Core\Generators\Frontend\ViewTableGenerator;
 use LaraJS\Core\Generators\FrontendUpdate\InterfaceCommonUpdateGenerator;
 use LaraJS\Core\Generators\FrontendUpdate\UsesUpdateGenerator;
 use LaraJS\Core\Models\Generator;
+use LaraJS\Core\Resources\GeneratorResource;
 use LaraJS\Core\Services\FileService;
 use LaraJS\Core\Services\GeneratorService;
 use LaraJS\QueryParser\LaraJSQueryParser;
@@ -59,17 +61,17 @@ class GeneratorController extends BaseLaraJSController
         $this->baseGenerator = new BaseGenerator();
     }
 
-    public function index(Request $request): JsonResponse
+    public function index(Request $request)
     {
         $query = $this->applyQueryBuilder(Generator::query(), $request);
         $generators = $query->paginate($request->get('limit'));
 
-        return $this->sendData($generators);
+        return GeneratorResource::collection($generators);
     }
 
     public function show(Generator $generator): JsonResponse
     {
-        return $this->sendData($generator);
+        return GeneratorResource::make($generator);
     }
 
     public function store(Request $request): JsonResponse
@@ -101,7 +103,7 @@ class GeneratorController extends BaseLaraJSController
         $this->_exportDataGenerator();
         $this->_runCommand($model);
 
-        return $this->sendMessage(trans('messages.success'));
+        return $this->responseMessage(trans('messages.success'));
     }
 
     public function update(Request $request, Generator $generator): JsonResponse
@@ -138,7 +140,7 @@ class GeneratorController extends BaseLaraJSController
         $this->_exportDataGenerator();
         $this->_runCommand();
 
-        return $this->sendMessage(trans('messages.success'));
+        return $this->responseMessage(trans('messages.success'));
     }
 
     public function destroy(Generator $generator): JsonResponse
@@ -317,7 +319,7 @@ class GeneratorController extends BaseLaraJSController
         $generator->delete();
         $this->__runPrettier();
 
-        return $this->sendMessage(trans('messages.success'));
+        return $this->responseMessage(trans('messages.success'));
     }
 
     public function checkModel(Request $request): JsonResponse
@@ -328,15 +330,15 @@ class GeneratorController extends BaseLaraJSController
             $name = $serviceGenerator->tableName($name);
             if (Schema::hasTable($name)) {
                 //table exist
-                return $this->sendData(1);
+                return $this->responseData(1);
             }
 
             // table not exist
-            return $this->sendData(2);
+            return $this->responseData(2);
         }
 
         //name null
-        return $this->sendData(3);
+        return $this->responseData(3);
     }
 
     public function generateRelationship(Request $request): JsonResponse
@@ -387,7 +389,7 @@ class GeneratorController extends BaseLaraJSController
         }
         $this->_runCommand();
 
-        return $this->sendMessage(trans('messages.success'));
+        return $this->responseMessage(trans('messages.success'));
     }
 
     public function generateDiagram(Request $request): JsonResponse
@@ -395,7 +397,7 @@ class GeneratorController extends BaseLaraJSController
         $model = $request->get('model');
         $diagram = $this->serviceGenerator->getDiagram($model);
 
-        return $this->sendData($diagram);
+        return $this->responseData($diagram);
     }
 
     public function getModels(Request $request): JsonResponse
@@ -416,7 +418,7 @@ class GeneratorController extends BaseLaraJSController
             }
         }
 
-        return $this->sendData($modelData);
+        return $this->responseData($modelData);
     }
 
     public function getAllModels(): JsonResponse
@@ -429,7 +431,7 @@ class GeneratorController extends BaseLaraJSController
             !in_array($model, $whiteList) && ($files[] = $model);
         }
 
-        return $this->sendData($files);
+        return $this->responseData($files);
     }
 
     public function getColumns(Request $request): JsonResponse
@@ -438,7 +440,7 @@ class GeneratorController extends BaseLaraJSController
         $table = Str::snake(Str::plural($table));
         $columns = Schema::getColumnListing($table);
 
-        return $this->sendData($columns);
+        return $this->responseData($columns);
     }
 
     private function _generateBackend($fields, $model): void
@@ -452,6 +454,7 @@ class GeneratorController extends BaseLaraJSController
         new LangGenerator($fields, $model);
         new RouteGenerator($model);
         new RequestGenerator($fields, $model);
+        new ResourceGenerator($model);
         if ($this->serviceGenerator->getOptions(config('generator.model.options.test_cases'), $model['options'])) {
             new TestsGenerator($fields, $model);
         }

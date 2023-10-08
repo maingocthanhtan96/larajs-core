@@ -13,19 +13,19 @@ beforeEach(function () {
     ];
 });
 
-test('get list {{{ROUTE_RESOURCE}} -> 200', function () {
+test('get list {{ROUTE_RESOURCE}} -> 200', function () {
     {{MODEL}}Seeder::run(3);
     $response = asAdmin()
         ->get(route('{{ROUTE_RESOURCE}}.index', []))
         ->assertOK()
-        ->json('data');
+        ->json();
 
     expect($response)
-        ->toHaveKeys(['total', 'items'])
-        ->and($response['total'])
+        ->toHaveKeys(['meta', 'data'])
+        ->and($response['meta']['total'])
         ->toBeInt()
         ->toBe(3)
-        ->and($response['items'])
+        ->and($response['data'])
         ->toBeArray()
         ->toHaveCount(3);
 });
@@ -52,9 +52,7 @@ test('show a {{MODEL_TEST}} -> 200', function () {
         ->json();
 
     expect($response)
-        ->toHaveKeys(['message', 'data'])
-        ->and($response['message'])
-        ->toBeEmpty()
+        ->toHaveKeys(['data'])
         ->and($response['data'])
         ->id->toBe(${{MODEL_VARIABLE}}->id);
 });

@@ -17,7 +17,6 @@ class ServiceGenerator extends BaseGenerator
 
     private function _generate($model)
     {
-        $now = Carbon::now();
         $createFolderModel = '/'.$model['name'].'/';
         $pathTemplate = 'Services/';
         //template Repository

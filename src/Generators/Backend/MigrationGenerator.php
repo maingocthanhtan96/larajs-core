@@ -19,11 +19,9 @@ class MigrationGenerator extends BaseGenerator
 
     private function _generate($fields, $model): string
     {
-        $now = Carbon::now();
         $pathTemplate = 'Databases/Migrations/';
         $templateData = $this->serviceGenerator->get_template('migration', $pathTemplate);
         $templateData = str_replace('{{FIELDS}}', $this->_generateFields($fields, $model), $templateData);
-        $templateData = str_replace('{{DATE_TIME}}', $now->toDateTimeString(), $templateData);
         $templateData = str_replace(
             '{{TABLE_NAME}}',
             $this->serviceGenerator->tableName($model['name']),

@@ -17,10 +17,8 @@ class ModelGenerator extends BaseGenerator
 
     private function _generate($fields, $model): void
     {
-        $now = Carbon::now();
         $pathTemplate = 'Models/';
         $templateData = $this->serviceGenerator->get_template('model', $pathTemplate);
-        $templateData = str_replace('{{DATE}}', $now->toDateTimeString(), $templateData);
         $templateData = str_replace('{{MODEL_CLASS}}', $model['name'], $templateData);
         $templateData = str_replace('{{FIELDS}}', $this->_generateFields($fields), $templateData);
         $templateData = str_replace(

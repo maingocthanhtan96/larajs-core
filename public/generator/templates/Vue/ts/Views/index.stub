@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { PermissionType } from '@larajs/common';
-import { ManagementTable } from '@larajs/components';
+import { LaraTable } from '@larajs/components';
 import { use{{$NAME_MODEL$}}Tables } from '@larajs/cms/uses';
 
 const { table } = use{{$NAME_MODEL$}}Tables();
@@ -21,6 +21,6 @@ const { table } = use{{$NAME_MODEL$}}Tables();
         </router-link>
       </div>
     </template>
-    <ManagementTable :table="table" />
+    <LaraTable :table="table" />
   </el-card>
 </template>

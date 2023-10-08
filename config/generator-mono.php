@@ -39,6 +39,7 @@ return [
             'provider' => app_path('Providers/'),
             'api_routes' => base_path('routes/api-' . strtolower(env('API_VERSION_GENERATOR', 'V1')) . '.php'),
             'api_controller' => app_path('Http/Controllers/Api/' . $API_VERSION),
+            'resources' => app_path('Http/Resources/' . $API_VERSION),
             'lang' => base_path('lang/'),
             'request' => app_path('Http/Requests/' . $API_VERSION),
             'tests' => [
@@ -57,6 +58,7 @@ return [
                 'provider' => '/app/Providers/',
                 'api_routes' => '/routes/api-v1.php',
                 'api_controller' => '/app/Http/Controllers/Api/' . $API_VERSION,
+                'resources' => '/app/Http/Resources/' . $API_VERSION,
                 'lang' => '/lang/',
                 'request' => '/app/Http/Requests/' . $API_VERSION,
                 'tests' => [

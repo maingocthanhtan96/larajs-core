@@ -2,27 +2,21 @@
 
 namespace LaraJS\Core\Controllers;
 
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Routing\Controller as BaseController;
 use Symfony\Component\HttpFoundation\Response;
 
 class BaseLaraJSController extends BaseController
 {
-    public function sendData($data, string $message = '', int $status = Response::HTTP_OK): JsonResponse
+    /**
+     * @param mixed $data
+     * @param string $message
+     * @param int $status
+     * @return JsonResponse
+     */
+    public function responseData(mixed $data, string $message = '', int $status = Response::HTTP_OK): JsonResponse
     {
-        if ($data instanceof LengthAwarePaginator) {
-            return response()->json(
-                [
-                    'data' => [
-                        'items' => $data->items(),
-                        'total' => $data->total(),
-                    ],
-                ],
-                $status,
-            );
-        }
-
         return response()->json(
             [
                 'message' => $message,
@@ -33,9 +27,11 @@ class BaseLaraJSController extends BaseController
     }
 
     /**
-     * @author tanmnt
+     * @param $message
+     * @param int $status
+     * @return JsonResponse
      */
-    public function sendMessage(
+    public function responseMessage(
         $message,
         int $status = Response::HTTP_OK,
     ): JsonResponse {
@@ -46,4 +42,20 @@ class BaseLaraJSController extends BaseController
             $status,
         );
     }
+
+    /**
+     * @param JsonResource $resource
+     * @param ?string $message
+     * @param int $status
+     * @return JsonResponse
+     */
+    public function responseResource(JsonResource $resource, ?string $message = null, int $status = Response::HTTP_OK): JsonResponse
+    {
+        if ($message) {
+            $resource->additional(['message' => $message]);
+        }
+
+        return $resource->response()->setStatusCode($status);
+    }
+
 }
