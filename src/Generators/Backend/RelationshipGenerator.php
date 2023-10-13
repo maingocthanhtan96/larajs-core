@@ -681,27 +681,4 @@ class RelationshipGenerator extends BaseGenerator
             $this->serviceFile->createFileReal($path.$fileName, $templateDataReal);
         }
     }
-
-    /**
-     * @param  null  $notDelete
-     */
-    private function _checkImportInterfaceCommon(
-        $model,
-        $templateDataReal,
-        string $from = './index',
-        $notDelete = null,
-    ): string {
-        $notDelete ??= config('generator.not_delete.package.model')['import'];
-        if (!preg_match("~\b$model\b~", $templateDataReal)) {
-            return $this->serviceGenerator->replaceNotDelete(
-                $notDelete,
-                "import { $model } from '$from';",
-                0,
-                $templateDataReal,
-                0,
-            );
-        }
-
-        return $templateDataReal;
-    }
 }

@@ -4,9 +4,10 @@ import { LaraForm } from '@larajs/components';
 import { use{{$NAME_MODEL$}}Forms, use{{$NAME_USES$}} } from '@larajs/cms/uses';
 import { useCancelToken } from '@larajs/uses';
 import { useCoreStore } from '@larajs/core';
+import { useI18n } from 'vue-i18n';
 
-// eslint-disable-next-line unused-imports/no-unused-vars
-const { id, form, state, formElement } = use{{$NAME_MODEL$}}Forms();
+const { t } = useI18n();
+const { id, form, state, formElement } = use{{$NAME_MODEL$}}Forms(); // eslint-disable-line unused-imports/no-unused-vars
 const { show } = use{{$NAME_USES$}}();
 const coreStore = useCoreStore();
 const cancelToken = useCancelToken();
@@ -26,7 +27,7 @@ onBeforeMount(async () => {
 <template>
   <el-card>
     <template #header>
-      <h3>{{ id ? $t('route.{{$LANG_MODEL_CLASS$}}_edit') : $t('route.{{$LANG_MODEL_CLASS$}}_create') }}</h3>
+      <h3>{{ id ? t('route.{{$LANG_MODEL_CLASS$}}_edit') : t('route.{{$LANG_MODEL_CLASS$}}_create') }}</h3>
     </template>
     <LaraForm :form="formElement" />
   </el-card>

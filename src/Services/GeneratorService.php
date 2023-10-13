@@ -10,22 +10,6 @@ use ReflectionClass;
 
 class GeneratorService
 {
-    /**
-     * Find the position of the Xth occurrence of a substring in a string
-     *
-     * @param $number integer > 0
-     */
-    public function strpos_x($haystack, $needle, int $number): int
-    {
-        if ($number === 1) {
-            return strpos($haystack, $needle);
-        }
-        if ($number > 1) {
-            return strpos($haystack, $needle, strpos_x($haystack, $needle, $number - 1) + strlen($needle));
-        }
-
-        return error_log('Error: Value for parameter $number is out of range');
-    }
 
     /**
      * Generates tab with spaces.
@@ -165,34 +149,9 @@ class GeneratorService
     }
 
     /**
-     * get file.
-     */
-    public function getFileReal(string $fileName = '', string $type = 'laravel'): string
-    {
-        $path = $this->getFilePathReal($fileName, $type);
-
-        return file_get_contents($path);
-    }
-
-    /**
      * get template contents.
      */
     public function get_template(string $templateName, string $templatePath, string $typeTemplate = 'laravel'): string
-    {
-        $path = $this->get_template_file_path($templateName, $templatePath, $typeTemplate);
-
-        return file_get_contents($path);
-    }
-
-    /**
-     * get template contents.
-     *
-     * @param  string  $templateName
-     * @param  string  $templatePath
-     * @param  string  $typeTemplate
-     * @return string
-     */
-    public function getFileExist($templateName, $templatePath, $typeTemplate = 'laravel')
     {
         $path = $this->get_template_file_path($templateName, $templatePath, $typeTemplate);
 
@@ -230,22 +189,6 @@ class GeneratorService
         }
 
         return $template;
-    }
-
-    /**
-     * fill template with field data.
-     *
-     * @param  array  $variables
-     * @param  array  $fieldVariables
-     * @param  string  $template
-     * @param  \InfyOm\Generator\Common\GeneratorField  $field
-     * @return string
-     */
-    public function fill_template_with_field_data($variables, $fieldVariables, $template, $field)
-    {
-        $template = $this->fill_template($variables, $template);
-
-        return $this->fill_field_template($fieldVariables, $template, $field);
     }
 
     /**
@@ -374,29 +317,6 @@ class GeneratorService
     }
 
     /**
-     * generates model name from table name.
-     *
-     * @param  string  $tableName
-     * @return string
-     */
-    public function urlFilterColumn($key, $type, $value = '', $singleSorting = true)
-    {
-        $params = \Request::all();
-        if (isset($params['filter_column']) && $singleSorting) {
-            foreach ($params['filter_column'] as $k => $filter) {
-                foreach ($filter as $t => $val) {
-                    if ($t === 'sorting') {
-                        unset($params['filter_column'][$k]['sorting']);
-                    }
-                }
-            }
-        }
-        $params['filter_column'][$key][$type] = $value;
-
-        return \Request::url().'?'.http_build_query($params);
-    }
-
-    /**
      * check options.
      *
      * @return string
@@ -453,34 +373,6 @@ class GeneratorService
     }
 
     /**
-     * search string with position X template.
-     *
-     * @param  string  $search
-     * @param  number  $number
-     * @param  string  $char
-     * @param  number  $plusStart
-     * @param  number  $plusEnd
-     * @param  string  $templateDataReal
-     * @return string
-     */
-    public function searchTemplateX($search, $number, $char, $plusStart, $plusEnd, $templateDataReal)
-    {
-        $position = $this->strpos_x($templateDataReal, $search, $number);
-        if ($position) {
-            $template = substr($templateDataReal, $position);
-            $length = stripos($template, $char);
-
-            return substr(
-                $templateDataReal,
-                $position + strlen($search) + $plusStart,
-                $length + $plusEnd - strlen($search),
-            );
-        }
-
-        return false;
-    }
-
-    /**
      * Get relationship on model
      */
     public function getDiagram(?string $model): array
@@ -509,58 +401,6 @@ class GeneratorService
         return $modelData;
     }
 
-    /**
-     * search relationship
-     */
-    public function extractRelations(array $data): array
-    {
-        $relationshipIdentifiers = config('generator.relationship.relationship');
-        $relationshipData = [];
-        foreach ($data as $line) {
-            foreach ($relationshipIdentifiers as $relationship) {
-                $nameRelationship = $relationship.'(';
-                $searchRelationship = $this->searchTemplateX(
-                    $nameRelationship,
-                    1,
-                    ')',
-                    -strlen($nameRelationship),
-                    strlen($nameRelationship),
-                    $line,
-                );
-                if ($searchRelationship) {
-                    $modelData = explode(',', $searchRelationship);
-                    $modelName = $this->stripString($modelData[0], $relationship);
-                    if ($relationship === 'belongsToMany') {
-                        $tableName = $this->modelNameNotPlural($this->stripString($modelData[1], $relationship));
-                        $subModel = substr($tableName, strlen($modelName));
-                        $relationshipData[] = [
-                            'type' => $relationship,
-                            'model' => $modelName,
-                            'table' => $tableName,
-                            'foreign_key' => $this->stripString(
-                                $modelData[2] ?? $this->tableNameNotPlural($subModel).'_id',
-                            ),
-                            'local_key' => $this->stripString(
-                                $modelData[3] ?? $this->tableNameNotPlural($modelName).'_id',
-                            ),
-                        ];
-                    } else {
-                        $relationshipData[] = [
-                            'type' => $relationship,
-                            'model' => $modelName,
-                            'foreign_key' => $this->stripString(
-                                $modelData[1] ?? $this->tableNameNotPlural($modelName).'_id',
-                            ),
-                            'local_key' => $this->stripString($modelData[2] ?? 'id'),
-                        ];
-                    }
-                }
-            }
-        }
-
-        return $relationshipData;
-    }
-
     public function getModelsNames(string $modelsPath): Collection
     {
         return collect(\File::allFiles($modelsPath))
@@ -580,28 +420,6 @@ class GeneratorService
 
                 return $valid;
             });
-    }
-
-    /**
-     * trip strings from slashes, App, class and ::
-     *
-     * @param  string  $string
-     * @param  string  $relationship
-     * @return string
-     */
-    public function stripString($string, $relationship = '')
-    {
-        $string = str_replace('App', '', $string);
-        $string = str_replace("'", '', $string);
-        $string = str_replace('\\', '', $string);
-        $string = str_replace('Models', '', $string);
-        $string = str_replace('::', '', $string);
-        $string = str_replace('class', '', $string);
-        $string = str_replace($relationship, '', $string);
-        $string = str_replace('(', '', $string);
-        $string = str_replace(')', '', $string);
-
-        return str_replace(' ', '', $string);
     }
 
     /**
@@ -744,23 +562,6 @@ MIGRATE;
         return $table;
     }
     // END - MIGRATION
-
-    // START - FORM
-    public function formField($templateDataForm): array
-    {
-        $dataForms = explode(',', trim($templateDataForm));
-        $fieldsGenerateDataForm = [];
-        foreach ($dataForms as $form) {
-            if (strlen($form) > 0) {
-                $form = trim($form);
-                [$keyForm, $valForm] = array_pad(explode(':', $form, 2), 2, '');
-                $name = $keyForm.":$valForm,";
-                $fieldsGenerateDataForm[] = $name;
-            }
-        }
-
-        return $fieldsGenerateDataForm;
-    }
 
     public function formFeGenerateField(): object
     {
@@ -999,33 +800,6 @@ MIGRATE;
             default => 'left',
         };
     }
-
-    public function viewTableHandler($field, $model): string
-    {
-        $dbType = config('generator.db_type');
-        $pathTemplate = 'Handler/';
-        $templateTableColumnLongText = $this->get_template('tableColumnLongText', $pathTemplate, 'vue');
-        $templateTableColumnBoolean = $this->get_template('tableColumnBoolean', $pathTemplate, 'vue');
-        $templateTableColumn = $this->get_template('tableColumn', $pathTemplate, 'vue');
-        if ($field['db_type'] === $dbType['longtext']) {
-            $template = str_replace('{{$FIELD_NAME$}}', $field['field_name'], $templateTableColumnLongText);
-            $template = str_replace('{{$TABLE_MODEL_CLASS$}}', $this->tableNameNotPlural($model['name']), $template);
-        } elseif ($field['db_type'] === $dbType['boolean']) {
-            $template = str_replace('{{$FIELD_NAME$}}', $field['field_name'], $templateTableColumnBoolean);
-            $template = str_replace('{{$TABLE_MODEL_CLASS$}}', $this->tableNameNotPlural($model['name']), $template);
-        } else {
-            $template = str_replace('{{$FIELD_NAME$}}', $field['field_name'], $templateTableColumn);
-            $template = str_replace('{{$TABLE_MODEL_CLASS$}}', $this->tableNameNotPlural($model['name']), $template);
-            $template = str_replace('{{$ALIGN$}}', $this->viewTableClassColumn($field), $template);
-        }
-        if ($field['sort']) {
-            $template = str_replace('{{$SORT$}}', 'sortable="custom"', $template);
-        } else {
-            $template = str_replace('{{$SORT$}}', '', $template);
-        }
-
-        return $template;
-    }
     // END - VIEW TABLE
 
     public function generateRepositoryProvider($case, $model): string
@@ -1132,13 +906,6 @@ MIGRATE;
         }
 
         return $formTemplate;
-    }
-
-    public function replaceTemplate($fieldsGenerate, int $space = 2, int $start = 1): string
-    {
-        return $this->infy_nl_tab($start, 2).
-            implode($this->infy_nl_tab(1, 2), $fieldsGenerate).
-            $this->infy_nl_tab(1, 3, $space);
     }
 
     public function generateColumns($fields, $model, $ignoreOptions = false): array
