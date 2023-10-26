@@ -30,9 +30,9 @@ interface BaseLaraJSRepositoryInterface
      * @param  int  $id
      * @param  Request  $request
      * @param  array  $options
-     * @return TModel
+     * @return TModel|Builder
      */
-    public function find(int $id, Request $request, array $options): Model;
+    public function find(int $id, Request $request, array $options): Model|Builder;
 
     /**
      * @param  int  $id

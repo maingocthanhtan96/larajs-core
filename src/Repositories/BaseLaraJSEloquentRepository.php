@@ -73,7 +73,6 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
     public function list(Request $request, array $options = []): LengthAwarePaginator|Collection
     {
         $queryBuilder = $this->applyQueryBuilder($this->queryBuilder(), $request, $options);
-
         if ($request->get('page') === '-1') {
             return $queryBuilder->take($this->maxLimit)->get();
         }
@@ -94,11 +93,15 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
      * @param  int  $id
      * @param  Request  $request
      * @param  array  $options
-     * @return TModel
+     * @return TModel|Builder
      */
-    public function find(int $id, Request $request, array $options = []): Model
+    public function find(int $id, Request $request, array $options = []): Model|Builder
     {
-        return $this->applyQueryBuilder($this->queryBuilder(), $request, $options)->findOrFail($id);
+        $queryBuilder = $this->applyQueryBuilder($this->queryBuilder(), $request, $options);
+        if ($options['isBuilder'] ?? false) {
+            return $queryBuilder;
+        }
+        return $queryBuilder->findOrFail($id);
     }
 
     /**
