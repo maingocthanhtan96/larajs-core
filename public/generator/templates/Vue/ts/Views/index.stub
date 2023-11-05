@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PermissionType } from '@larajs/common';
+import { PermissionType } from '@larajs/permission';
 import { LaraTable } from '@larajs/components';
 import { use{{$NAME_MODEL$}}Tables } from '@larajs/cms/uses';
 import { useI18n } from 'vue-i18n';

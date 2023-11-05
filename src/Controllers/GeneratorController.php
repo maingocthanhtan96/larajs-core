@@ -4,6 +4,7 @@ namespace LaraJS\Core\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
@@ -69,7 +70,7 @@ class GeneratorController extends BaseLaraJSController
         return GeneratorResource::collection($generators);
     }
 
-    public function show(Generator $generator): JsonResponse
+    public function show(Generator $generator): JsonResource
     {
         return GeneratorResource::make($generator);
     }
