@@ -11,9 +11,9 @@ use Illuminate\Http\Request;
 use LaraJS\QueryParser\LaraJSQueryParser;
 
 /**
- * @template TModel
+ * @template T
  *
- * @template-implements BaseLaraJSRepositoryInterface<TModel>
+ * @template-implements BaseLaraJSRepositoryInterface<T>
  */
 abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInterface
 {
@@ -68,7 +68,7 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
     /**
      * @param  Request  $request
      * @param  array  $options
-     * @return LengthAwarePaginator|TModel[]
+     * @return LengthAwarePaginator|T[]
      */
     public function list(Request $request, array $options = []): LengthAwarePaginator|Collection
     {
@@ -82,9 +82,9 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
 
     /**
      * @param  array  $data
-     * @return TModel
+     * @return T
      */
-    public function create(array $data): Model
+    public function create(array $data)
     {
         return $this->save(new $this->model(), $data);
     }
@@ -93,23 +93,19 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
      * @param  int  $id
      * @param  Request  $request
      * @param  array  $options
-     * @return TModel|Builder
+     * @return T
      */
-    public function find(int $id, Request $request, array $options = []): Model|Builder
+    public function find(int $id, Request $request, array $options = [])
     {
-        $queryBuilder = $this->applyQueryBuilder($this->queryBuilder(), $request, $options);
-        if ($options['isBuilder'] ?? false) {
-            return $queryBuilder;
-        }
-        return $queryBuilder->findOrFail($id);
+        return $this->applyQueryBuilder($this->queryBuilder(), $request, $options)->findOrFail($id);
     }
 
     /**
      * @param  int  $id
      * @param  array  $data
-     * @return TModel
+     * @return T
      */
-    public function update(int $id, array $data): Model
+    public function update(int $id, array $data)
     {
         return $this->save($this->model->findOrFail($id), $data);
     }
@@ -126,9 +122,9 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
     /**
      * @param  Model  $model
      * @param  array  $data
-     * @return TModel
+     * @return T
      */
-    public function save(Model $model, array $data): Model
+    public function save(Model $model, array $data)
     {
         $model->fill($data)->save();
 

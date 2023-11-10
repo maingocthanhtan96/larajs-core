@@ -23,7 +23,7 @@ class ApiGenerator extends BaseGenerator
         $templateData = $this->serviceGenerator->get_template('api', $pathTemplate, 'vue');
         $templateData = str_replace('{{$DATE$}}', $now->toDateTimeString(), $templateData);
         $templateData = str_replace('{{$MODEL_CLASS$}}', $model['name'], $templateData);
-        $templateData = str_replace('{{$API_VERSION$}}', config('generator.api_version'), $templateData);
+        $templateData = str_replace('{{$VERSION$}}', strtolower(config('generator.api_version')), $templateData);
         $templateData = str_replace(
             '{{$MODEL_CLASS_URI$}}',
             $this->serviceGenerator->urlResource($model['name']),

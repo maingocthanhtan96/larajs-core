@@ -2,7 +2,6 @@
 
 namespace LaraJS\Core\Generators\Backend;
 
-use Carbon\Carbon;
 use LaraJS\Core\Generators\BaseGenerator;
 
 class MigrationGenerator extends BaseGenerator

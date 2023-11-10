@@ -1,4 +1,4 @@
-import { {{$NAME_MODEL$}}Resource } from '@larajs/cms/api/{{$API_VERSION$}}';
+import { {{$NAME_MODEL$}}Resource } from '@larajs/cms/api/{{$VERSION$}}';
 import { AxiosRequestConfig } from 'axios';
 import { IQuery, {{$NAME_MODEL$}} } from '@larajs/common';
 

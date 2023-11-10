@@ -9,37 +9,37 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
 /**
- * @template TModel
+ * @template T
  */
 interface BaseLaraJSRepositoryInterface
 {
     /**
      * @param  Request  $request
      * @param  array  $options
-     * @return LengthAwarePaginator|TModel[]
+     * @return LengthAwarePaginator|T[]
      */
-    public function list(Request $request, array $options): LengthAwarePaginator|Collection;
+    public function list(Request $request, array $options = []): LengthAwarePaginator|Collection;
 
     /**
      * @param  array  $data
-     * @return TModel
+     * @return T
      */
-    public function create(array $data): Model;
+    public function create(array $data);
 
     /**
      * @param  int  $id
      * @param  Request  $request
      * @param  array  $options
-     * @return TModel|Builder
+     * @return T
      */
-    public function find(int $id, Request $request, array $options): Model|Builder;
+    public function find(int $id, Request $request, array $options = []);
 
     /**
      * @param  int  $id
      * @param  array  $data
-     * @return TModel
+     * @return T
      */
-    public function update(int $id, array $data): Model;
+    public function update(int $id, array $data);
 
     /**
      * @param  int  $id
@@ -55,7 +55,7 @@ interface BaseLaraJSRepositoryInterface
     /**
      * @param  Model  $model
      * @param  array  $data
-     * @return TModel
+     * @return T
      */
-    public function save(Model $model, array $data): Model;
+    public function save(Model $model, array $data);
 }

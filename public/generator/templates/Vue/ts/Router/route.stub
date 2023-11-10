@@ -1,4 +1,4 @@
-import { Permission } from '@larajs/permission';
+import { PermissionType } from '@larajs/permission';
 import { RouterMapping } from '@larajs/common';
 
 const {{$NAME_CONST$}}: RouterMapping = {
@@ -19,7 +19,7 @@ const {{$NAME_CONST$}}: RouterMapping = {
         title: '{{$TITLE_ROUTE_MODEL_CLASS$}}_overview',
         icon: 'list',
         activeMenu: '/{{$PATH_ROUTE_MODEL_CLASS$}}',
-        permissions: [Permission.VISIT],
+        permissions: [PermissionType.VISIT],
       },
       hidden: true,
     },
@@ -32,7 +32,7 @@ const {{$NAME_CONST$}}: RouterMapping = {
         activeMenu: '/{{$PATH_ROUTE_MODEL_CLASS$}}',
         title: '{{$TITLE_ROUTE_MODEL_CLASS$}}_create',
         icon: 'record_create',
-        permissions: [Permission.CREATE],
+        permissions: [PermissionType.CREATE],
       },
     },
     {
@@ -43,7 +43,7 @@ const {{$NAME_CONST$}}: RouterMapping = {
       meta: {
         activeMenu: '/{{$PATH_ROUTE_MODEL_CLASS$}}',
         title: '{{$TITLE_ROUTE_MODEL_CLASS$}}_edit',
-        permissions: [Permission.EDIT],
+        permissions: [PermissionType.EDIT],
         icon: 'edit',
       },
     },

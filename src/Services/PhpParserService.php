@@ -77,6 +77,9 @@ class PhpParserService
 
     public function addCodeToFunction(string $template, string $code, string $functionName): string
     {
+        if (strpos($template, $code)) {
+            return $template;
+        }
         $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
         $ast = $parser->parse($template);
         $nodeFinder = new NodeFinder();
@@ -96,10 +99,22 @@ class PhpParserService
         $nodeFinder = new NodeFinder();
         $traverser->addVisitor(new NameResolver());
         $namespace = $nodeFinder->findFirstInstanceOf($stmts, Node\Stmt\Namespace_::class);
-        $namespace->stmts = array_merge(
-            [new Node\Stmt\Use_([new Node\Stmt\UseUse(new Node\Name($code))])],
-            $namespace->stmts,
-        );
+        $existingUses = $nodeFinder->findInstanceOf($namespace->stmts, Node\Stmt\Use_::class);
+        $isNotImported = true;
+        foreach ($existingUses as $useStatement) {
+            foreach ($useStatement->uses as $use) {
+                if ($use->name->toString() === $code) {
+                    $isNotImported = false;
+                    break 2;
+                }
+            }
+        }
+        if ($isNotImported) {
+            $namespace->stmts = array_merge(
+                [new Node\Stmt\Use_([new Node\Stmt\UseUse(new Node\Name($code))])],
+                $namespace->stmts,
+            );
+        }
 
         return $this->prettyPrintFile($stmts);
     }

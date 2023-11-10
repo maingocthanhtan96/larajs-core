@@ -5,6 +5,13 @@ namespace App\Repositories\{{MODEL_CLASS}};
 use App\Models\{{MODEL_CLASS}};
 use App\Repositories\BaseEloquentRepository;
 
+/**
+ * @template T of {{MODEL_CLASS}}
+ *
+ * @template-implements {{MODEL_CLASS}}RepositoryInterface<T>
+ *
+ * @template-extends  BaseEloquentRepository<T>
+ */
 class {{MODEL_CLASS}}Repository extends BaseEloquentRepository implements {{MODEL_CLASS}}RepositoryInterface
 {
     public function getModel(): string

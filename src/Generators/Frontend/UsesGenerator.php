@@ -33,7 +33,7 @@ class UsesGenerator extends BaseGenerator
             $this->serviceGenerator->modelNamePlural($model['name']),
             $templateData,
         );
-        $templateData = str_replace('{{$API_VERSION$}}', config('generator.api_version'), $templateData);
+        $templateData = str_replace('{{$VERSION$}}', strtolower(config('generator.api_version')), $templateData);
         $templateData = str_replace(
             '{{$NAME_ROUTE_API$}}',
             $this->serviceGenerator->nameAttribute($model['name']),

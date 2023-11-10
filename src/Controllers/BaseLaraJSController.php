@@ -10,9 +10,9 @@ use Symfony\Component\HttpFoundation\Response;
 class BaseLaraJSController extends BaseController
 {
     /**
-     * @param mixed $data
-     * @param string $message
-     * @param int $status
+     * @param  mixed  $data
+     * @param  string  $message
+     * @param  int  $status
      * @return JsonResponse
      */
     public function responseData(mixed $data, string $message = '', int $status = Response::HTTP_OK): JsonResponse
@@ -28,7 +28,7 @@ class BaseLaraJSController extends BaseController
 
     /**
      * @param $message
-     * @param int $status
+     * @param  int  $status
      * @return JsonResponse
      */
     public function responseMessage(
@@ -44,12 +44,12 @@ class BaseLaraJSController extends BaseController
     }
 
     /**
-     * @param JsonResource $resource
-     * @param ?string $message
-     * @param int $status
+     * @param  JsonResource  $resource
+     * @param  string  $message
+     * @param  int  $status
      * @return JsonResponse
      */
-    public function responseResource(JsonResource $resource, ?string $message = null, int $status = Response::HTTP_OK): JsonResponse
+    public function responseResource(JsonResource $resource, string $message = '', int $status = Response::HTTP_OK): JsonResponse
     {
         if ($message) {
             $resource->additional(['message' => $message]);
@@ -57,5 +57,4 @@ class BaseLaraJSController extends BaseController
 
         return $resource->response()->setStatusCode($status);
     }
-
 }

@@ -1,4 +1,4 @@
-import { {{$CONST_NAME_MODEL$}}Resource } from '@/api/{{$API_VERSION$}}';
+import { {{$CONST_NAME_MODEL$}}Resource } from '@/api/{{$VERSION$}}';
 
 export * from './table';
 export * from './form';

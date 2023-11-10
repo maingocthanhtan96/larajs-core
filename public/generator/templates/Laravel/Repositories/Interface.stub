@@ -2,7 +2,14 @@
 
 namespace App\Repositories\{{MODEL_CLASS}};
 
-interface {{MODEL_CLASS}}RepositoryInterface
+use App\Repositories\BaseRepositoryInterface;
+
+/**
+ * @template T
+ *
+ * @extends BaseRepositoryInterface<T>
+ */
+interface {{MODEL_CLASS}}RepositoryInterface extends BaseRepositoryInterface
 {
 
 }

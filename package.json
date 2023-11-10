@@ -4,11 +4,12 @@
     "prepare": "husky install"
   },
   "devDependencies": {
-    "@babel/generator": "^7.21.4",
-    "@babel/parser": "^7.21.4",
-    "@babel/traverse": "^7.21.4",
-    "@babel/types": "^7.21.4",
-    "prettier": "^2.8.7"
+    "@babel/generator": "^7.23.0",
+    "@babel/parser": "^7.23.0",
+    "@babel/traverse": "^7.23.2",
+    "@babel/types": "^7.23.0",
+    "@vue/compiler-sfc": "^3.3.8",
+    "prettier": "^3.0.3"
   },
   "dependencies": {
     "husky": "^8.0.3"

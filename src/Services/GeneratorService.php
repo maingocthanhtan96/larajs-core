@@ -10,7 +10,6 @@ use ReflectionClass;
 
 class GeneratorService
 {
-
     /**
      * Generates tab with spaces.
      *

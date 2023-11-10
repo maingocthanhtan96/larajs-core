@@ -2,7 +2,6 @@
 
 namespace LaraJS\Core\Generators\Backend;
 
-use Carbon\Carbon;
 use Illuminate\Support\Str;
 use LaraJS\Core\Generators\BaseGenerator;
 
@@ -61,13 +60,14 @@ class RelationshipGenerator extends BaseGenerator
                 $template,
             );
         }
-        $templateModel = str_replace('{{RELATION}}', $relationship, $templateModel);
+        $templateModel = str_replace('{{RELATION}}', ucfirst($relationship), $templateModel);
         $templateModel = str_replace('{{RELATION_MODEL_CLASS}}', $model, $templateModel);
         //ModelCurrent Relationship
 
         $templateInverse = str_replace('{{RELATION_MODEL_CLASS}}', $modelCurrent, $templateInverse);
         if ($relationship === $this->relationship['belongs_to_many']) {
-            $templateInverse = str_replace('{{RELATION}}', 'belongsToMany', $templateInverse);
+            $relationshipInverse = 'BelongsToMany';
+            $templateInverse = str_replace('{{RELATION}}', $relationshipInverse, $templateInverse);
             $templateModel = str_replace(
                 '{{FIELD_RELATIONSHIP}}',
                 "'".
@@ -103,14 +103,17 @@ class RelationshipGenerator extends BaseGenerator
                 "'".$columnChildren."'",
                 $templateInverse,
             );
-            $templateInverse = str_replace('{{RELATION}}', 'belongsTo', $templateInverse);
+            $relationshipInverse = 'BelongsTo';
+            $templateInverse = str_replace('{{RELATION}}', $relationshipInverse, $templateInverse);
         }
         $migrateFile = $this->_migrateRelationship($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName, $columnChildren, $ignoreMigrate);
         //replace file model real
         $templateModelReal = $this->serviceGenerator->getFile('model', 'laravel', $model.'.php');
+        $templateModelReal = $this->phpParserService->usePackage($templateModelReal, "Illuminate\Database\Eloquent\Relations\\$relationshipInverse");
         $this->_replaceFile($model, $templateInverse, $templateModelReal);
         //replace file model current real
         $templateModelCurrentReal = $this->serviceGenerator->getFile('model', 'laravel', $modelCurrent.'.php');
+        $templateModelCurrentReal = $this->phpParserService->usePackage($templateModelCurrentReal, "Illuminate\Database\Eloquent\Relations\\" . ucfirst($relationship));
         $this->_replaceFile($modelCurrent, $templateModel, $templateModelCurrentReal);
 
         return $migrateFile;
@@ -470,7 +473,7 @@ class RelationshipGenerator extends BaseGenerator
         $templateDataRegisterEvent = $this->serviceGenerator->getFile('provider', 'laravel', $fileName);
         $templateDataRegisterEvent = $this->phpParserService->usePackage($templateDataRegisterEvent, "App\Models\\$model");
         $templateDataRegisterEvent = $this->phpParserService->usePackage($templateDataRegisterEvent, "App\Observers\\{$model}Observer");
-        $templateDataRegisterEvent = $this->phpParserService->addCodeToFunction($templateDataRegisterEvent, "$model::observe({$model}Observer::class);\n", 'boot');
+        $templateDataRegisterEvent = $this->phpParserService->addCodeToFunction($templateDataRegisterEvent, "$model::observe({$model}Observer::class);", 'boot');
         $pathProvider = config('generator.path.laravel.provider');
         $this->serviceFile->createFileReal("$pathProvider/$fileName", $templateDataRegisterEvent);
     }

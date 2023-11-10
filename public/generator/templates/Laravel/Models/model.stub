@@ -11,6 +11,11 @@ class {{MODEL_CLASS}} extends BaseModel
 
     protected $table = '{{TABLE_NAME}}';
     //{{TIMESTAMPS}}
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<string>
+     */
     protected $fillable = [
     	{{FIELDS}}
     ];

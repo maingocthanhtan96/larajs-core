@@ -10,13 +10,44 @@ use Illuminate\Http\Request;
 
 interface {{MODEL_CLASS}}ServiceInterface extends BaseServiceInterface
 {
+    /**
+     * Get list
+     *
+     * @param  Request $request
+     * @return LengthAwarePaginator|Collection
+     */
     public function list(Request $request): LengthAwarePaginator|Collection;
 
+    /**
+     * Create a record
+     *
+     * @param  array $data
+     * @return {{MODEL_CLASS}}
+     */
     public function create(array $data): {{MODEL_CLASS}};
 
+    /**
+     * Get a record
+     *
+     * @param  int $id
+     * @param  Request $request
+     * @return {{MODEL_CLASS}}
+     */
     public function find(int $id, Request $request): {{MODEL_CLASS}};
 
+    /**
+     * Update a record
+     *
+     * @param  int $id
+     * @param  array $data
+     * @return {{MODEL_CLASS}}
+     */
     public function update(int $id, array $data): {{MODEL_CLASS}};
 
+    /**
+     * Delete a record
+     *
+     * @param  int $id
+     */
     public function delete(int $id): bool;
 }
