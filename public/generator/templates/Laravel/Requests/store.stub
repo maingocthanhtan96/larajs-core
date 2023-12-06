@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\{{VERSION}};
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class Store{{MODEL_CLASS}}Request extends FormRequest
@@ -19,7 +20,7 @@ class Store{{MODEL_CLASS}}Request extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array
+     * @return array<string, array<ValidationRule|string>|string>
      */
     public function rules(): array
     {

@@ -21,7 +21,7 @@ interface {{MODEL_CLASS}}ServiceInterface extends BaseServiceInterface
     /**
      * Create a record
      *
-     * @param  array $data
+     * @param  array<string, mixed> $data
      * @return {{MODEL_CLASS}}
      */
     public function create(array $data): {{MODEL_CLASS}};
@@ -39,7 +39,7 @@ interface {{MODEL_CLASS}}ServiceInterface extends BaseServiceInterface
      * Update a record
      *
      * @param  int $id
-     * @param  array $data
+     * @param  array<string, mixed> $data
      * @return {{MODEL_CLASS}}
      */
     public function update(int $id, array $data): {{MODEL_CLASS}};
