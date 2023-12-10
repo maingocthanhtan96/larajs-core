@@ -6,9 +6,6 @@ return [
     'js_language' => 'ts',
     'api_version' => strtoupper(env('GENERATOR_API_VERSION', 'V1')),
     'node_path' => env('GENERATOR_NODE_PATH', 'node'),
-    'permission' => [
-        'view_menu' => 'VIEW_MENU',
-    ],
     /*
     |--------------------------------------------------------------------------
     | Templates
