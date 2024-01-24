@@ -129,6 +129,8 @@ class RelationshipGenerator extends BaseGenerator
             //if belongsToMany replace table to create
             $templateData = $this->_replaceTemplateRelationshipMTM($model, $modelCurrent, $templateData, $modelName);
             $fileName = date('Y_m_d_His')."_relationship_{$this->serviceGenerator->tableName($modelName)}_table.php";
+            $this->_generateDocs($model, $modelCurrent, $relationship);
+            $this->_generateDocs($modelCurrent, $model, $relationship);
             $this->_generateModelMTM($model, $modelCurrent, $modelName);
             $this->_generateSeeder($modelCurrent, $model, $relationship);
             $this->_generateRequest($model, $relationship, Str::snake($modelCurrent) . self::_IDS);
@@ -144,7 +146,7 @@ class RelationshipGenerator extends BaseGenerator
             }
         } else {
             //hasOne or hasMany
-            $templateData = $this->_replaceTemplateRelationship($model, $columnChildren, $templateData, $columnChildren);
+            $templateData = $this->_replaceTemplateRelationship($model, $modelCurrent, $templateData, $columnChildren);
             $fileName =
                 date('Y_m_d_His').
                 '_relationship_'.
@@ -153,6 +155,7 @@ class RelationshipGenerator extends BaseGenerator
                 $this->serviceGenerator->tableName($model).
                 '_table.php';
             $this->_generateModel($model, $columnChildren);
+            $this->_generateDocs($modelCurrent, $model, $relationship);
             $this->_generateSeeder($modelCurrent, $model, $relationship);
             $this->_generateRequest($model, $relationship, $columnChildren);
             //generate frontend
@@ -166,6 +169,20 @@ class RelationshipGenerator extends BaseGenerator
         }
 
         return $fileName;
+    }
+
+    private function _generateDocs(string $model, string $modelRelationship, string $relationship): void
+    {
+        $templateDataReal = $this->serviceGenerator->getFile('api_controller', 'laravel', "{$model}Controller.php");
+        if (!$templateDataReal) {
+            return;
+        }
+        $relationship =
+            $relationship === $this->relationship['has_one']
+                ? $this->serviceGenerator->modelNameNotPluralFe($modelRelationship)
+                : $this->serviceGenerator->modelNamePluralFe($modelRelationship);
+        $templateDataReal = $this->phpParserService->addItemForAttribute($templateDataReal, $relationship, 'with');
+        $this->_createFileAll('api_controller', "{$model}Controller", $templateDataReal);
     }
 
     private function _generateFormFe($model, $modelRelationship, $columnRelationship, $options, $relationship, $columnChildren)

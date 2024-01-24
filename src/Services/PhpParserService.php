@@ -157,16 +157,37 @@ class PhpParserService
         if ($argNumber) {
             $methodCall->var->args[] = new Node\Arg(new Node\Scalar\LNumber($argNumber));
         }
-        $printer = new Standard();
 
-        return $printer->prettyPrintFile($ast);
+        return $this->prettyPrintFile($ast);
+    }
+
+    public function addItemForAttribute(string $template, string $item, string $identify): string
+    {
+        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
+        $ast = $parser->parse($template);
+        $nodeFinder = new NodeFinder();
+        $attributeNodes = $nodeFinder->find($ast, function (Node $node): bool {
+            return $node instanceof Node\Attribute && $node->name->toCodeString() === 'ResponseFromApiResource';
+        });
+        foreach ($attributeNodes as $attributeNode) {
+            foreach ($attributeNode->args as $arg) {
+                // Find the 'with' argument in the attribute's arguments
+                if ($arg->name && $arg->name->name === $identify) {
+                    //Add new item to the array
+                    $arg->value->items[] = new Node\Scalar\String_($item);
+                    break;
+                }
+            }
+        }
+
+        return $this->prettyPrintFile($ast);
     }
 
     public function runParserJS($file, $data, $templateDataReal = null): string
     {
         if ($templateDataReal) {
-            if (!file_exists(dirname($file))) {
-                mkdir(dirname($file), 0755, true);
+            if (!file_exists(dirname($file)) && !mkdir($concurrentDirectory = dirname($file), 0755, true) && !is_dir($concurrentDirectory)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
             }
             file_put_contents($file, $templateDataReal);
         }
@@ -197,7 +218,15 @@ class PhpParserService
                         'faker' => 'numberBetween',
                         'args' => [],
                     ],
-                    $dbType['float'], $dbType['double'] => [
+                    $dbType['float'] => [
+                        'faker' => 'randomFloat',
+                        'args' => [
+                            new Node\Scalar\LNumber(2),
+                            new Node\Scalar\LNumber(1),
+                            new Node\Scalar\LNumber(1000),
+                        ],
+                    ],
+                    $dbType['double'] => [
                         'faker' => 'randomFloat',
                         'args' => [],
                     ],
@@ -245,13 +274,7 @@ class PhpParserService
         foreach ($data as $item) {
             switch ($item['db_type']) {
                 case $dbType['enum']:
-                    $enum = \Arr::map($item['enum'], function ($value) {
-                        if (is_numeric($value)) {
-                            return new Node\Scalar\LNumber($value);
-                        } else {
-                            return new Node\Scalar\String_($value);
-                        }
-                    });
+                    $enum = \Arr::map($item['enum'], fn ($value) => is_numeric($value) ? new Node\Scalar\LNumber($value) : new Node\Scalar\String_($value));
                     $item['args'] = new Node\Expr\Array_($enum);
                     $itemFakers[] = new Node\Expr\ArrayItem(
                         new Node\Expr\MethodCall(new Node\Expr\PropertyFetch(new Node\Expr\Variable('this'), 'faker'), $item['faker'], [$item['args']]),
@@ -277,8 +300,6 @@ class PhpParserService
 
     private function prettyPrintFile($ast): string
     {
-        $printer = new Standard();
-
-        return $printer->prettyPrintFile($ast);
+        return (new Standard())->prettyPrintFile($ast);
     }
 }

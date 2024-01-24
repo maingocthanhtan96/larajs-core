@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api\{{VERSION}};
 use App\Http\Controllers\Controller;
 use App\Http\Requests\{{VERSION}}\Store{{MODEL_CLASS}}Request;
 use App\Http\Resources\{{VERSION}}\{{MODEL_CLASS}}Resource;
+use App\Models\{{MODEL_CLASS}};
 use App\Services\{{VERSION}}\{{MODEL_CLASS}}\{{MODEL_CLASS}}Service;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -18,7 +20,7 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
 {
     public function __construct(private readonly {{MODEL_CLASS}}Service ${{MODEL_CLASS_PARAM}}Service)
     {
-        parent::permissions();
+        $this->permissions();
     }
 
     /**
@@ -33,11 +35,8 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
      * @queryParam orderBy string https://www.jsonapi.net/usage/reading/sorting.html. Example: -id.
      * @queryParam limit number Limit. Example: 25.
      * @queryParam page number Page equals -1 get all records. Example: 1
-     *
-     * @apiResourceCollection App\Http\Resources\V1\{{MODEL_CLASS}}Resource
-     *
-     * @apiResourceModel App\Models\{{MODEL_CLASS}} paginate=5
      */
+    #[ResponseFromApiResource({{MODEL_CLASS}}Resource::class, {{MODEL_CLASS}}::class, collection: true, with: [], paginate: 5)]
 	public function index(Request $request): JsonResponse
 	{
         ${{MODEL_CLASS_PARAM_LIST}} = $this->{{MODEL_CLASS_PARAM}}Service->list($request);
@@ -66,11 +65,8 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
      *
      * @queryParam select string Select column. No-example.
      * @queryParam include string[] Specify relationships and aggregate. No-example.
-     *
-     * @apiResource App\Http\Resources\V1\{{MODEL_CLASS}}Resource
-     *
-     * @apiResourceModel App\Models\{{MODEL_CLASS}}
      */
+    #[ResponseFromApiResource({{MODEL_CLASS}}Resource::class, {{MODEL_CLASS}}::class, with: [])]
 	public function show(int ${{MODEL_CLASS_PARAM}}, Request $request): JsonResponse
 	{
         ${{MODEL_CLASS_PARAM}} = $this->{{MODEL_CLASS_PARAM}}Service->find(${{MODEL_CLASS_PARAM}}, $request);
