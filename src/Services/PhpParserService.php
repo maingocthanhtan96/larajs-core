@@ -263,8 +263,11 @@ class PhpParserService
                         'enum' => $field['enum'],
                         'args' => [],
                     ],
-                    $dbType['json'] => [],
+                    $dbType['json'], 'FOREIGN_KEY' => [],
                 };
+                if ($field['db_type'] === 'FOREIGN_KEY') {
+                    $faker['model'] = $field['model'];
+                }
                 $faker['key'] = $field['field_name'];
                 $faker['db_type'] = $field['db_type'];
                 $data[] = $faker;
@@ -284,6 +287,15 @@ class PhpParserService
                 case $dbType['json']:
                     $itemFakers[] = new Node\Expr\ArrayItem(
                         new Node\Scalar\String_('{}'),
+                        new Node\Scalar\String_($item['key']),
+                    );
+                    break;
+                case 'FOREIGN_KEY':
+                    $itemFakers[] = new Node\Expr\ArrayItem(
+                        new Node\Expr\StaticCall(
+                            new Node\Name\FullyQualified('App\Models\\' . $item['model']),
+                            'factory'
+                        ),
                         new Node\Scalar\String_($item['key']),
                     );
                     break;

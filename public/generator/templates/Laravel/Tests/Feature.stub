@@ -1,6 +1,6 @@
 <?php
 
-use Database\Seeders\{{MODEL}}Seeder;
+use App\Models\{{MODEL}};
 use Illuminate\Foundation\Testing\WithFaker;
 
 uses(WithFaker::class);
@@ -14,7 +14,7 @@ beforeEach(function () {
 });
 
 test('get list {{ROUTE_RESOURCE}} -> 200', function () {
-    {{MODEL}}Seeder::run(3);
+    {{MODEL}}::factory()->count(5)->create();
     $response = asAdmin()
         ->get(route('{{ROUTE_RESOURCE}}.index', []))
         ->assertOK()
@@ -24,10 +24,10 @@ test('get list {{ROUTE_RESOURCE}} -> 200', function () {
         ->toHaveKeys(['meta', 'data'])
         ->and($response['meta']['total'])
         ->toBeInt()
-        ->toBe(3)
+        ->toBe(5)
         ->and($response['data'])
         ->toBeArray()
-        ->toHaveCount(3);
+        ->toHaveCount(5);
 });
 
 test('store a {{MODEL_TEST}} -> 201', function () {
@@ -45,7 +45,7 @@ test('store a {{MODEL_TEST}} -> 201', function () {
 });
 
 test('show a {{MODEL_TEST}} -> 200', function () {
-    ${{MODEL_VARIABLE}} = {{MODEL}}Seeder::run(1);
+    ${{MODEL_VARIABLE}} = {{MODEL}}::factory()->create();
     $response = asAdmin()
         ->get(route('{{ROUTE_RESOURCE}}.show', ['{{MODEL_SINGULAR}}' => ${{MODEL_VARIABLE}}->id]))
         ->assertOK()
@@ -58,7 +58,7 @@ test('show a {{MODEL_TEST}} -> 200', function () {
 });
 
 test('update a {{MODEL_TEST}} -> 200', function () {
-    ${{MODEL_VARIABLE}} = {{MODEL}}Seeder::run(1);
+    ${{MODEL_VARIABLE}} = {{MODEL}}::factory()->create();
     $response = asAdmin()
         ->put(route('{{ROUTE_RESOURCE}}.update', ['{{MODEL_SINGULAR}}' => ${{MODEL_VARIABLE}}->id]), $this->data)
         ->assertOK()
@@ -73,7 +73,7 @@ test('update a {{MODEL_TEST}} -> 200', function () {
 });
 
 test('destroy a {{MODEL_TEST}} -> 200', function () {
-    ${{MODEL_VARIABLE}} = {{MODEL}}Seeder::run(1);
+    ${{MODEL_VARIABLE}} = {{MODEL}}::factory()->create();
     $response = asAdmin()
         ->delete(route('{{ROUTE_RESOURCE}}.destroy', ['{{MODEL_SINGULAR}}' => ${{MODEL_VARIABLE}}->id]))
         ->assertOK()

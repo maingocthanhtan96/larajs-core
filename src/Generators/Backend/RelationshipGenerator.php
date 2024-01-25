@@ -7,8 +7,6 @@ use LaraJS\Core\Generators\BaseGenerator;
 
 class RelationshipGenerator extends BaseGenerator
 {
-    public const SORT_COLUMN = 'sortable="custom"';
-
     public const _ID = '_id';
 
     public const _IDS = '_ids';
@@ -156,6 +154,8 @@ class RelationshipGenerator extends BaseGenerator
                 '_table.php';
             $this->_generateModel($model, $columnChildren);
             $this->_generateDocs($modelCurrent, $model, $relationship);
+            $this->_generateDocs($model, $modelCurrent, $relationship === $this->relationship['has_one'] ? $this->relationship['x'] : $this->relationship['has_one']); // reserve
+            $this->_generateFactory($modelCurrent, $model, $columnChildren);
             $this->_generateSeeder($modelCurrent, $model, $relationship);
             $this->_generateRequest($model, $relationship, $columnChildren);
             //generate frontend
@@ -169,6 +169,19 @@ class RelationshipGenerator extends BaseGenerator
         }
 
         return $fileName;
+    }
+
+    private function _generateFactory(string $model, string $modelRelationship, string $columnChildren): void
+    {
+        $templateDataReal = $this->serviceGenerator->getFile('factory', 'laravel', "{$modelRelationship}Factory.php");
+        $templateDataReal = $this->phpParserService->addFakerToFactory($templateDataReal, [
+            [
+                'field_name' => $columnChildren,
+                'db_type' => 'FOREIGN_KEY',
+                'model' => $model,
+            ],
+        ]);
+        $this->_createFileAll('factory', "{$modelRelationship}Factory", $templateDataReal);
     }
 
     private function _generateDocs(string $model, string $modelRelationship, string $relationship): void

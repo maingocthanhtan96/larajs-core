@@ -11,15 +11,11 @@ class {{TABLE_NAME_TITLE}}Seeder extends Seeder
 {
     /**
      * Run the database seeds.
-     * @param int $times
-     * @return Collection|Model
+     *
+     * @return void
      */
-    public static function run(int $times = 5): Model|Collection
+    public function run(): void
     {
-        $factory = {{MODEL_CLASS}}::factory();
-        if ($times > 1) {
-            $factory = $factory->count($times);
-        }
-        return $factory->create();
+        {{MODEL_CLASS}}::factory()->count(10)->create();
     }
 }
