@@ -67,9 +67,9 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
      * @queryParam include string[] Specify relationships and aggregate. No-example.
      */
     #[ResponseFromApiResource({{MODEL_CLASS}}Resource::class, {{MODEL_CLASS}}::class, with: [])]
-	public function show(int ${{MODEL_CLASS_PARAM}}, Request $request): JsonResponse
+	public function show(int $id, Request $request): JsonResponse
 	{
-        ${{MODEL_CLASS_PARAM}} = $this->{{MODEL_CLASS_PARAM}}Service->find(${{MODEL_CLASS_PARAM}}, $request);
+        ${{MODEL_CLASS_PARAM}} = $this->{{MODEL_CLASS_PARAM}}Service->find($id, $request);
 
         return $this->responseResource({{MODEL_CLASS}}Resource::make(${{MODEL_CLASS_PARAM}}));
 	}
@@ -83,9 +83,9 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
      *
      * @apiResourceAdditional message="Update successfully!"
      */
-	public function update(int ${{MODEL_CLASS_PARAM}}, Store{{MODEL_CLASS}}Request $request): JsonResponse
+	public function update(int $id, Store{{MODEL_CLASS}}Request $request): JsonResponse
 	{
-        ${{MODEL_CLASS_PARAM}} = $this->{{MODEL_CLASS_PARAM}}Service->update(${{MODEL_CLASS_PARAM}}, $request->validated());
+        ${{MODEL_CLASS_PARAM}} = $this->{{MODEL_CLASS_PARAM}}Service->update($id, $request->validated());
 
         return $this->responseResource({{MODEL_CLASS}}Resource::make(${{MODEL_CLASS_PARAM}}), trans('messages.update'));
 	}
@@ -95,9 +95,9 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
      *
      * @response 200 {"message": "Delete successfully!"}
      */
-    public function destroy(int ${{MODEL_CLASS_PARAM}}): JsonResponse
+    public function destroy(int $id): JsonResponse
     {
-        $this->{{MODEL_CLASS_PARAM}}Service->delete(${{MODEL_CLASS_PARAM}});
+        $this->{{MODEL_CLASS_PARAM}}Service->delete($id);
 
         return $this->responseMessage(trans('messages.delete'));
     }
