@@ -30,7 +30,7 @@ class BaseGenerator
         $this->dbType = config('generator.db_type');
     }
 
-    public function jsType(string $type = null)
+    public function jsType(?string $type = null)
     {
         $isJS = config('generator.js_language') === 'js';
         switch ($type) {

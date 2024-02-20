@@ -2,6 +2,7 @@
 
 namespace LaraJS\Core\Generators\Backend;
 
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Support\Str;
 use LaraJS\Core\Generators\BaseGenerator;
 
@@ -499,12 +500,15 @@ class RelationshipGenerator extends BaseGenerator
         $templateDataReal = $this->phpParserService->addCodeToFunction($templateDataReal, $templateDeleted, 'deleted');
         $this->serviceFile->createFile($pathObserver, $fileName, $templateDataReal);
         // provider event
-        $fileName = 'EventServiceProvider.php';
-        $templateDataRegisterEvent = $this->serviceGenerator->getFile('provider', 'laravel', $fileName);
-        $templateDataRegisterEvent = $this->phpParserService->usePackage($templateDataRegisterEvent, "App\Models\\$model");
+        $fileName = "$model.php";
+        $templateDataRegisterEvent = $this->serviceGenerator->getFile('model', 'laravel', $fileName);
+        if (!$templateDataRegisterEvent) {
+            return;
+        }
+        $templateDataRegisterEvent = $this->phpParserService->usePackage($templateDataRegisterEvent, ObservedBy::class);
         $templateDataRegisterEvent = $this->phpParserService->usePackage($templateDataRegisterEvent, "App\Observers\\{$model}Observer");
-        $templateDataRegisterEvent = $this->phpParserService->addCodeToFunction($templateDataRegisterEvent, "$model::observe({$model}Observer::class);", 'boot');
-        $pathProvider = config('generator.path.laravel.provider');
+        $templateDataRegisterEvent = $this->phpParserService->addAttribute($templateDataRegisterEvent, 'ObservedBy', "{$model}Observer");
+        $pathProvider = config('generator.path.laravel.model');
         $this->serviceFile->createFileReal("$pathProvider/$fileName", $templateDataRegisterEvent);
     }
 

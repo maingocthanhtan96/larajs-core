@@ -4,10 +4,12 @@ namespace LaraJS\Core\Services;
 
 use PhpParser\Node;
 use PhpParser\Node\Expr;
+use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeFinder;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
+use PhpParser\Parser;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,10 +18,26 @@ use Symfony\Component\Process\Process;
 
 class PhpParserService
 {
+    public function addAttribute(string $template, string $attribute, string $className): string
+    {
+        $parser = $this->createParser();
+        $ast = $parser->parse($template);
+        $nodeFinder = new NodeFinder();
+        $classNode = $nodeFinder->findFirstInstanceOf($ast, Class_::class);
+        $classNode->attrGroups[] = new Node\AttributeGroup([
+            new Node\Attribute(new Node\Name($attribute), [
+                new Node\Expr\Array_([
+                    new Node\Expr\ClassConstFetch(new Node\Name($className), new Node\Identifier('class')),
+                ]),
+            ]),
+        ]);
+
+        return $this->prettyPrintFile($ast);
+    }
+
     public function addStringToArray($template, $field, $property): string
     {
-        $parserFactory = new ParserFactory();
-        $parser = $parserFactory->create(ParserFactory::PREFER_PHP7);
+        $parser = $this->createParser();
         $ast = $parser->parse($template);
         $nodeFinder = new NodeFinder();
         $fillableNode = $nodeFinder->findFirst($ast, function (Node $node) use ($property) {
@@ -39,8 +57,7 @@ class PhpParserService
 
     public function addItemToArray(string $template, string $arrayParent, array $items): string
     {
-        $parserFactory = new ParserFactory();
-        $parser = $parserFactory->create(ParserFactory::PREFER_PHP7);
+        $parser = $this->createParser();
         $ast = $parser->parse($template);
         $nodeFinder = new NodeFinder();
         $node = $nodeFinder->findFirst($ast, function (Node $node) use ($arrayParent) {
@@ -62,7 +79,7 @@ class PhpParserService
 
     public function addTemplateToArrayWithReturn(string $template, string $code): string
     {
-        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
+        $parser = $this->createParser();
         $ast = $parser->parse($template);
         $nodeFinder = new NodeFinder();
         $returnStmt = $nodeFinder->findFirstInstanceOf($ast, Return_::class);
@@ -80,7 +97,7 @@ class PhpParserService
         if (strpos($template, $code)) {
             return $template;
         }
-        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
+        $parser = $this->createParser();
         $ast = $parser->parse($template);
         $nodeFinder = new NodeFinder();
         $node = $nodeFinder->findFirst($ast, function (Node $node) use ($functionName) {
@@ -93,7 +110,7 @@ class PhpParserService
 
     public function usePackage(string $template, string $code): string
     {
-        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
+        $parser = $this->createParser();
         $stmts = $parser->parse($template);
         $traverser = new NodeTraverser();
         $nodeFinder = new NodeFinder();
@@ -121,9 +138,11 @@ class PhpParserService
 
     public function addFakerToFactory(string $template, array $fields, $isSignature = false): string
     {
-        if (!$fields) { return $template; }
+        if (!$fields) {
+            return $template;
+        }
 
-        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
+        $parser = $this->createParser();
         $ast = $parser->parse($template);
         $finder = new NodeFinder();
         $methodNode = $finder->findFirstInstanceOf($ast, Node\Stmt\ClassMethod::class);
@@ -149,7 +168,7 @@ class PhpParserService
 
     public function addNewMethod(string $template, string $methodName, $argNumber = 0): string
     {
-        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
+        $parser = $this->createParser();
         $ast = $parser->parse($template);
         $nodeFinder = new NodeFinder();
         $methodCall = $nodeFinder->findFirstInstanceOf($ast, Node\Expr\MethodCall::class);
@@ -163,7 +182,7 @@ class PhpParserService
 
     public function addItemForAttribute(string $template, string $item, string $identify): string
     {
-        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
+        $parser = $this->createParser();
         $ast = $parser->parse($template);
         $nodeFinder = new NodeFinder();
         $attributeNodes = $nodeFinder->find($ast, function (Node $node): bool {
@@ -313,5 +332,10 @@ class PhpParserService
     private function prettyPrintFile($ast): string
     {
         return (new Standard())->prettyPrintFile($ast);
+    }
+
+    private function createParser(): Parser
+    {
+        return (new ParserFactory())->createForHostVersion();
     }
 }
