@@ -5,7 +5,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 
 uses(WithFaker::class);
 
-beforeEach(function () {
+beforeAll(function () {
     $faker = $this->faker;
     $this->data = [
         {{FIELDS}}
