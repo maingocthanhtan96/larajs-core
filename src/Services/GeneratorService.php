@@ -564,8 +564,7 @@ MIGRATE;
 
     public function formFeGenerateField(): object
     {
-        return new class extends GeneratorService
-        {
+        return new class extends GeneratorService {
             public function generateBoolean($tableName, $field): string
             {
                 $formTemplate = $this->_getFormTemplate('switch');
@@ -1036,8 +1035,8 @@ MIGRATE;
     }
 
     /**
-     * @param  $fields
-     * @param  $model
+     * @param    $fields
+     * @param    $model
      * @return array
      */
     public function generateRules($fields, $model): array

@@ -3,7 +3,7 @@
 /**
  * write log when exception
  *
- * @param  $e
+ * @param    $e
  * @return void
  */
 if (!function_exists('write_log_exception')) {
@@ -33,7 +33,7 @@ if (!function_exists('convert_direction')) {
 /**
  * check file exist
  *
- * @param  $url
+ * @param    $url
  * @return bool
  */
 if (!function_exists('storage_exist_file')) {
@@ -50,7 +50,7 @@ if (!function_exists('storage_exist_file')) {
 /**
  * delete file
  *
- * @param  $url
+ * @param    $url
  * @return void
  */
 if (!function_exists('storage_delete_file')) {
@@ -66,8 +66,8 @@ if (!function_exists('storage_delete_file')) {
 /**
  * store base64 to file
  *
- * @param  $base64
- * @param  $folder
+ * @param    $base64
+ * @param    $folder
  * @return string
  *
  * @throws Exception
@@ -99,7 +99,7 @@ if (!function_exists('save_file_base64')) {
 /**
  * check file is base64
  *
- * @param  $base64
+ * @param    $base64
  * @return bool
  */
 if (!function_exists('is_file_base64')) {
@@ -112,7 +112,7 @@ if (!function_exists('is_file_base64')) {
 /**
  * convert mime type to extension
  *
- * @param  $mime
+ * @param    $mime
  * @return bool|string
  */
 if (!function_exists('mime2ext')) {
