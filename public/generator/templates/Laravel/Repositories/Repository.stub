@@ -3,16 +3,16 @@
 namespace App\Repositories\{{MODEL_CLASS}};
 
 use App\Models\{{MODEL_CLASS}};
-use App\Repositories\BaseEloquentRepository;
+use App\Repositories\BaseRepository;
 
 /**
  * @template T of {{MODEL_CLASS}}
  *
- * @template-implements {{MODEL_CLASS}}RepositoryInterface<T>
+ * @implements {{MODEL_CLASS}}RepositoryInterface<T>
  *
- * @template-extends  BaseEloquentRepository<T>
+ * @extends  BaseRepository<T>
  */
-class {{MODEL_CLASS}}Repository extends BaseEloquentRepository implements {{MODEL_CLASS}}RepositoryInterface
+class {{MODEL_CLASS}}Repository extends BaseRepository implements {{MODEL_CLASS}}RepositoryInterface
 {
     public function getModel(): string
     {

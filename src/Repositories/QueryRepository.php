@@ -13,14 +13,14 @@ use LaraJS\QueryParser\LaraJSQueryParser;
 /**
  * @template T
  *
- * @template-implements BaseLaraJSRepositoryInterface<T>
+ * @implements QueryRepositoryInterface<T>
  */
-abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInterface
+abstract class QueryRepository implements QueryRepositoryInterface
 {
     use LaraJSQueryParser;
 
     /** @var Model */
-    public Model $model;
+    protected Model $model;
 
     /** @var int */
     protected int $limit;
@@ -31,6 +31,10 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
     /** @var int */
     private int $overrideLimit = 100;
 
+    abstract public function getLimit(): int;
+
+    abstract public function getMaxLimit(): int;
+
     /**
      * @throws BindingResolutionException
      */
@@ -40,12 +44,6 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
         $this->setLimit();
         $this->setMaxLimit();
     }
-
-    abstract public function getModel(): string;
-
-    abstract public function getLimit(): int;
-
-    abstract public function getMaxLimit(): int;
 
     /**
      * @throws BindingResolutionException
@@ -92,15 +90,6 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
     }
 
     /**
-     * @param  array  $data
-     * @return T
-     */
-    public function create(array $data)
-    {
-        return $this->save(new $this->model(), $data);
-    }
-
-    /**
      * @param  int  $id
      * @param  Request  $request
      * @param  array  $options
@@ -109,37 +98,6 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
     public function find(int $id, Request $request, array $options = [])
     {
         return $this->applyQueryBuilder($this->queryBuilder(), $request, $options)->findOrFail($id);
-    }
-
-    /**
-     * @param  int  $id
-     * @param  array  $data
-     * @return T
-     */
-    public function update(int $id, array $data)
-    {
-        return $this->save($this->model->findOrFail($id), $data);
-    }
-
-    /**
-     * @param  int  $id
-     * @return bool
-     */
-    public function delete(int $id): bool
-    {
-        return $this->model->findOrFail($id)->delete();
-    }
-
-    /**
-     * @param  Model  $model
-     * @param  array  $data
-     * @return T
-     */
-    public function save(Model $model, array $data)
-    {
-        $model->fill($data)->save();
-
-        return $model;
     }
 
     /**
