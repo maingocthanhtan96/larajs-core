@@ -19,11 +19,17 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
 {
     use LaraJSQueryParser;
 
+    /** @var Model */
     public Model $model;
 
+    /** @var int */
     protected int $limit;
 
+    /** @var int */
     protected int $maxLimit;
+
+    /** @var int */
+    private int $overrideLimit = 100;
 
     /**
      * @throws BindingResolutionException
@@ -74,10 +80,15 @@ abstract class BaseLaraJSEloquentRepository implements BaseLaraJSRepositoryInter
     {
         $queryBuilder = $this->applyQueryBuilder($this->queryBuilder(), $request, $options);
         if ($request->get('page') === '-1') {
-            return $queryBuilder->take($this->maxLimit)->get();
-        }
+            if ($this->maxLimit > 0) {
+                $queryBuilder->take($this->maxLimit);
+            }
 
-        return $queryBuilder->paginate(min($request->get('limit', $this->limit), $this->maxLimit));
+            return $queryBuilder->get();
+        }
+        $limit = min($request->get('limit', $this->limit), $this->maxLimit ?: $this->overrideLimit);
+
+        return $queryBuilder->paginate($limit);
     }
 
     /**
