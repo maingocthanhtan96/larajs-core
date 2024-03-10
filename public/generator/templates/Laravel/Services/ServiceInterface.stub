@@ -16,7 +16,7 @@ interface {{MODEL_CLASS}}ServiceInterface extends BaseServiceInterface
      * @param  Request $request
      * @return LengthAwarePaginator|Collection
      */
-    public function list(Request $request): LengthAwarePaginator|Collection;
+    public function findAll(Request $request): LengthAwarePaginator|Collection;
 
     /**
      * Create a record

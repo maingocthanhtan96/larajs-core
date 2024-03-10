@@ -19,26 +19,48 @@ class {{MODEL_CLASS}}Service extends BaseService implements {{MODEL_CLASS}}Servi
     {
     }
 
-    public function list(Request $request): LengthAwarePaginator|Collection
+    /**
+     * @param  Request  $request
+     * @return LengthAwarePaginator|Collection
+     */
+    public function findAll(Request $request): LengthAwarePaginator|Collection
     {
-        return $this->{{MODEL_CLASS_PARAM}}Repository->list($request);
+        return $this->{{MODEL_CLASS_PARAM}}Repository->findAll($request);
     }
 
+    /**
+     * @param  array $data
+     * @return {{MODEL_CLASS}}
+     */
     public function create(array $data): {{MODEL_CLASS}}
     {
         return $this->{{MODEL_CLASS_PARAM}}Repository->create($data);
     }
 
+    /**
+     * @param int $id
+     * @param Request $request
+     * @return {{MODEL_CLASS}}
+     */
     public function find(int $id, Request $request): {{MODEL_CLASS}}
     {
         return $this->{{MODEL_CLASS_PARAM}}Repository->find($id, $request);
     }
 
+    /**
+     * @param  int  $id
+     * @param  array  $data
+     * @return {{MODEL_CLASS}}
+     */
     public function update(int $id, array $data): {{MODEL_CLASS}}
     {
         return $this->{{MODEL_CLASS_PARAM}}Repository->update($id, $data);
     }
 
+    /**
+     * @param  int $id
+     * @return bool
+     */
     public function delete(int $id): bool
     {
         return $this->{{MODEL_CLASS_PARAM}}Repository->delete($id);

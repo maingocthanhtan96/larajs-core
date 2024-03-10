@@ -2,7 +2,6 @@
 
 namespace LaraJS\Core\Repositories;
 
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -10,27 +9,13 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @implements BaseLaraJSRepositoryInterface<T>
  */
-abstract class CommandRepository implements CommandRepositoryInterface
+class CommandRepository implements CommandRepositoryInterface
 {
-    /** @var Model */
-    protected Model $model;
-
     /**
-     * @throws BindingResolutionException
+     * @param  Model  $model
      */
-    public function __construct()
+    public function __construct(protected readonly Model $model)
     {
-        $this->setModel();
-    }
-
-    abstract public function getModel(): string;
-
-    /**
-     * @throws BindingResolutionException
-     */
-    public function setModel(): void
-    {
-        $this->model = app()->make($this->getModel());
     }
 
     /**

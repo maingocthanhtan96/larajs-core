@@ -318,7 +318,7 @@ class GeneratorController extends BaseLaraJSController
         }
         // END - package common
         $generator->delete();
-        $this->__runPrettier();
+        $this->_runPrettier();
 
         return $this->responseMessage(trans('messages.success'));
     }
@@ -543,10 +543,10 @@ class GeneratorController extends BaseLaraJSController
             Artisan::call('migrate');
         }
         Artisan::call('vue-i18n:generate');
-        $this->__runPrettier();
+        $this->_runPrettier();
     }
 
-    private function __runPrettier(): void
+    private function _runPrettier(): void
     {
         $basePath = apps_path();
         if (config('generator.js_language') === 'js') {

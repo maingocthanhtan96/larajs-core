@@ -39,7 +39,7 @@ class {{CONTROLLER_CLASS}}Controller extends Controller
     #[ResponseFromApiResource({{MODEL_CLASS}}Resource::class, {{MODEL_CLASS}}::class, collection: true, with: [], paginate: 5)]
 	public function index(Request $request): JsonResponse
 	{
-        ${{MODEL_CLASS_PARAM_LIST}} = $this->{{MODEL_CLASS_PARAM}}Service->list($request);
+        ${{MODEL_CLASS_PARAM_LIST}} = $this->{{MODEL_CLASS_PARAM}}Service->findAll($request);
 
         return $this->responseResource({{MODEL_CLASS}}Resource::collection(${{MODEL_CLASS_PARAM_LIST}}));
 	}

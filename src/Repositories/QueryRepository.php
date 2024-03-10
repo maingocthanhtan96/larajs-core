@@ -2,7 +2,6 @@
 
 namespace LaraJS\Core\Repositories;
 
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -15,66 +14,25 @@ use LaraJS\QueryParser\LaraJSQueryParser;
  *
  * @implements QueryRepositoryInterface<T>
  */
-abstract class QueryRepository implements QueryRepositoryInterface
+class QueryRepository implements QueryRepositoryInterface
 {
     use LaraJSQueryParser;
 
-    /** @var Model */
-    protected Model $model;
-
-    /** @var int */
-    protected int $limit;
-
-    /** @var int */
-    protected int $maxLimit;
-
-    /** @var int */
-    private int $overrideLimit = 100;
-
-    abstract public function getLimit(): int;
-
-    abstract public function getMaxLimit(): int;
-
     /**
-     * @throws BindingResolutionException
+     * @param  Model  $model
+     * @param  int  $limit
+     * @param  int  $maxLimit
      */
-    public function __construct()
+    public function __construct(protected readonly Model $model, protected readonly int $limit, protected readonly int $maxLimit)
     {
-        $this->setModel();
-        $this->setLimit();
-        $this->setMaxLimit();
-    }
-
-    /**
-     * @throws BindingResolutionException
-     */
-    public function setModel(): void
-    {
-        $this->model = app()->make($this->getModel());
-    }
-
-    /**
-     * @return void
-     */
-    public function setLimit(): void
-    {
-        $this->limit = $this->getLimit();
-    }
-
-    /**
-     * @return void
-     */
-    public function setMaxLimit(): void
-    {
-        $this->maxLimit = $this->getMaxLimit();
     }
 
     /**
      * @param  Request  $request
      * @param  array  $options
-     * @return LengthAwarePaginator|T[]
+     * @return LengthAwarePaginator|Collection
      */
-    public function list(Request $request, array $options = []): LengthAwarePaginator|Collection
+    public function findAll(Request $request, array $options = []): LengthAwarePaginator|Collection
     {
         $queryBuilder = $this->applyQueryBuilder($this->queryBuilder(), $request, $options);
         if ($request->get('page') === '-1') {
@@ -84,7 +42,8 @@ abstract class QueryRepository implements QueryRepositoryInterface
 
             return $queryBuilder->get();
         }
-        $limit = min($request->get('limit', $this->limit), $this->maxLimit ?: $this->overrideLimit);
+        $overrideLimit = 100;
+        $limit = min($request->get('limit', $this->limit), $this->maxLimit ?: $overrideLimit);
 
         return $queryBuilder->paginate($limit);
     }

@@ -15,9 +15,9 @@ interface QueryRepositoryInterface
     /**
      * @param  Request  $request
      * @param  array  $options
-     * @return LengthAwarePaginator|T[]
+     * @return LengthAwarePaginator|Collection
      */
-    public function list(Request $request, array $options = []): LengthAwarePaginator|Collection;
+    public function findAll(Request $request, array $options = []): LengthAwarePaginator|Collection;
 
     /**
      * @param  int  $id
