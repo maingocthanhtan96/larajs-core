@@ -178,6 +178,7 @@ class SetupCommand extends Command
         File::put($this->cacheConfig, $fileConfig);
 
         $this->_outputArtisan('config:cache');
+        $this->_outputArtisan('key:generate');
     }
 
     private function _replaceEnvConfig($fileEnvEx): string
