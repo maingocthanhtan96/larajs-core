@@ -4,10 +4,9 @@ namespace LaraJS\Core\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Routing\Controller as BaseController;
 use Symfony\Component\HttpFoundation\Response;
 
-class BaseLaraJSController extends BaseController
+class BaseLaraJSController
 {
     /**
      * @param  mixed  $data

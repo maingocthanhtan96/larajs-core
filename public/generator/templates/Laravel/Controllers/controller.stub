@@ -9,30 +9,45 @@ use App\Models\{{MODEL_CLASS}};
 use App\Services\{{VERSION}}\{{MODEL_CLASS}}\{{MODEL_CLASS}}Service;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Knuckles\Scribe\Attributes\ResponseFromApiResource;
+use LaraJS\Permission\Enums\PermissionEnum;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @group {{CONTROLLER_CLASS}}
  * @authenticated
  */
-class {{CONTROLLER_CLASS}}Controller extends Controller
+class {{CONTROLLER_CLASS}}Controller extends Controller implements HasMiddleware
 {
     public function __construct(private readonly {{MODEL_CLASS}}Service ${{MODEL_CLASS_PARAM}}Service)
     {
-        $this->permissions();
+    }
+
+    /**
+     * Get the middleware that should be assigned to the controller.
+     */
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:' . PermissionEnum::VISIT->name, ['only' => ['index']]),
+            new Middleware('permission:' . PermissionEnum::CREATE->name, ['only' => ['store']]),
+            new Middleware('permission:' . PermissionEnum::EDIT->name, ['only' => ['show', 'update']]),
+            new Middleware('permission:' . PermissionEnum::DELETE->name, ['only' => ['destroy']]),
+        ];
     }
 
     /**
      * List
      * @queryParam select string Select column. No-example.
      * @queryParam include string[] Specify relationships and aggregate. No-example.
-     * @queryParam filter string https://www.jsonapi.net/usage/reading/filtering.html. No-example.
+     * @queryParam filter string. No-example.
      * @queryParam search[value] string The search value. No-example.
      * @queryParam search[column] string The search column. No-example.
      * @queryParam date[value] string[] The date value. No-example.
      * @queryParam date[column] string The date column. No-example.
-     * @queryParam orderBy string https://www.jsonapi.net/usage/reading/sorting.html. Example: -id.
+     * @queryParam orderBy string. Example: -id.
      * @queryParam limit number Limit. Example: 25.
      * @queryParam page number Page equals -1 get all records. Example: 1
      */
