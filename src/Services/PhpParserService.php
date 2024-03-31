@@ -108,15 +108,20 @@ class PhpParserService
         return $this->prettyPrintFile($ast);
     }
 
-    public function usePackage(string $template, string $code): string
+    public function usePackage(string $template, string $code, bool $isNamespace = true): string
     {
         $parser = $this->createParser();
         $stmts = $parser->parse($template);
         $traverser = new NodeTraverser();
         $nodeFinder = new NodeFinder();
         $traverser->addVisitor(new NameResolver());
-        $namespace = $nodeFinder->findFirstInstanceOf($stmts, Node\Stmt\Namespace_::class);
-        $existingUses = $nodeFinder->findInstanceOf($namespace->stmts, Node\Stmt\Use_::class);
+        if ($isNamespace) {
+            $namespace = $nodeFinder->findFirstInstanceOf($stmts, Node\Stmt\Namespace_::class);
+            $existingUses = $nodeFinder->findInstanceOf($namespace->stmts, Node\Stmt\Use_::class);
+        } else {
+            $existingUses = $nodeFinder->findInstanceOf($stmts, Node\Stmt\Use_::class);
+        }
+
         $isNotImported = true;
         foreach ($existingUses as $useStatement) {
             foreach ($useStatement->uses as $use) {
@@ -127,10 +132,17 @@ class PhpParserService
             }
         }
         if ($isNotImported) {
-            $namespace->stmts = array_merge(
-                [new Node\Stmt\Use_([new Node\Stmt\UseUse(new Node\Name($code))])],
-                $namespace->stmts,
-            );
+            if ($isNamespace) {
+                $namespace->stmts = array_merge(
+                    [new Node\Stmt\Use_([new Node\Stmt\UseUse(new Node\Name($code))])],
+                    $namespace->stmts,
+                );
+            } else {
+                $stmts = array_merge(
+                    [new Node\Stmt\Use_([new Node\Stmt\UseUse(new Node\Name($code))])],
+                    $stmts,
+                );
+            }
         }
 
         return $this->prettyPrintFile($stmts);

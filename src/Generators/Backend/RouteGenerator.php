@@ -20,10 +20,6 @@ class RouteGenerator extends BaseGenerator
         $now = Carbon::now();
         $pathTemplate = 'Routes/';
         $templateData = $this->serviceGenerator->get_template('api', $pathTemplate);
-        $templateData = $this->phpParserService->usePackage(
-            $templateData,
-            "App\Http\Controllers\Api\\" . config('generator.api_version') . '\\' . $model['name'] . 'Controller'
-        );
         $templateData = str_replace('{{MODEL_CLASS}}', $model['name'], $templateData);
         $templateData = str_replace('{{DATE}}', $now->toDateTimeString(), $templateData);
         $templateData = str_replace(
@@ -33,6 +29,11 @@ class RouteGenerator extends BaseGenerator
         );
         $notDelete = config('generator.not_delete.laravel.route.api');
         $templateDataReal = $this->serviceGenerator->getFile('api_routes');
+        $templateDataReal = $this->phpParserService->usePackage(
+            $templateDataReal,
+            "App\Http\Controllers\Api\\" . config('generator.api_version') . '\\' . $model['name'] . 'Controller',
+            false
+        );
         $templateDataReal = $this->serviceGenerator->replaceNotDelete(
             $notDelete['user'],
             $templateData,
