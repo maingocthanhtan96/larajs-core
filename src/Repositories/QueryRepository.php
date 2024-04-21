@@ -2,7 +2,9 @@
 
 namespace LaraJS\Core\Repositories;
 
+use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -30,22 +32,23 @@ class QueryRepository implements QueryRepositoryInterface
     /**
      * @param  Request  $request
      * @param  array  $options
-     * @return LengthAwarePaginator|Collection
+     * @return LengthAwarePaginator|CursorPaginator|Paginator|T[]
      */
-    public function findAll(Request $request, array $options = []): LengthAwarePaginator|Collection
+    public function findAll(Request $request, array $options = []): LengthAwarePaginator|CursorPaginator|Paginator|Collection
     {
         $queryBuilder = $this->applyQueryBuilder($this->queryBuilder(), $request, $options);
         if ($request->get('page') === '-1') {
-            if ($this->maxLimit > 0) {
-                $queryBuilder->take($this->maxLimit);
-            }
+            $limit = min($this->maxLimit, $request->input('pagination.limit'));
 
-            return $queryBuilder->get();
+            return $queryBuilder->take($limit)->get();
         }
-        $overrideLimit = 100;
-        $limit = min($request->get('limit', $this->limit), $this->maxLimit ?: $overrideLimit);
+        $limit = min($request->input('pagination.limit', $this->limit), $this->maxLimit);
 
-        return $queryBuilder->paginate($limit);
+        return match ($request->input('pagination.type')) {
+            'simple' => $queryBuilder->simplePaginate($limit, pageName: 'pagination[page]'),
+            'cursor' => $queryBuilder->cursorPaginate($limit, cursorName: 'pagination[cursor]'),
+            default => $queryBuilder->paginate($limit, pageName: 'pagination[page]'),
+        };
     }
 
     /**

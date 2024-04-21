@@ -2,7 +2,9 @@
 
 namespace LaraJS\Core\Repositories;
 
+use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -100,9 +102,9 @@ abstract class BaseLaraJSRepository implements QueryRepositoryInterface, Command
     /**
      * @param  Request  $request
      * @param  array  $options
-     * @return LengthAwarePaginator|T[]
+     * @return LengthAwarePaginator|CursorPaginator|Paginator|T[]
      */
-    public function findAll(Request $request, array $options = []): LengthAwarePaginator|Collection
+    public function findAll(Request $request, array $options = []): LengthAwarePaginator|CursorPaginator|Paginator|Collection
     {
         return $this->queryRepository->findAll($request, $options);
     }

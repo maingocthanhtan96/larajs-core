@@ -6,7 +6,9 @@ use App\Http\Requests\{{VERSION}}\Store{{MODEL_CLASS}}Request;
 use App\Models\{{MODEL_CLASS}};
 use App\Repositories\{{MODEL_CLASS}}\{{MODEL_CLASS}}RepositoryInterface;
 use App\Services\BaseService;
+use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
@@ -21,9 +23,9 @@ class {{MODEL_CLASS}}Service extends BaseService implements {{MODEL_CLASS}}Servi
 
     /**
      * @param  Request  $request
-     * @return LengthAwarePaginator|Collection
+     * @return LengthAwarePaginator|CursorPaginator|Paginator|Collection
      */
-    public function findAll(Request $request): LengthAwarePaginator|Collection
+    public function findAll(Request $request): LengthAwarePaginator|CursorPaginator|Paginator|Collection
     {
         return $this->{{MODEL_CLASS_PARAM}}Repository->findAll($request);
     }

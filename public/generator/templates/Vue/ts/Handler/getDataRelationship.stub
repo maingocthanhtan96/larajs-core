@@ -1,4 +1,4 @@
 const {
         data: { data: {{$MODEL_RELATIONSHIP$}} },
-      } = await {{$USE_MODEL_RELATIONSHIP$}}({ page: -1 }, { cancelToken });
+      } = await {{$USE_MODEL_RELATIONSHIP$}}({ pagination: { page: -1 } }, { cancelToken });
       state.{{$MODEL_RELATIONSHIP$}} = {{$MODEL_RELATIONSHIP$}};

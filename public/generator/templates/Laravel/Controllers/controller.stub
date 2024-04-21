@@ -40,16 +40,17 @@ class {{CONTROLLER_CLASS}}Controller extends Controller implements HasMiddleware
 
     /**
      * List
-     * @queryParam select string Select column. No-example.
-     * @queryParam include string[] Specify relationships and aggregate. No-example.
-     * @queryParam filter string. No-example.
-     * @queryParam search[value] string The search value. No-example.
-     * @queryParam search[column] string The search column. No-example.
-     * @queryParam date[value] string[] The date value. No-example.
-     * @queryParam date[column] string The date column. No-example.
-     * @queryParam orderBy string. Example: -id.
-     * @queryParam limit number Limit. Example: 25.
-     * @queryParam page number Page equals -1 get all records. Example: 1
+     * @queryParam select string Select column. No-example
+     * @queryParam include string[] Specify relationships and aggregate. No-example
+     * @queryParam filter string. No-example
+     * @queryParam search[value] string The search value. No-example
+     * @queryParam search[column] string The search column. No-example
+     * @queryParam date[value] string[] The date value. No-example
+     * @queryParam date[column] string The date column. No-example
+     * @queryParam orderBy string. Example: -id
+     * @queryParam pagination[page] number Page equals -1 get all records. Example: 1
+     * @queryParam pagination[limit] number Limit. Example: 25
+     * @queryParam pagination[type] string Type pagination: simple | cursor | default. Example: default
      */
     #[ResponseFromApiResource({{MODEL_CLASS}}Resource::class, {{MODEL_CLASS}}::class, collection: true, with: [], paginate: 5)]
 	public function index(Request $request): JsonResponse
