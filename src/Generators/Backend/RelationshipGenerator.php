@@ -59,14 +59,13 @@ class RelationshipGenerator extends BaseGenerator
                 $template,
             );
         }
-        $templateModel = str_replace('{{RELATION}}', ucfirst($relationship), $templateModel);
-        $templateModel = str_replace('{{RELATION_MODEL_CLASS}}', $model, $templateModel);
+        $templateModel = str_replace(['{{RELATION}}', '{{RELATION_FUNCTION}}', '{{RELATION_MODEL_CLASS}}'], [ucfirst($relationship), $relationship, $model], $templateModel);
         //ModelCurrent Relationship
 
         $templateInverse = str_replace('{{RELATION_MODEL_CLASS}}', $modelCurrent, $templateInverse);
         if ($relationship === $this->relationship['belongs_to_many']) {
             $relationshipInverse = 'BelongsToMany';
-            $templateInverse = str_replace('{{RELATION}}', $relationshipInverse, $templateInverse);
+            $templateInverse = str_replace(['{{RELATION}}', '{{RELATION_FUNCTION}}'], [$relationshipInverse, lcfirst($relationshipInverse)], $templateInverse);
             $templateModel = str_replace(
                 '{{FIELD_RELATIONSHIP}}',
                 "'".
@@ -103,7 +102,7 @@ class RelationshipGenerator extends BaseGenerator
                 $templateInverse,
             );
             $relationshipInverse = 'BelongsTo';
-            $templateInverse = str_replace('{{RELATION}}', $relationshipInverse, $templateInverse);
+            $templateInverse = str_replace(['{{RELATION}}', '{{RELATION_FUNCTION}}'], [$relationshipInverse, lcfirst($relationshipInverse)], $templateInverse);
         }
         $migrateFile = $this->_migrateRelationship($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName, $columnChildren, $ignoreMigrate);
         //replace file model real
@@ -155,7 +154,7 @@ class RelationshipGenerator extends BaseGenerator
                 '_table.php';
             $this->_generateModel($model, $columnChildren);
             $this->_generateDocs($modelCurrent, $model, $relationship);
-            $this->_generateDocs($model, $modelCurrent, $relationship === $this->relationship['has_one'] ? $this->relationship['x'] : $this->relationship['has_one']); // reserve
+            $this->_generateDocs($model, $modelCurrent, $relationship === $this->relationship['has_one'] ? $this->relationship['has_many'] : $this->relationship['has_one']); // reserve
             $this->_generateFactory($modelCurrent, $model, $columnChildren);
             $this->_generateSeeder($modelCurrent, $model, $relationship);
             $this->_generateRequest($model, $relationship, $columnChildren);
@@ -342,23 +341,18 @@ class RelationshipGenerator extends BaseGenerator
             $stubGetData =
                 'form.{{$FIELD_NAME$}} = {{$MODEL_RELATIONSHIP$}}.{{$FIELD_RELATIONSHIP$}}.map(item => item.id);';
             $stubGetData = str_replace(
-                '{{$FIELD_NAME$}}',
-                $this->serviceGenerator->tableNameNotPlural($model).self::_IDS,
-                $stubGetData,
-            );
-            $stubGetData = str_replace(
-                '{{$MODEL_RELATIONSHIP$}}',
-                $this->serviceGenerator->modelNameNotPluralFe($modelRelationship),
-                $stubGetData,
-            );
-            $stubGetData = str_replace(
-                '{{$FIELD_RELATIONSHIP$}}',
-                Str::snake($this->serviceGenerator->modelNamePluralFe($model)),
-                $stubGetData,
+                ['{{$FIELD_NAME$}}', '{{$MODEL_RELATIONSHIP$}}', '{{$FIELD_RELATIONSHIP$}}'],
+                [
+                    $this->serviceGenerator->tableNameNotPlural($model) . self::_IDS,
+                    $this->serviceGenerator->modelNameNotPluralFe($modelRelationship),
+                    Str::snake($this->serviceGenerator->modelNamePluralFe($model)),
+                ],
+                $stubGetData
             );
             $templateDataReal = $this->phpParserService->runParserJS($pathFile, [
                 'key' => 'views.form:edit',
                 'content' => $stubGetData,
+                'relationFunction' => $this->serviceGenerator->modelNamePluralFe($model),
             ]);
 
             $this->serviceFile->createFileReal($pathFile, $templateDataReal);
@@ -407,12 +401,7 @@ class RelationshipGenerator extends BaseGenerator
             'useName' => $useModel,
             'useKey' => "list: {$this->serviceGenerator->modelNameNotPluralFe($model)}List",
         ], $templateDataRealForm);
-        if ($relationship === $this->relationship['belongs_to_many']) {
-            $stubGetData = $this->serviceGenerator->get_template('getDataRelationshipMTM', 'Handler/', 'vue');
-            $stubGetData = str_replace('{{$RELATIONSHIP$}}', "'{$this->serviceGenerator->modelNamePluralFe($modelRelationship)}'", $stubGetData);
-        } else {
-            $stubGetData = $this->serviceGenerator->get_template('getDataRelationship', 'Handler/', 'vue');
-        }
+        $stubGetData = $this->serviceGenerator->get_template('getDataRelationship', 'Handler/', 'vue');
         $stubGetData = str_replace(
             '{{$USE_MODEL_RELATIONSHIP$}}',
             "{$this->serviceGenerator->modelNameNotPluralFe($model)}List",

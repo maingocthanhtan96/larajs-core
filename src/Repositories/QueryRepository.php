@@ -37,7 +37,7 @@ class QueryRepository implements QueryRepositoryInterface
     public function findAll(Request $request, array $options = []): LengthAwarePaginator|CursorPaginator|Paginator|Collection
     {
         $queryBuilder = $this->applyQueryBuilder($this->queryBuilder(), $request, $options);
-        if ($request->get('page') === '-1') {
+        if ($request->input('pagination.page') === '-1') {
             $limit = min($this->maxLimit, $request->input('pagination.limit'));
 
             return $queryBuilder->take($limit)->get();

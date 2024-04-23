@@ -592,7 +592,7 @@ class GeneratorController extends BaseLaraJSController
         }
         $basePath = base_path();
         $now = \Carbon\Carbon::now()->toDateTimeString();
-        $commit = '"'.$model.' - '.$now.'"';
+        $commit = '"feat: '.$model.' - '.$now.'"';
 
         $gitAdd = new Process(['git', 'add', '.'], $basePath);
         $gitAdd->run();

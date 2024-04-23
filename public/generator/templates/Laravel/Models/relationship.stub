@@ -3,5 +3,5 @@
      **/
     public function {{FUNCTION_NAME}}(): {{RELATION}}
     {
-        return $this->{{RELATION}}({{RELATION_MODEL_CLASS}}::class, {{FIELD_RELATIONSHIP}}, 'id');
+        return $this->{{RELATION_FUNCTION}}({{RELATION_MODEL_CLASS}}::class, {{FIELD_RELATIONSHIP}}, 'id');
     }

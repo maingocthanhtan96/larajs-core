@@ -344,12 +344,34 @@ try {
         return false;
       };
       traverse(ast, {
+        CallExpression(path) {
+          if (t.isIdentifier(path.node.callee, { name: 'show' })) {
+            let paramsNode = path.node.arguments[1]?.properties?.find(prop =>
+              t.isIdentifier(prop.key, { name: 'params' })
+            );
+            if (!paramsNode) {
+              paramsNode = t.objectProperty(t.identifier('params'), t.objectExpression([]));
+              path.node.arguments[1].properties.push(paramsNode);
+            }
+            let includeNode = paramsNode.value.properties?.find(prop => {
+              return t.isIdentifier(prop.key, { name: 'include' });
+            });
+            if (includeNode) {
+              includeNode.value.elements.push(t.stringLiteral(data.relationFunction));
+            } else {
+              includeNode = t.objectProperty(
+                t.identifier('include'),
+                t.arrayExpression([t.stringLiteral(data.relationFunction)])
+              );
+              paramsNode.value.properties.push(includeNode);
+            }
+          }
+        },
         IfStatement(path) {
           const { node } = path;
           if (hasIdIdentifierInCondition(node.test)) {
             const code = astParser(data.content);
             node.consequent.body.push(...code.program.body);
-            path.stop();
           }
         },
       });
