@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 /**
  * @template T
  */
-interface QueryRepositoryInterface
+interface ReadRepositoryInterface
 {
     /**
      * @param  Request  $request

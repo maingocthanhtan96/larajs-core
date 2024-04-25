@@ -14,9 +14,9 @@ use LaraJS\QueryParser\LaraJSQueryParser;
 /**
  * @template T
  *
- * @implements QueryRepositoryInterface<T>
+ * @implements ReadRepositoryInterface<T>
  */
-class QueryRepository implements QueryRepositoryInterface
+class ReadRepository implements ReadRepositoryInterface
 {
     use LaraJSQueryParser;
 

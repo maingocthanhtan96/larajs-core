@@ -13,10 +13,10 @@ use Illuminate\Http\Request;
 /**
  * @template T
  *
- * @implements QueryRepositoryInterface<T>
- * @implements CommandRepositoryInterface<T>
+ * @implements ReadRepositoryInterface<T>
+ * @implements WriteRepositoryInterface<T>
  */
-abstract class BaseLaraJSRepository implements QueryRepositoryInterface, CommandRepositoryInterface
+abstract class BaseLaraJSRepository implements ReadRepositoryInterface, WriteRepositoryInterface
 {
     /** @var Model */
     protected Model $model;
@@ -27,9 +27,9 @@ abstract class BaseLaraJSRepository implements QueryRepositoryInterface, Command
     /** @var int */
     protected readonly int $maxLimit;
 
-    private readonly CommandRepository $commandRepository;
+    private readonly WriteRepository $writeRepository;
 
-    private readonly QueryRepository $queryRepository;
+    private readonly ReadRepository $readRepository;
 
     abstract public function getModel(): string;
 
@@ -42,8 +42,8 @@ abstract class BaseLaraJSRepository implements QueryRepositoryInterface, Command
         $this->setModel();
         $this->setLimit();
         $this->setMaxLimit();
-        $this->commandRepository = new CommandRepository($this->model);
-        $this->queryRepository = new QueryRepository($this->model, $this->limit, $this->maxLimit);
+        $this->writeRepository = new WriteRepository($this->model);
+        $this->readRepository = new ReadRepository($this->model, $this->limit, $this->maxLimit);
     }
 
     private function setModel(): void
@@ -67,7 +67,7 @@ abstract class BaseLaraJSRepository implements QueryRepositoryInterface, Command
      */
     public function create(array $data)
     {
-        return $this->commandRepository->create($data);
+        return $this->writeRepository->create($data);
     }
 
     /**
@@ -77,7 +77,7 @@ abstract class BaseLaraJSRepository implements QueryRepositoryInterface, Command
      */
     public function update(int $id, array $data)
     {
-        return $this->commandRepository->update($id, $data);
+        return $this->writeRepository->update($id, $data);
     }
 
     /**
@@ -86,7 +86,7 @@ abstract class BaseLaraJSRepository implements QueryRepositoryInterface, Command
      */
     public function delete(int $id): bool
     {
-        return $this->commandRepository->delete($id);
+        return $this->writeRepository->delete($id);
     }
 
     /**
@@ -96,7 +96,7 @@ abstract class BaseLaraJSRepository implements QueryRepositoryInterface, Command
      */
     public function save(Model $model, array $data)
     {
-        return $this->commandRepository->save($model, $data);
+        return $this->writeRepository->save($model, $data);
     }
 
     /**
@@ -106,7 +106,7 @@ abstract class BaseLaraJSRepository implements QueryRepositoryInterface, Command
      */
     public function findAll(Request $request, array $options = []): LengthAwarePaginator|CursorPaginator|Paginator|Collection
     {
-        return $this->queryRepository->findAll($request, $options);
+        return $this->readRepository->findAll($request, $options);
     }
 
     /**
@@ -117,7 +117,7 @@ abstract class BaseLaraJSRepository implements QueryRepositoryInterface, Command
      */
     public function find(int $id, Request $request, array $options = [])
     {
-        return $this->queryRepository->find($id, $request, $options);
+        return $this->readRepository->find($id, $request, $options);
     }
 
     /**
@@ -125,6 +125,6 @@ abstract class BaseLaraJSRepository implements QueryRepositoryInterface, Command
      */
     public function queryBuilder(): Builder
     {
-        return $this->queryRepository->queryBuilder();
+        return $this->readRepository->queryBuilder();
     }
 }

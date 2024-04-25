@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @template T
  */
-interface CommandRepositoryInterface
+interface WriteRepositoryInterface
 {
     /**
      * @param  array  $data

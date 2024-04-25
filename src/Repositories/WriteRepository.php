@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @template T
  *
- * @implements BaseLaraJSRepositoryInterface<T>
+ * @implements WriteRepositoryInterface<T>
  */
-class CommandRepository implements CommandRepositoryInterface
+class WriteRepository implements WriteRepositoryInterface
 {
     /**
      * @param  Model  $model
