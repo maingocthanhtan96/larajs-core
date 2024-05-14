@@ -218,6 +218,7 @@ try {
       break;
     }
     case 'uses.table:search:column':
+    case 'uses.table:date:column':
     case 'uses.table:include':
     case 'uses.table:columns': {
       traverse(ast, {

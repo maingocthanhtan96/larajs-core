@@ -18,7 +18,7 @@ export function use{{$NAME_MODEL$}}Forms() {
   const state = reactive<{{$NAME_MODEL$}}Root>({});
   const rules = computed<FormRules>(() => ({}));
 
-  const formElement: LaraFormType ={
+  const formElement: LaraFormType<{{$NAME_MODEL$}}> ={
     name: '{{$NAME_TABLE$}}',
     ref: formRef,
     form: {
