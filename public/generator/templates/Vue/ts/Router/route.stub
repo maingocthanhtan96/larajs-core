@@ -36,7 +36,7 @@ const {{$NAME_CONST$}}: RouterMapping = {
       },
     },
     {
-      path: ':id(\\d+)',
+      path: String.raw`:id(\d+)`,
       name: '{{$NAME_ROUTE_MODEL_CLASS$}}Edit',
       hidden: true,
       component: () => import('@larajs/cms/views/{{$MODEL_CLASS$}}/Form.vue'),
