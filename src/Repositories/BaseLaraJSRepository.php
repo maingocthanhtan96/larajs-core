@@ -123,8 +123,8 @@ abstract class BaseLaraJSRepository implements ReadRepositoryInterface, WriteRep
     /**
      * @return Builder
      */
-    public function queryBuilder(): Builder
+    public function query(): Builder
     {
-        return $this->readRepository->queryBuilder();
+        return $this->readRepository->query();
     }
 }

@@ -36,7 +36,7 @@ class ReadRepository implements ReadRepositoryInterface
      */
     public function findAll(Request $request, array $options = []): LengthAwarePaginator|CursorPaginator|Paginator|Collection
     {
-        $queryBuilder = $this->applyQueryBuilder($this->queryBuilder(), $request, $options);
+        $queryBuilder = $this->applyQueryBuilder($this->query(), $request, $options);
         if ($request->input('pagination.page') === '-1') {
             $limit = min($this->maxLimit, $request->input('pagination.limit'));
 
@@ -59,13 +59,13 @@ class ReadRepository implements ReadRepositoryInterface
      */
     public function find(int $id, Request $request, array $options = [])
     {
-        return $this->applyQueryBuilder($this->queryBuilder(), $request, $options)->findOrFail($id);
+        return $this->applyQueryBuilder($this->query(), $request, $options)->findOrFail($id);
     }
 
     /**
      * @return Builder
      */
-    public function queryBuilder(): Builder
+    public function query(): Builder
     {
         return $this->model->query();
     }

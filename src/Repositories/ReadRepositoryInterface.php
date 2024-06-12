@@ -32,5 +32,5 @@ interface ReadRepositoryInterface
     /**
      * @return Builder
      */
-    public function queryBuilder(): Builder;
+    public function query(): Builder;
 }
