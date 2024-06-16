@@ -5,6 +5,7 @@ import { use{{$NAME_MODEL$}}Forms, use{{$NAME_USES$}} } from '@larajs/cms/uses';
 import { useCancelToken } from '@larajs/uses';
 import { useCoreStore } from '@larajs/core';
 import { useI18n } from 'vue-i18n';
+import { objectAssign } from '@larajs/utils';
 
 const { t } = useI18n();
 const { id, form, state, formElement } = use{{$NAME_MODEL$}}Forms(); // eslint-disable-line unused-imports/no-unused-vars
@@ -18,7 +19,7 @@ onBeforeMount(async () => {
     const {
       data: { data: {{$CONST_MODEL_CLASS$}} },
     } = await show(id, { cancelToken });
-    Object.assign(form, {{$CONST_MODEL_CLASS$}});
+    objectAssign(form, {{$CONST_MODEL_CLASS$}});
   }
   coreStore.setLoading(false);
 });
