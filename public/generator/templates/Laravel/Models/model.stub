@@ -19,4 +19,12 @@ class {{MODEL_CLASS}} extends BaseModel
     protected $fillable = [
     	{{FIELDS}}
     ];
+
+    /**
+     * @return array<string, string>[]
+     */
+    public function allowQueryParsers(): array
+    {
+        return ['field' => [], 'include' => [], 'sort' => [], 'filter' => [], 'search' => [], 'date' => []];
+    }
 }

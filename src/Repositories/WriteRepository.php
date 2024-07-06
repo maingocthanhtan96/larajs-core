@@ -14,9 +14,7 @@ class WriteRepository implements WriteRepositoryInterface
     /**
      * @param  Model  $model
      */
-    public function __construct(protected readonly Model $model)
-    {
-    }
+    public function __construct(protected readonly Model $model) {}
 
     /**
      * @param  array  $data

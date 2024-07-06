@@ -1,6 +1,6 @@
 import { {{$NAME_MODEL$}}Resource } from '@larajs/cms/api/{{$VERSION$}}';
-import { AxiosRequestConfig } from 'axios';
-import { IQuery, {{$NAME_MODEL$}} } from '@larajs/common';
+import type { AxiosRequestConfig } from 'axios';
+import type { IQuery, {{$NAME_MODEL$}} } from '@larajs/common';
 
 export * from './table';
 export * from './form';

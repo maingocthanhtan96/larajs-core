@@ -26,7 +26,7 @@ class BaseLaraJSController
     }
 
     /**
-     * @param    $message
+     * @param  $message
      * @param  int  $status
      * @return JsonResponse
      */

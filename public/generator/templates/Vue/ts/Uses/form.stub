@@ -3,8 +3,8 @@ import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import { FormInstance, FormRules } from 'element-plus';
 import { use{{$NAME_USES$}} } from '@larajs/cms/uses';
-import { {{$NAME_MODEL$}} } from '@larajs/common';
-import { LaraFormType } from '@larajs/components';
+import type { {{$NAME_MODEL$}} } from '@larajs/common';
+import type { LaraFormType } from '@larajs/components';
 
 export interface {{$NAME_MODEL$}}Root {}
 

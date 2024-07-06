@@ -1,7 +1,7 @@
 import { useI18n } from 'vue-i18n';
 import { use{{$NAME_USES$}} } from '@larajs/cms/uses';
-import { LaraTableType } from '@larajs/components';
-import { {{$NAME_MODEL$}} } from '@larajs/common';
+import type { LaraTableType } from '@larajs/components';
+import type { {{$NAME_MODEL$}} } from '@larajs/common';
 
 export function use{{$NAME_MODEL$}}Tables() {
   const { list, destroy } = use{{$NAME_USES$}}();

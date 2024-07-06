@@ -16,10 +16,7 @@ return new class extends Migration {
             $table
                 ->foreignId('{{FOREIGN_KEY}}')
                 ->index()
-                ->after('id')
-                ->constrained('{{TABLE_FOREIGN_KEY}}')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
+                ->after('id');
         });
     }
 
@@ -31,7 +28,7 @@ return new class extends Migration {
     public function down()
     {
         Schema::table('{{TABLE_NAME}}', function (Blueprint $table) {
-            $table->dropConstrainedForeignId('{{FOREIGN_KEY}}');
+            $table->dropColumn('{{FOREIGN_KEY}}');
         });
     }
 };

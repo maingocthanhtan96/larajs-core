@@ -13,18 +13,8 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('{{TABLE_NAME}}', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->foreignId('{{FOREIGN_KEY_1}}')
-                ->index()
-                ->constrained('{{TABLE_FOREIGN_KEY_1}}')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
-            $table->foreignId('{{FOREIGN_KEY_2}}')
-                ->index()
-                ->constrained('{{TABLE_FOREIGN_KEY_2}}')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
-            $table->timestamps();
+            $table->foreignId('{{FOREIGN_KEY_1}}')->index();
+            $table->foreignId('{{FOREIGN_KEY_2}}')->index();
         });
     }
 
