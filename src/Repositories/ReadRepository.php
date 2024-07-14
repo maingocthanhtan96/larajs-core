@@ -25,18 +25,15 @@ class ReadRepository implements ReadRepositoryInterface
      * @param  int  $limit
      * @param  int  $maxLimit
      */
-    public function __construct(protected readonly Model $model, protected readonly int $limit, protected readonly int $maxLimit)
-    {
-    }
+    public function __construct(protected readonly Model $model, protected readonly int $limit, protected readonly int $maxLimit) {}
 
     /**
      * @param  Request  $request
-     * @param  array  $options
      * @return LengthAwarePaginator|CursorPaginator|Paginator|T[]
      */
-    public function findAll(Request $request, array $options = []): LengthAwarePaginator|CursorPaginator|Paginator|Collection
+    public function findAll(Request $request): LengthAwarePaginator|CursorPaginator|Paginator|Collection
     {
-        $queryBuilder = $this->applyQueryBuilder($this->query(), $request, $options);
+        $queryBuilder = $this->applyQueryBuilder($this->query(), $request);
         if ($request->input('pagination.page') === '-1') {
             $limit = min($this->maxLimit, $request->input('pagination.limit'));
 
@@ -54,12 +51,11 @@ class ReadRepository implements ReadRepositoryInterface
     /**
      * @param  int  $id
      * @param  Request  $request
-     * @param  array  $options
      * @return T
      */
-    public function find(int $id, Request $request, array $options = [])
+    public function find(int $id, Request $request)
     {
-        return $this->applyQueryBuilder($this->query(), $request, $options)->findOrFail($id);
+        return $this->applyQueryBuilder($this->query(), $request)->findOrFail($id);
     }
 
     /**

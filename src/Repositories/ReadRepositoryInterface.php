@@ -16,18 +16,16 @@ interface ReadRepositoryInterface
 {
     /**
      * @param  Request  $request
-     * @param  array  $options
      * @return LengthAwarePaginator|CursorPaginator|Paginator|Collection
      */
-    public function findAll(Request $request, array $options = []): LengthAwarePaginator|CursorPaginator|Paginator|Collection;
+    public function findAll(Request $request): LengthAwarePaginator|CursorPaginator|Paginator|Collection;
 
     /**
      * @param  int  $id
      * @param  Request  $request
-     * @param  array  $options
      * @return T
      */
-    public function find(int $id, Request $request, array $options = []);
+    public function find(int $id, Request $request);
 
     /**
      * @return Builder
