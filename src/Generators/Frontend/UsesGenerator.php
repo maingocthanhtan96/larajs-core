@@ -23,8 +23,11 @@ class UsesGenerator extends BaseGenerator
         $path = "$this->path{$folderName}/";
         // create index.ts
         $templateData = $this->serviceGenerator->get_template('use', 'Uses/', 'vue');
-        $templateData = str_replace(['{{$NAME_MODEL$}}', '{{$NAME_USES$}}', '{{$VERSION$}}', '{{$NAME_ROUTE_API$}}'], [$this->serviceGenerator->modelNameNotPlural($model['name']), $this->serviceGenerator->modelNamePlural($model['name']), strtolower(config('generator.api_version')), $this->serviceGenerator->nameAttribute($model['name'])], $templateData);
         $this->serviceFile->createFile($path, $this->jsType('index'), $templateData);
+        // create api.ts
+        $templateData = $this->serviceGenerator->get_template('api', 'Uses/', 'vue');
+        $templateData = str_replace(['{{$NAME_MODEL$}}', '{{$NAME_USES$}}', '{{$VERSION$}}', '{{$NAME_ROUTE_API$}}'], [$this->serviceGenerator->modelNameNotPlural($model['name']), $this->serviceGenerator->modelNamePlural($model['name']), strtolower(config('generator.api_version')), $this->serviceGenerator->nameAttribute($model['name'])], $templateData);
+        $this->serviceFile->createFile($path, $this->jsType('api'), $templateData);
         // create table.tsx
         $templateData = $this->serviceGenerator->get_template('table', 'Uses/', 'vue');
         $templateData = str_replace(['{{$NAME_USES$}}', '{{$NAME_MODEL$}}', '{{$NAME_TABLE$}}', '{{$CONST_NAME_MODEL$}}'], [$this->serviceGenerator->modelNamePlural($model['name']), $this->serviceGenerator->modelNameNotPlural($model['name']), $this->serviceGenerator->tableNameNotPlural($model['name']), $this->serviceGenerator->modelNameNotPluralFe($model['name'])], $templateData);

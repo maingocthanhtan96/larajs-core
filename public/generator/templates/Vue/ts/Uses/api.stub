@@ -1,0 +1,19 @@
+import { {{$NAME_MODEL$}}Resource } from '@larajs/cms/api/{{$VERSION$}}';
+import type { AxiosRequestConfig } from 'axios';
+import type { IQuery, {{$NAME_MODEL$}} } from '@larajs/common';
+
+export function use{{$NAME_USES$}}() {
+  const list = (query: IQuery, props?: AxiosRequestConfig) => {{$NAME_MODEL$}}Resource.list(query, props);
+  const store = (data: {{$NAME_MODEL$}}, props?: AxiosRequestConfig) => {{$NAME_MODEL$}}Resource.store(data, props);
+  const show = (id: number | string, props?: AxiosRequestConfig) => {{$NAME_MODEL$}}Resource.show(id, props);
+  const update = (id: number | string, data: Partial<{{$NAME_MODEL$}}>, props?: AxiosRequestConfig) => {{$NAME_MODEL$}}Resource.update(id, data, props);
+  const destroy = (id: number | string, props?: AxiosRequestConfig) => {{$NAME_MODEL$}}Resource.destroy(id, props);
+
+  return {
+    list,
+    store,
+    show,
+    update,
+    destroy,
+  };
+}

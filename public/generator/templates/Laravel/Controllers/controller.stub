@@ -39,7 +39,7 @@ class {{CONTROLLER_CLASS}}Controller extends Controller implements HasMiddleware
     }
 
     /**
-     * List
+     * Get {{MODEL_CLASS_PARAM_LIST}}
      * @queryParam select string Select column. No-example
      * @queryParam include string[] Specify relationships and aggregate. No-example
      * @queryParam filter string. No-example
@@ -61,7 +61,21 @@ class {{CONTROLLER_CLASS}}Controller extends Controller implements HasMiddleware
 	}
 
     /**
-     * Create
+     * Get {{MODEL_CLASS_PARAM}}
+     *
+     * @queryParam select string Select column. No-example.
+     * @queryParam include string[] Specify relationships and aggregate. No-example.
+     */
+    #[ResponseFromApiResource({{MODEL_CLASS}}Resource::class, {{MODEL_CLASS}}::class, with: [])]
+	public function show(int $id, Request $request): JsonResponse
+	{
+        ${{MODEL_CLASS_PARAM}} = $this->{{MODEL_CLASS_PARAM}}Service->find($id, $request);
+
+        return $this->responseResource({{MODEL_CLASS}}Resource::make(${{MODEL_CLASS_PARAM}}));
+	}
+
+    /**
+     * Create {{MODEL_CLASS_PARAM}}
      *
      * @apiResource App\Http\Resources\V1\{{MODEL_CLASS}}Resource status=201
      *
@@ -77,21 +91,7 @@ class {{CONTROLLER_CLASS}}Controller extends Controller implements HasMiddleware
 	}
 
     /**
-     * Get
-     *
-     * @queryParam select string Select column. No-example.
-     * @queryParam include string[] Specify relationships and aggregate. No-example.
-     */
-    #[ResponseFromApiResource({{MODEL_CLASS}}Resource::class, {{MODEL_CLASS}}::class, with: [])]
-	public function show(int $id, Request $request): JsonResponse
-	{
-        ${{MODEL_CLASS_PARAM}} = $this->{{MODEL_CLASS_PARAM}}Service->find($id, $request);
-
-        return $this->responseResource({{MODEL_CLASS}}Resource::make(${{MODEL_CLASS_PARAM}}));
-	}
-
-    /**
-     * Update
+     * Update {{MODEL_CLASS_PARAM}}
      *
      * @apiResource App\Http\Resources\{{VERSION}}\{{MODEL_CLASS}}Resource
      *
@@ -107,7 +107,7 @@ class {{CONTROLLER_CLASS}}Controller extends Controller implements HasMiddleware
 	}
 
     /**
-     * Delete
+     * Delete {{MODEL_CLASS_PARAM}}
      *
      * @response 200 {"message": "Delete successfully!"}
      */

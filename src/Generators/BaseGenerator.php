@@ -52,6 +52,12 @@ class BaseGenerator
                 } else {
                     return 'index.ts';
                 }
+            case 'api':
+                if ($isJS) {
+                    return 'api.js';
+                } else {
+                    return 'api.ts';
+                }
             case 'ext':
                 return config('generator.js_language');
             default:
