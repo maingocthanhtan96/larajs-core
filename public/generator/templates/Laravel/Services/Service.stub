@@ -5,14 +5,13 @@ namespace App\Services\{{VERSION}}\{{MODEL_CLASS}};
 use App\Http\Requests\{{VERSION}}\Store{{MODEL_CLASS}}Request;
 use App\Models\{{MODEL_CLASS}};
 use App\Repositories\{{MODEL_CLASS}}\{{MODEL_CLASS}}RepositoryInterface;
-use App\Services\BaseService;
 use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
-class {{MODEL_CLASS}}Service extends BaseService implements {{MODEL_CLASS}}ServiceInterface
+class {{MODEL_CLASS}}Service
 {
     /**
      * @param  {{MODEL_CLASS}}RepositoryInterface<{{MODEL_CLASS}}>  ${{MODEL_CLASS_PARAM}}Repository

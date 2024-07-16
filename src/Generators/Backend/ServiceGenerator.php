@@ -20,20 +20,8 @@ class ServiceGenerator extends BaseGenerator
         $pathTemplate = 'Services/';
         //template Repository
         $templateDataService = $this->serviceGenerator->get_template('Service', $pathTemplate);
-        $templateDataService = str_replace('{{VERSION}}', config('generator.api_version'), $templateDataService);
-        $templateDataService = str_replace('{{MODEL_CLASS}}', $model['name'], $templateDataService);
-        $templateDataService = str_replace(
-            '{{MODEL_CLASS_PARAM}}',
-            $this->serviceGenerator->modelNameNotPluralFe($model['name']),
-            $templateDataService,
-        );
+        $templateDataService = str_replace(['{{VERSION}}', '{{MODEL_CLASS}}', '{{MODEL_CLASS_PARAM}}'], [config('generator.api_version'), $model['name'], $this->serviceGenerator->modelNameNotPluralFe($model['name'])], $templateDataService);
         $fileNameRepository = $model['name'].'Service.php';
         $this->serviceFile->createFile($this->path.$createFolderModel, $fileNameRepository, $templateDataService);
-        //template Interface
-        $templateDataInterface = $this->serviceGenerator->get_template('ServiceInterface', $pathTemplate);
-        $templateDataInterface = str_replace('{{VERSION}}', config('generator.api_version'), $templateDataInterface);
-        $templateDataInterface = str_replace('{{MODEL_CLASS}}', $model['name'], $templateDataInterface);
-        $fileNameInterFace = $model['name'].'ServiceInterface.php';
-        $this->serviceFile->createFile($this->path.$createFolderModel, $fileNameInterFace, $templateDataInterface);
     }
 }

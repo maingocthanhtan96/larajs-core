@@ -2,9 +2,10 @@
 
 namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 //{{USE_CLASS}}
 
-class {{MODEL_CLASS}} extends BaseModel
+class {{MODEL_CLASS}} extends Model
 {
 	use HasFactory;
 	//{{USE}}
