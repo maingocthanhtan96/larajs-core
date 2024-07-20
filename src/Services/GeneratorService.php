@@ -1024,7 +1024,7 @@ MIGRATE;
             } elseif ($field['db_type'] === $dbType['enum'] && config('generator.js_language') === 'ts') {
                 $templateDataReal = $phpParserService->runParserJS($path, [
                     'key' => 'uses.form',
-                    'interface' => "{$model['name']}Root",
+                    'interface' => "{$model['name']}StateRoot",
                     'items' => [
                         "{$field['field_name']}Options" => 'unknown[];',
                     ],
@@ -1061,36 +1061,36 @@ MIGRATE;
     public function generateModel($fields): array
     {
         $data = [];
+        $dbType = config('generator.db_type');
+        $defaultValue = config('generator.default_value');
+        // Mapping of database types to TypeScript types
+        $typeMapping = [
+            $dbType['increments'] => 'number',
+            $dbType['integer'] => 'number',
+            $dbType['bigInteger'] => 'number',
+            $dbType['float'] => 'number',
+            $dbType['double'] => 'number',
+            $dbType['boolean'] => 'number',
+            $dbType['date'] => 'string',
+            $dbType['dateTime'] => 'string',
+            $dbType['timestamp'] => 'string',
+            $dbType['time'] => 'string',
+            $dbType['year'] => 'string',
+            $dbType['string'] => 'string',
+            $dbType['text'] => 'string',
+            $dbType['longtext'] => 'string',
+            $dbType['enum'] => 'unknown',
+            $dbType['json'] => 'Record<string, unknown>',
+        ];
+
         foreach ($fields as $field) {
-            $dbType = config('generator.db_type');
-            $defaultValue = config('generator.default_value');
-            $isRequired = $defaultValue['null'] === $field['default_value'] ? '?' : '';
-            switch ($field['db_type']) {
-                case $dbType['increments']:
-                case $dbType['integer']:
-                case $dbType['bigInteger']:
-                case $dbType['float']:
-                case $dbType['double']:
-                case $dbType['boolean']:
-                    $data["{$field['field_name']}$isRequired"] = 'number;';
-                    break;
-                case $dbType['date']:
-                case $dbType['dateTime']:
-                case $dbType['timestamp']:
-                case $dbType['time']:
-                case $dbType['year']:
-                case $dbType['string']:
-                case $dbType['text']:
-                case $dbType['longtext']:
-                    $data["{$field['field_name']}$isRequired"] = 'string;';
-                    break;
-                case $dbType['enum']:
-                    $data["{$field['field_name']}$isRequired"] = 'unknown;';
-                    break;
-                case $dbType['json']:
-                    $data["{$field['field_name']}$isRequired"] = 'object;';
-                    break;
-            }
+            $dbType = $field['db_type'];
+            $isNull = $defaultValue['null'] === $field['default_value'];
+            // Determine the TypeScript type based on the database type
+            $tsType = $typeMapping[$dbType] ?? 'unknown'; // Default to 'unknown' if not mapped
+            $tsType .= $isNull ? ' | null' : ''; // Append '| null' for nullable fields
+
+            $data[$field['field_name']] = $tsType . ';';
         }
 
         return $data;

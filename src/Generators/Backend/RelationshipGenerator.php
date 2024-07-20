@@ -212,11 +212,10 @@ class RelationshipGenerator extends BaseGenerator
         }
         if (!$isMTM) {
             $templateRules = $this->_getHandlerTemplate();
-            $templateRules = str_replace('{{$FIELD$}}', $columnChildren, $templateRules);
-            $templateRules = str_replace('{{$ATTRIBUTE_FIELD$}}', 't(\'route.'.Str::snake($model).'\')', $templateRules);
-            $templateRules = str_replace('{{$TRIGGER$}}', 'change', $templateRules);
+            $templateRules = str_replace(['{{$FIELD$}}', '{{$ATTRIBUTE_FIELD$}}', '{{$TRIGGER$}}'], [$columnChildren, 't(\'route.' . Str::snake($model) . '\')', 'change'], $templateRules);
             $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->jsType('form')}", [
                 'key' => 'uses.form:rules',
+                'variable' => $this->serviceGenerator->modelNameNotPluralFe($modelRelationship).'Rules',
                 'items' => [
                     $columnChildren => $templateRules,
                 ],
@@ -260,22 +259,7 @@ class RelationshipGenerator extends BaseGenerator
         if (in_array($configOptions['show'], $options)) {
             $templateDataReal = $this->serviceGenerator->getFile('uses', 'vue', "/$folderName/{$this->jsType('table')}");
             $templateColumn = $this->serviceGenerator->get_template('column', 'Forms/', 'vue');
-            $templateColumn = str_replace(
-                '{{$FIELD_NAME$}}',
-                Str::camel($tableFunctionRelationship).".$columnRelationship",
-                $templateColumn,
-            );
-            $templateColumn = str_replace(
-                '{{$FORM_SORTABLE$}}',
-                in_array($configOptions['sort'], $options) ? "'custom'" : 'false',
-                $templateColumn,
-            );
-            $templateColumn = str_replace('{{$FORM_ALIGN$}}', 'left', $templateColumn);
-            $templateColumn = str_replace(
-                '{{$FORM_LABEL$}}',
-                "label: t('route.{$this->serviceGenerator->tableNameNotPlural($model)}'),",
-                $templateColumn,
-            );
+            $templateColumn = str_replace(['{{$FIELD_NAME$}}', '{{$FORM_SORTABLE$}}', '{{$FORM_ALIGN$}}', '{{$FORM_LABEL$}}'], [Str::camel($tableFunctionRelationship) . ".$columnRelationship", in_array($configOptions['sort'], $options) ? "'custom'" : 'false', 'left', "label: t('route.{$this->serviceGenerator->tableNameNotPlural($model)}'),"], $templateColumn);
             if ($isMTM) {
                 $templateRow = <<<TEMPLATE
                 template: ({ row }) => row.$tableFunctionRelationship.map(item => <el-tag key={item.id}>{item.$columnRelationship}</el-tag>),
@@ -385,7 +369,7 @@ class RelationshipGenerator extends BaseGenerator
                 'key' => 'uses.form',
                 'name' => $model,
                 'path' => '@larajs/common',
-                'interface' => "{$modelRelationship}Root",
+                'interface' => "{$modelRelationship}StateRoot",
                 'items' => [
                     $nameModelRelationship => "{$model}[];",
                 ],

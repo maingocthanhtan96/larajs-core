@@ -188,12 +188,17 @@ try {
     }
     case 'uses.form:rules': {
       traverse(ast, {
-        VariableDeclarator(path) {
-          if (t.isIdentifier(path.node.id) && path.node.id.name === 'rules') {
-            Object.keys(data.items).forEach(field => {
-              path.node.init?.arguments[0]?.body?.properties.push(
-                t.objectProperty(t.identifier(field), parserExpression(data.items[field]))
-              );
+        FunctionDeclaration(path) {
+          if (t.isIdentifier(path.node.id) && path.node.id.name === data.variable) {
+            path.traverse({
+              ReturnStatement(path) {
+                Object.keys(data.items).forEach(field => {
+                  const properties = path.node.argument.properties;
+                  properties.push(
+                    t.objectProperty(t.identifier(field), parserExpression(data.items[field]))
+                  );
+                });
+              }
             });
           }
         },

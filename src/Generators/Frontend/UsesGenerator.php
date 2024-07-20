@@ -61,6 +61,7 @@ class UsesGenerator extends BaseGenerator
         ], $templateData);
         $templateData = $this->phpParserService->runParserJS("{$path}{$this->jsType('form')}", [
             'key' => 'uses.form:rules',
+            'variable' => $this->serviceGenerator->modelNameNotPluralFe($model['name']).'Rules',
             'items' => $this->serviceGenerator->generateRules($fields, $model),
         ], $templateData);
         $templateData = $this->phpParserService->runParserJS("{$path}{$this->jsType('form')}", [
