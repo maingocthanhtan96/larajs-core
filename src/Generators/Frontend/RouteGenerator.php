@@ -22,32 +22,7 @@ class RouteGenerator extends BaseGenerator
         $pathTemplate = 'Router/';
         $templateData = $this->serviceGenerator->get_template('route', $pathTemplate, 'vue');
 
-        $templateData = str_replace('{{$DATE$}}', $now->toDateTimeString(), $templateData);
-        $templateData = str_replace(
-            '{{$NAME_CONST$}}',
-            $this->serviceGenerator->modelNameNotPluralFe($model['name']),
-            $templateData,
-        );
-        $templateData = str_replace(
-            '{{$NAME_ROUTE_MODEL_CLASS$}}',
-            $this->serviceGenerator->modelNameNotPlural($model['name']),
-            $templateData,
-        );
-        $templateData = str_replace(
-            '{{$MODEL_CLASS$}}',
-            $this->serviceGenerator->nameAttribute($model['name']),
-            $templateData,
-        );
-        $templateData = str_replace(
-            '{{$PATH_ROUTE_MODEL_CLASS$}}',
-            $this->serviceGenerator->urlResource($model['name']),
-            $templateData,
-        );
-        $templateData = str_replace(
-            '{{$TITLE_ROUTE_MODEL_CLASS$}}',
-            $this->serviceGenerator->tableNameNotPlural($model['name']),
-            $templateData,
-        );
+        $templateData = str_replace(['{{$DATE$}}', '{{$NAME_CONST$}}', '{{$NAME_ROUTE_MODEL_CLASS$}}', '{{$MODEL_CLASS$}}', '{{$PATH_ROUTE_MODEL_CLASS$}}', '{{$TITLE_ROUTE_MODEL_CLASS$}}'], [$now->toDateTimeString(), $this->serviceGenerator->modelNameNotPluralFe($model['name']), $this->serviceGenerator->modelNameNotPlural($model['name']), $this->serviceGenerator->nameAttribute($model['name']), $this->serviceGenerator->urlResource($model['name']), $this->serviceGenerator->tableNameNotPlural($model['name'])], $templateData);
         $fileName = "{$this->serviceGenerator->folderPages($model['name'])}.{$this->jsType('ext')}";
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
 

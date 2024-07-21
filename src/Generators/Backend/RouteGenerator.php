@@ -20,13 +20,7 @@ class RouteGenerator extends BaseGenerator
         $now = Carbon::now();
         $pathTemplate = 'Routes/';
         $templateData = $this->serviceGenerator->get_template('api', $pathTemplate);
-        $templateData = str_replace('{{MODEL_CLASS}}', $model['name'], $templateData);
-        $templateData = str_replace('{{DATE}}', $now->toDateTimeString(), $templateData);
-        $templateData = str_replace(
-            '{{RESOURCE}}',
-            $this->serviceGenerator->urlResource($model['name']),
-            $templateData,
-        );
+        $templateData = str_replace(['{{MODEL_CLASS}}', '{{RESOURCE}}'], [$model['name'], $this->serviceGenerator->urlResource($model['name'])], $templateData);
         $notDelete = config('generator.not_delete.laravel.route.api');
         $templateDataReal = $this->serviceGenerator->getFile('api_routes');
         $templateDataReal = $this->phpParserService->usePackage(

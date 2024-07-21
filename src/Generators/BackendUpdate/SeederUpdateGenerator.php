@@ -22,9 +22,9 @@ class SeederUpdateGenerator extends BaseGenerator
     {
         $fileName = $model['name'].'Seeder.php';
         $templateDataReal = $this->serviceGenerator->getFile('seeder', 'laravel', $fileName);
-        $templateDataReal = $this->_generateRenameFields($updateFields['renameFields'], $templateDataReal);
-        $templateDataReal = $this->_generateChangeFields($updateFields['changeFields'], $generator, $templateDataReal);
-        $templateDataReal = $this->_generateFieldsDrop($updateFields['dropFields'], $templateDataReal);
+        //        $templateDataReal = $this->_generateRenameFields($updateFields['renameFields'], $templateDataReal);
+        //        $templateDataReal = $this->_generateChangeFields($updateFields['changeFields'], $generator, $templateDataReal);
+        //        $templateDataReal = $this->_generateFieldsDrop($updateFields['dropFields'], $templateDataReal);
         if ($updateFields['updateFields']) {
             $templateDataReal = $this->serviceGenerator->replaceNotDelete(
                 $this->notDelete['seeder'],

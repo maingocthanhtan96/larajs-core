@@ -17,8 +17,7 @@ class SeederGenerator extends BaseGenerator
     private function _generate($model): void
     {
         $templateData = $this->serviceGenerator->get_template('seeder', 'Databases/Seeders/');
-        $templateData = str_replace('{{TABLE_NAME_TITLE}}', $model['name'], $templateData);
-        $templateData = str_replace('{{MODEL_CLASS}}', $model['name'], $templateData);
+        $templateData = str_replace(['{{TABLE_NAME_TITLE}}', '{{MODEL_CLASS}}'], [$model['name'], $model['name']], $templateData);
         $fileName = "{$model['name']}Seeder.php";
 
         $this->serviceFile->createFile($this->path, $fileName, $templateData);

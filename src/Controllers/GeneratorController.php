@@ -80,7 +80,7 @@ class GeneratorController extends BaseLaraJSController
         $fields = $request->get('fields', []);
         $model = $request->get('model', []);
         // git commit
-        $this->_gitCommit($model['name']);
+        //        $this->_gitCommit($model['name']);
         [$relationships, $fieldIgnoreRelationship] = $this->_handleFieldRelationship($fields);
         if (
             $this->serviceGenerator->getOptions(config('generator.model.options.only_migrate'), $model['options'])
@@ -123,7 +123,7 @@ class GeneratorController extends BaseLaraJSController
             'dropFields' => $dropFields,
         ];
         // git commit
-        $this->_gitCommit($model['name']);
+        //        $this->_gitCommit($model['name']);
         if (
             $this->serviceGenerator->getOptions(config('generator.model.options.only_migrate'), $model['options'])
         ) {
@@ -151,7 +151,7 @@ class GeneratorController extends BaseLaraJSController
         $generatorService = new GeneratorService();
         $fileService = new FileService();
 
-        $this->_gitCommit($model['name']);
+        //        $this->_gitCommit($model['name']);
         // START - Remove File
         foreach ($files as $file) {
             if (is_array($file)) {
@@ -359,7 +359,7 @@ class GeneratorController extends BaseLaraJSController
         $column2 = $request->get('column2');
         $options = $request->get('options', []);
         // git commit
-        $this->_gitCommit($model);
+        //        $this->_gitCommit($model);
         $migrateFile = new RelationshipGenerator($relationship, $model, $modelCurrent, $column, $column2, $options, $modelName);
         if ($relationship === config('generator.relationship.relationship.belongs_to_many')) {
             $fields = [

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Collection;
 use ReflectionClass;
+use Symfony\Component\HttpFoundation\Exception\UnexpectedValueException;
 
 class GeneratorService
 {
@@ -496,53 +497,23 @@ class GeneratorService
     }
 
     // START - MIGRATION
-    public function migrationFields($field, $configDBType, $typeDB, $typeLaravel, $model): string
+    public function migrationFields($field, $configDBType, $typeDB, $typeLaravel): string
     {
-        if ($field['db_type'] === $configDBType['enum']) {
-            $enum = '';
-            foreach ($field['enum'] as $keyEnum => $value) {
-                if ($keyEnum === count($field['enum']) - 1) {
-                    $enum .= "'$value'";
-                } else {
-                    $enum .= "'$value',";
-                }
-            }
-
-            return '$table->enum("'.trim($field['field_name']).'", ['.$enum.'])';
-        }
-        if (in_array($typeDB, [$configDBType['hasOne'], $configDBType['hasMany']])) {
-            $table = '$table';
-
-            return <<<MIGRATE
-$table
-                ->foreignId('{$field['field_name']}')
-                ->index()
-                ->constrained('{$this->tableName($field['model_relationship'])}')
-                ->onUpdate('cascade')
-                ->onDelete('cascade')
-MIGRATE;
-
-        }
-
-        if ($field['db_type'] === $typeDB) {
-            return '$table->'.$typeLaravel.'("'.trim($field['field_name']).'")';
-        }
-
-        return '';
+        return match ($field['db_type']) {
+            $configDBType['enum'] => "\$table->enum('{$field['field_name']}', " . json_encode($field['enum']) . ')',
+            $configDBType['hasOne'], $configDBType['hasMany'] => "\$table->foreignId('{$field['field_name']}')",
+            default => $field['db_type'] === $typeDB ? "\$table->{$typeLaravel}('" . trim($field['field_name']) . "')" : '',
+        };
     }
 
     public function migrationDefaultValue($field, $configDefaultValue): string
     {
-        $table = '';
-        if ($field['default_value'] === $configDefaultValue['null']) {
-            $table = '->nullable()';
-        } elseif ($field['default_value'] === $configDefaultValue['as_define']) {
-            $table = '->nullable()->default("'.$field['as_define'].'")';
-        } elseif ($field['default_value'] === $configDefaultValue['current_timestamps']) {
-            $table = '->nullable()->useCurrent()';
-        }
-
-        return $table;
+        return match ($field['default_value']) {
+            $configDefaultValue['null'] => '->nullable()',
+            $configDefaultValue['as_define'] => '->default(' . (is_numeric($field['as_define']) ? $field['as_define'] : '"' . $field['as_define'] . '"') . ')',
+            $configDefaultValue['current_timestamps'] => '->useCurrent()',
+            default => '',
+        };
     }
 
     public function migrationOption($field): string
@@ -592,7 +563,7 @@ MIGRATE;
                 $formTemplate = $this->_checkRequired($field, $formTemplate);
                 $formTemplate = $this->_replaceAutoFocus($index, $formTemplate);
                 $formTemplate = $this->_replaceFormField($field, $formTemplate);
-                if ($dbType === $dbTypeConfig['string']) {
+                if (in_array($dbType, [$dbTypeConfig['string'], $dbTypeConfig['char']], false)) {
                     $formTemplate = str_replace('{{MAX_LENGTH}}', $field['length_varchar'], $formTemplate);
                 }
 
@@ -669,91 +640,85 @@ MIGRATE;
     // END - FORM
 
     // START - REQUEST
-    public function requestField($field): string
+    public function requestField(array $field): string
     {
+        // Retrieve configuration values
         $dbType = config('generator.db_type');
         $configDefaultValue = config('generator.default_value');
-        if ($field['default_value'] === $configDefaultValue['none']) {
-            $required = 'required';
-        } else {
-            $required = 'nullable';
-        }
-        $enumFunc = function ($field, $required) {
-            $enum = 'in:';
-            foreach ($field['enum'] as $keyEnum => $value) {
-                if ($keyEnum === count($field['enum']) - 1) {
-                    $enum .= "$value";
-                } else {
-                    $enum .= "$value,";
-                }
-            }
-
-            return "'".$field['field_name']."'".' => '."['$required','$enum'],";
+        // Determine if the field is required or nullable
+        $required = $field['default_value'] === $configDefaultValue['none'] ? 'required' : 'nullable';
+        // Determine the rules based on the database type
+        $rules = match ($field['db_type']) {
+            $dbType['integer'],
+            $dbType['smallInteger'],
+            $dbType['tinyInteger'],
+            $dbType['mediumInteger'],
+            $dbType['bigInteger'],
+            $dbType['float'],
+            $dbType['double'] => "['$required', 'numeric']",
+            $dbType['decimal'] => "['$required', 'numeric', 'between:-999999.99,999999.99']",
+            $dbType['unsignedInteger'],
+            $dbType['unsignedTinyInteger'],
+            $dbType['unsignedSmallInteger'],
+            $dbType['unsignedMediumInteger'],
+            $dbType['unsignedBigInteger'] => "['$required', 'min:0', 'numeric']",
+            $dbType['boolean'] => "['$required', 'boolean']",
+            $dbType['date'] => "['$required', 'date_format:Y-m-d']",
+            $dbType['dateTime'],
+            $dbType['timestamp'] => "['$required', 'date_format:Y-m-d H:i:s']",
+            $dbType['time'] => "['$required', 'date_format:H:i:s']",
+            $dbType['year'] => "['$required', 'date_format:Y']",
+            $dbType['char'],
+            $dbType['string'],
+            $dbType['tinyText'] => "['$required', 'string', 'max:{$field['length_varchar']}']",
+            $dbType['mediumText'],
+            $dbType['text'],
+            $dbType['longtext'] => "['$required', 'string']",
+            $dbType['enum'] => "['$required','in:".implode(',', $field['enum'])."']",
+            $dbType['json'],
+            $dbType['jsonb'] => "['$required', 'json']",
+            default => throw new UnexpectedValueException('Unknown database type'),
         };
 
-        return match ($field['db_type']) {
-            $dbType['integer'], $dbType['bigInteger'], $dbType['float'], $dbType['double'] => "'".
-                $field['field_name'].
-                "'".
-                ' => '.
-                "['$required','numeric'],",
-            $dbType['boolean'] => "'".$field['field_name']."'".' => '."['$required','boolean'],",
-            $dbType['date'] => "'".$field['field_name']."'".' => '."['$required','date_format:Y-m-d'],",
-            $dbType['dateTime'], $dbType['timestamp'] => "'".
-                $field['field_name'].
-                "'".
-                ' => '.
-                "['$required','date_format:Y-m-d H:i:s'],",
-            $dbType['time'] => "'".$field['field_name']."'".' => '."['$required','date_format:H:i:s'],",
-            $dbType['year'] => "'".$field['field_name']."'".' => '."['$required','date_format:Y'],",
-            $dbType['string'] => "'".
-                $field['field_name'].
-                "'".
-                ' => '.
-                "['$required','string','max:{$field['length_varchar']}'],",
-            $dbType['text'], $dbType['longtext'] => "'".$field['field_name']."'".' => '."['$required','string'],",
-            $dbType['enum'] => $enumFunc($field, $required),
-            $dbType['json'] => "'".$field['field_name']."'".' => '."['$required','json'],",
-            default => '',
-        };
+        // Return the formatted string
+        return "'{$field['field_name']}' => $rules,";
     }
     // END - REQUEST
 
     // START - SEEDER
-    public function seederField($field): string
+    public function seederField(array $field): string
     {
         $dbType = config('generator.db_type');
+        $fieldName = "'" . $field['field_name'] . "'";
 
         return match ($field['db_type']) {
-            $dbType['integer'], $dbType['bigInteger'] => "'".
-                $field['field_name'].
-                "'".
-                ' => $faker->numberBetween(1000, 9000),',
-            $dbType['float'], $dbType['double'] => "'".
-                $field['field_name'].
-                "'".
-                ' => $faker->randomFloat(2, 1000, 9000),',
-            $dbType['boolean'] => "'".$field['field_name']."'".' => $faker->numberBetween(0, 1),',
-            $dbType['date'] => "'".$field['field_name']."'".' => $faker->date,',
-            $dbType['dateTime'], $dbType['timestamp'] => "'".
-                $field['field_name'].
-                "'".
-                ' => $faker->dateTime->format(\'Y-m-d H:i:s\'),',
-            $dbType['time'] => "'".$field['field_name']."'".' => $faker->date(\'H:i:s\'),',
-            $dbType['year'] => "'".$field['field_name']."'".' => $faker->year,',
-            $dbType['string'] => "'".$field['field_name']."'".' => $faker->name,',
-            $dbType['text'], $dbType['longtext'] => "'".$field['field_name']."'".' => $faker->paragraph,',
-            $dbType['enum'] => "'".
-                $field['field_name'].
-                "'".
-                ' => $faker->randomElement('.
-                json_encode($field['enum']).
-                '),',
-            $dbType['json'] => "'".$field['field_name']."'"." => '{}',",
-            $dbType['file'] => "'".
-                $field['field_name'].
-                "'".
-                " => json_encode(['https://via.placeholder.com/350']),",
+            $dbType['integer'],
+            $dbType['unsignedInteger'],
+            $dbType['tinyInteger'],
+            $dbType['unsignedTinyInteger'],
+            $dbType['smallInteger'],
+            $dbType['unsignedSmallInteger'],
+            $dbType['mediumInteger'],
+            $dbType['unsignedMediumInteger'],
+            $dbType['bigInteger'],
+            $dbType['unsignedBigInteger'] => "$fieldName => \$faker->numberBetween(0, 100),",
+            $dbType['float'],
+            $dbType['double'],
+            $dbType['decimal'] => "$fieldName => \$faker->randomFloat(2, 1, 1000),",
+            $dbType['boolean'] => "$fieldName => \$faker->boolean(),",
+            $dbType['date'] => "$fieldName => \$faker->date(),",
+            $dbType['dateTime'], $dbType['timestamp'] => "$fieldName => \$faker->dateTime->format('Y-m-d H:i:s'),",
+            $dbType['time'] => "$fieldName => \$faker->time('H:i:s'),",
+            $dbType['year'] => "$fieldName => \$faker->year(),",
+            $dbType['char'],
+            $dbType['string'],
+            $dbType['tinyText'] => "$fieldName => \$faker->randomLetter(),",
+            $dbType['text'],
+            $dbType['mediumText'],
+            $dbType['longtext'] => "$fieldName => \$faker->paragraph(),",
+            $dbType['enum'] => "$fieldName => \$faker->randomElement(" . json_encode($field['enum']) . '),',
+            $dbType['json'],
+            $dbType['jsonb'] => "$fieldName => '{}',",
             default => '',
         };
     }
@@ -787,15 +752,25 @@ MIGRATE;
         return match ($field['db_type']) {
             $dbType['increments'],
             $dbType['integer'],
+            $dbType['unsignedInteger'],
+            $dbType['tinyInteger'],
+            $dbType['unsignedTinyInteger'],
+            $dbType['smallInteger'],
+            $dbType['unsignedSmallInteger'],
+            $dbType['mediumInteger'],
+            $dbType['unsignedMediumInteger'],
             $dbType['bigInteger'],
+            $dbType['unsignedBigInteger'],
             $dbType['float'],
             $dbType['double'],
+            $dbType['decimal'],
             $dbType['boolean'],
             $dbType['date'],
             $dbType['dateTime'],
             $dbType['timestamp'],
             $dbType['time'],
             $dbType['year'],
+            $dbType['char'],
             $dbType['enum'] => 'center',
             default => 'left',
         };
@@ -838,22 +813,35 @@ MIGRATE;
             switch ($field['default_value']) {
                 case $defaultValue['none']:
                 case $defaultValue['null']:
-                    if ($field['db_type'] === $dbType['json']) {
+                    if (in_array($field['db_type'], [$dbType['json'], $dbType['jsonb']], false)) {
                         $items[$fieldName] = [
                             'value' => [],
                             'type' => 'json',
                         ];
                     } elseif (in_array($field['db_type'], [
+                        $dbType['increments'],
                         $dbType['integer'],
+                        $dbType['unsignedInteger'],
+                        $dbType['tinyInteger'],
+                        $dbType['unsignedTinyInteger'],
+                        $dbType['smallInteger'],
+                        $dbType['unsignedSmallInteger'],
+                        $dbType['mediumInteger'],
+                        $dbType['unsignedMediumInteger'],
                         $dbType['bigInteger'],
+                        $dbType['unsignedBigInteger'],
                         $dbType['float'],
                         $dbType['double'],
-                        $dbType['boolean'],
-                        $dbType['increments'],
-                    ])) {
+                        $dbType['decimal'],
+                    ], false)) {
                         $items[$fieldName] = [
                             'value' => 0,
                             'type' => 'number',
+                        ];
+                    } elseif ($field['db_type'] === $dbType['boolean']) {
+                        $items[$fieldName] = [
+                            'value' => false,
+                            'type' => 'boolean',
                         ];
                     } else {
                         $items[$fieldName] = [
@@ -864,10 +852,18 @@ MIGRATE;
                     break;
                 case $defaultValue['as_define']:
                     $value = $field['as_define'];
-                    $items[$fieldName] = [
-                        'value' => is_numeric($value) ? +$value : $value,
-                        'type' => is_numeric($value) ? 'number' : 'string',
-                    ];
+                    if ($field['db_type'] === $dbType['boolean']) {
+                        $items[$fieldName] = [
+                            'value' => (bool) $value,
+                            'type' => 'boolean',
+                        ];
+                    } else {
+                        $items[$fieldName] = [
+                            'value' => is_numeric($value) ? +$value : $value,
+                            'type' => is_numeric($value) ? 'number' : 'string',
+                        ];
+                    }
+
                     break;
                 case $defaultValue['current_timestamps']:
                     $items[$fieldName]['type'] = $defaultValue['current_timestamps'];
@@ -898,14 +894,8 @@ MIGRATE;
     {
         $dbType = config('generator.db_type');
         $attribute = "t('table.{$this->tableNameNotPlural($model['name'])}.{$field['field_name']}')";
-        $formTemplate = str_replace('{{$ATTRIBUTE_FIELD$}}', $attribute, $formTemplate);
-        if ($field['db_type'] === $dbType['enum']) {
-            $formTemplate = str_replace('{{$TRIGGER$}}', 'change', $formTemplate);
-        } else {
-            $formTemplate = str_replace('{{$TRIGGER$}}', 'blur', $formTemplate);
-        }
 
-        return $formTemplate;
+        return str_replace(['{{$ATTRIBUTE_FIELD$}}', '{{$TRIGGER$}}'], [$attribute, 'change'], $formTemplate);
     }
 
     public function generateColumns($fields, $model, $ignoreOptions = false): array
@@ -917,20 +907,13 @@ MIGRATE;
                 continue;
             }
             $templateClone = $template;
-            $templateClone = str_replace('{{$FIELD_NAME$}}', $field['field_name'], $templateClone);
-            $templateClone = str_replace('{{$FORM_SORTABLE$}}', $field['sort'] ? "'custom'" : 'false', $templateClone);
-            $templateClone = str_replace('{{$FORM_ALIGN$}}', $this->viewTableClassColumn($field), $templateClone);
-            $templateClone = str_replace('{{$FORM_LABEL$}}', '', $templateClone);
+            $templateClone = str_replace(['{{$FIELD_NAME$}}', '{{$FORM_SORTABLE$}}', '{{$FORM_ALIGN$}}', '{{$FORM_LABEL$}}'], [$field['field_name'], $field['sort'] ? "'custom'" : 'false', $this->viewTableClassColumn($field), ''], $templateClone);
             $templateColumn = $this->templateColumn($field);
             $templateClone = str_replace('{{$FORM_TEMPLATE$}}', $templateColumn, $templateClone);
             $columns[] = $templateClone;
         }
         if (!$ignoreOptions && $this->getOptions(config('generator.model.options.timestamps'), $model['options'])) {
-            $template = str_replace('{{$FIELD_NAME$}}', 'updated_at', $template);
-            $template = str_replace('{{$FORM_SORTABLE$}}', "'custom'", $template);
-            $template = str_replace('{{$FORM_ALIGN$}}', 'center', $template);
-            $template = str_replace('{{$FORM_LABEL$}}', "label: t('date.updated_at'),", $template);
-            $template = str_replace('{{$FORM_TEMPLATE$}}', "template: 'date',", $template);
+            $template = str_replace(['{{$FIELD_NAME$}}', '{{$FORM_SORTABLE$}}', '{{$FORM_ALIGN$}}', '{{$FORM_LABEL$}}', '{{$FORM_TEMPLATE$}}'], ['updated_at', "'custom'", 'center', "label: t('date.updated_at'),", "template: 'date',"], $template);
             $columns[] = $template;
         }
 
@@ -1011,7 +994,7 @@ MIGRATE;
                 ], $templateDataReal);
                 $flags['json'] = false;
             } elseif (
-                in_array($field['db_type'], [$dbType['dateTime'], $dbType['timestamp']]) &&
+                in_array($field['db_type'], [$dbType['dateTime'], $dbType['timestamp']], false) &&
                 $flags['parse_time'] &&
                 $field['default_value'] === $defaultValue['current_timestamps']
             ) {
@@ -1064,36 +1047,60 @@ MIGRATE;
         $dbType = config('generator.db_type');
         $defaultValue = config('generator.default_value');
         // Mapping of database types to TypeScript types
-        $typeMapping = [
-            $dbType['increments'] => 'number',
-            $dbType['integer'] => 'number',
-            $dbType['bigInteger'] => 'number',
-            $dbType['float'] => 'number',
-            $dbType['double'] => 'number',
-            $dbType['boolean'] => 'number',
-            $dbType['date'] => 'string',
-            $dbType['dateTime'] => 'string',
-            $dbType['timestamp'] => 'string',
-            $dbType['time'] => 'string',
-            $dbType['year'] => 'string',
-            $dbType['string'] => 'string',
-            $dbType['text'] => 'string',
-            $dbType['longtext'] => 'string',
-            $dbType['enum'] => 'unknown',
-            $dbType['json'] => 'Record<string, unknown>',
-        ];
-
         foreach ($fields as $field) {
-            $dbType = $field['db_type'];
+            $type = match ($field['db_type']) {
+                $dbType['increments'],
+                $dbType['integer'],
+                $dbType['unsignedInteger'],
+                $dbType['tinyInteger'],
+                $dbType['unsignedTinyInteger'],
+                $dbType['smallInteger'],
+                $dbType['unsignedSmallInteger'],
+                $dbType['mediumInteger'],
+                $dbType['unsignedMediumInteger'],
+                $dbType['bigInteger'],
+                $dbType['unsignedBigInteger'],
+                $dbType['float'],
+                $dbType['double'],
+                $dbType['decimal'] => 'number',
+                $dbType['boolean'] => 'boolean',
+                $dbType['date'],
+                $dbType['dateTime'],
+                $dbType['timestamp'],
+                $dbType['time'],
+                $dbType['year'],
+                $dbType['char'],
+                $dbType['string'],
+                $dbType['tinyText'],
+                $dbType['mediumText'],
+                $dbType['text'],
+                $dbType['longtext'] => 'string',
+                $dbType['json'],
+                $dbType['jsonb'] => 'Record<string, unknown>',
+                default => '',
+            };
             $isNull = $defaultValue['null'] === $field['default_value'];
             // Determine the TypeScript type based on the database type
-            $tsType = $typeMapping[$dbType] ?? 'unknown'; // Default to 'unknown' if not mapped
+            if ($field['db_type'] === $dbType['enum']) {
+                $tsType = $this->processEnumType($field);
+            } else {
+                $tsType = $type ?? 'unknown'; // Default to 'unknown' if not mapped
+            }
             $tsType .= $isNull ? ' | null' : ''; // Append '| null' for nullable fields
 
             $data[$field['field_name']] = $tsType . ';';
         }
 
         return $data;
+    }
+
+    /**
+     * Process the TypeScript enum type.
+     */
+    private function processEnumType(array $field): string
+    {
+        // Assuming $field['enum'] contains the possible enum values
+        return implode('|', array_map(fn($value) => "'$value'", $field['enum']));
     }
 
     public function replaceEndFile($templateDataReal, $content, $tab, $spaces = 4): array|string|null

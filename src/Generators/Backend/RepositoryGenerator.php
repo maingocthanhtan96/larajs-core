@@ -20,12 +20,7 @@ class RepositoryGenerator extends BaseGenerator
         $pathTemplate = 'Repositories/';
         //template Repository
         $templateDataRepository = $this->serviceGenerator->get_template('Repository', $pathTemplate);
-        $templateDataRepository = str_replace('{{MODEL_CLASS}}', $model['name'], $templateDataRepository);
-        $templateDataRepository = str_replace(
-            '{{MODEL_CLASS_PARAM}}',
-            $this->serviceGenerator->modelNameNotPluralFe($model['name']),
-            $templateDataRepository,
-        );
+        $templateDataRepository = str_replace(['{{MODEL_CLASS}}', '{{MODEL_CLASS_PARAM}}'], [$model['name'], $this->serviceGenerator->modelNameNotPluralFe($model['name'])], $templateDataRepository);
         $fileNameRepository = $model['name'].'Repository.php';
         $this->serviceFile->createFile($this->path.$createFolderModel, $fileNameRepository, $templateDataRepository);
         //template Interface

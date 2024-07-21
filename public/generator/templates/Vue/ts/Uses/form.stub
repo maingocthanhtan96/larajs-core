@@ -2,13 +2,13 @@ import { computed, ref, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import type { FormInstance, FormRules } from 'element-plus';
-import  { use{{$NAME_USES$}} } from '@larajs/cms/uses';
+import { use{{$NAME_USES$}}Apis } from '@larajs/cms/uses';
 import type { {{$NAME_MODEL$}} } from '@larajs/common';
 import type { LaraFormType } from '@larajs/components';
 
 export interface {{$NAME_MODEL$}}StateRoot {}
 
-export function {{$CONST_NAME_MODEL$}}Rules(form: {{$NAME_MODEL$}}, formRef: FormInstance): FormRules {
+export function {{$CONST_NAME_MODEL$}}Rules(): FormRules {
   const { t } = useI18n(); // eslint-disable-line
 
   return {};
@@ -18,7 +18,7 @@ export function use{{$NAME_MODEL$}}Forms() {
   const route = useRoute();
   const { t } = useI18n(); // eslint-disable-line
   const id = route.params.id as string;
-  const { store, update } = use{{$NAME_USES$}}();
+  const { store, update } = use{{$NAME_USES$}}Apis();
   const formRef = ref<FormInstance>();
   const form = reactive<{{$NAME_MODEL$}}>({});
   const state = reactive<{{$NAME_MODEL$}}StateRoot>({});
@@ -28,7 +28,7 @@ export function use{{$NAME_MODEL$}}Forms() {
     ref: formRef,
     form: {
       model: form,
-      rules: {{$CONST_NAME_MODEL$}}Rules(form, formRef.value!),
+      rules: {{$CONST_NAME_MODEL$}}Rules(),
     },
     items: [],
     actions: {

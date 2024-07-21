@@ -21,14 +21,7 @@ class ApiGenerator extends BaseGenerator
         $now = Carbon::now();
         $pathTemplate = 'Api/';
         $templateData = $this->serviceGenerator->get_template('api', $pathTemplate, 'vue');
-        $templateData = str_replace('{{$DATE$}}', $now->toDateTimeString(), $templateData);
-        $templateData = str_replace('{{$MODEL_CLASS$}}', $model['name'], $templateData);
-        $templateData = str_replace('{{$VERSION$}}', strtolower(config('generator.api_version')), $templateData);
-        $templateData = str_replace(
-            '{{$MODEL_CLASS_URI$}}',
-            $this->serviceGenerator->urlResource($model['name']),
-            $templateData,
-        );
+        $templateData = str_replace(['{{$DATE$}}', '{{$MODEL_CLASS$}}', '{{$VERSION$}}', '{{$MODEL_CLASS_URI$}}'], [$now->toDateTimeString(), $model['name'], strtolower(config('generator.api_version')), $this->serviceGenerator->urlResource($model['name'])], $templateData);
 
         $fileName = $this->serviceGenerator->folderPages($model['name']).".{$this->jsType('ext')}";
         $this->serviceFile->createFile($this->path, $fileName, $templateData);

@@ -245,21 +245,31 @@ class PhpParserService
         foreach ($fields as $field) {
             if ($field['field_name'] !== 'id') {
                 $faker = match ($field['db_type']) {
-                    $dbType['integer'], $dbType['bigInteger'] => [
+                    $dbType['integer'],
+                    $dbType['unsignedInteger'],
+                    $dbType['tinyInteger'],
+                    $dbType['unsignedTinyInteger'],
+                    $dbType['smallInteger'],
+                    $dbType['unsignedSmallInteger'],
+                    $dbType['mediumInteger'],
+                    $dbType['unsignedMediumInteger'],
+                    $dbType['bigInteger'],
+                    $dbType['unsignedBigInteger'] => [
                         'faker' => 'numberBetween',
-                        'args' => [],
+                        'args' => [
+                            new Node\Scalar\LNumber(0),
+                            new Node\Scalar\LNumber(100),
+                        ],
                     ],
-                    $dbType['float'] => [
+                    $dbType['float'],
+                    $dbType['double'],
+                    $dbType['decimal'] => [
                         'faker' => 'randomFloat',
                         'args' => [
                             new Node\Scalar\LNumber(2),
                             new Node\Scalar\LNumber(1),
                             new Node\Scalar\LNumber(1000),
                         ],
-                    ],
-                    $dbType['double'] => [
-                        'faker' => 'randomFloat',
-                        'args' => [],
                     ],
                     $dbType['boolean'] => [
                         'faker' => 'boolean',
@@ -281,11 +291,15 @@ class PhpParserService
                         'faker' => 'year',
                         'args' => [],
                     ],
-                    $dbType['string'] => [
-                        'faker' => 'name',
+                    $dbType['char'],
+                    $dbType['string'],
+                    $dbType['tinyText'] => [
+                        'faker' => 'randomLetter',
                         'args' => [],
                     ],
-                    $dbType['text'], $dbType['longtext'] => [
+                    $dbType['mediumText'],
+                    $dbType['text'],
+                    $dbType['longtext'] => [
                         'faker' => 'text',
                         'args' => [],
                     ],
@@ -294,7 +308,9 @@ class PhpParserService
                         'enum' => $field['enum'],
                         'args' => [],
                     ],
-                    $dbType['json'], 'FOREIGN_KEY' => [],
+                    $dbType['json'],
+                    $dbType['jsonb'],
+                    'FOREIGN_KEY' => [],
                 };
                 if ($field['db_type'] === 'FOREIGN_KEY') {
                     $faker['model'] = $field['model'];
@@ -316,6 +332,7 @@ class PhpParserService
                     );
                     break;
                 case $dbType['json']:
+                case $dbType['jsonb']:
                     $itemFakers[] = new Node\Expr\ArrayItem(
                         new Node\Scalar\String_('{}'),
                         new Node\Scalar\String_($item['key']),

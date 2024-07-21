@@ -20,19 +20,7 @@ class ControllerGenerator extends BaseGenerator
     private function _generate($model): void
     {
         $templateData = $this->serviceGenerator->get_template('controller', 'Controllers/');
-        $templateData = str_replace('{{VERSION}}', config('generator.api_version'), $templateData);
-        $templateData = str_replace('{{CONTROLLER_CLASS}}', $model['name'], $templateData);
-        $templateData = str_replace('{{MODEL_CLASS}}', $model['name'], $templateData);
-        $templateData = str_replace(
-            '{{MODEL_CLASS_PARAM}}',
-            \Str::camel(\Str::singular($model['name'])),
-            $templateData,
-        );
-        $templateData = str_replace(
-            '{{MODEL_CLASS_PARAM_LIST}}',
-            \Str::camel(\Str::plural($model['name'])),
-            $templateData,
-        );
+        $templateData = str_replace(['{{VERSION}}', '{{CONTROLLER_CLASS}}', '{{MODEL_CLASS}}', '{{MODEL_CLASS_PARAM}}', '{{MODEL_CLASS_PARAM_LIST}}'], [config('generator.api_version'), $model['name'], $model['name'], \Str::camel(\Str::singular($model['name'])), \Str::camel(\Str::plural($model['name']))], $templateData);
 
         $fileName = $model['name'].'Controller.php';
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
