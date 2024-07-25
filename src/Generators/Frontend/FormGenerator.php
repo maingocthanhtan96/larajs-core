@@ -22,7 +22,20 @@ class FormGenerator extends BaseGenerator
     {
         $pathTemplate = 'Views/';
         $templateData = $this->serviceGenerator->get_template('form', $pathTemplate, 'vue');
-        $templateData = str_replace(['{{$NAME_MODEL$}}', '{{$NAME_USES$}}', '{{$LANG_MODEL_CLASS$}}', '{{$CONST_MODEL_CLASS$}}'], [$this->serviceGenerator->modelNameNotPlural($model['name']), $this->serviceGenerator->modelNamePlural($model['name']), $this->serviceGenerator->tableNameNotPlural($model['name']), $this->serviceGenerator->modelNameNotPluralFe($model['name'])], $templateData);
+        $templateData = str_replace([
+            '{{$NAME_MODEL$}}',
+            '{{$NAME_API$}}',
+            '{{$LANG_MODEL_CLASS$}}',
+            '{{$CONST_MODEL_CLASS$}}',
+            '{{$API_ONE$}}',
+            '{{$NAME_USE$}}',
+        ], [
+            $this->serviceGenerator->modelNameNotPlural($model['name']),
+            $this->serviceGenerator->modelNameNotPlural($model['name']),
+            $this->serviceGenerator->tableNameNotPlural($model['name']),
+            $this->serviceGenerator->modelNameNotPluralFe($model['name']),
+            $this->serviceGenerator->modelNameNotPlural($model['name']),
+        ], $templateData);
         $folderName = $this->path.$this->serviceGenerator->folderPages($model['name']);
         if (!is_dir($folderName) && !mkdir($folderName, 0755, true) && !is_dir($folderName)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $folderName));

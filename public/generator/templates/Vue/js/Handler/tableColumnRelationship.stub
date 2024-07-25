@@ -1,5 +1,0 @@
-<el-table-column prop="{{$FIELD_NAME_RELATIONSHIP$}}" {{$SORT$}} :label="$t('route.{{$TABLE_MODEL_CLASS$}}')" align="{{$ALIGN$}}" header-align="center">
-                <template #default="{ row }">
-                  {{ row.{{$MODEL_RELATIONSHIP$}} && row.{{$MODEL_RELATIONSHIP$}}.{{$FIELD_NAME$}} }}
-                </template>
-              </el-table-column>

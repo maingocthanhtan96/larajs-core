@@ -21,7 +21,23 @@ class ApiGenerator extends BaseGenerator
         $now = Carbon::now();
         $pathTemplate = 'Api/';
         $templateData = $this->serviceGenerator->get_template('api', $pathTemplate, 'vue');
-        $templateData = str_replace(['{{$DATE$}}', '{{$MODEL_CLASS$}}', '{{$VERSION$}}', '{{$MODEL_CLASS_URI$}}'], [$now->toDateTimeString(), $model['name'], strtolower(config('generator.api_version')), $this->serviceGenerator->urlResource($model['name'])], $templateData);
+        $templateData = str_replace([
+            '{{$MODEL_CLASS$}}',
+            '{{$VERSION$}}',
+            '{{$MODEL_CLASS_URI$}}',
+            '{{$NAME_MODEL$}}',
+            '{{$API_ALL$}}',
+            '{{$API_ONE$}}',
+            '{{$NAME_API$}}',
+        ], [
+            $model['name'],
+            strtolower(config('generator.api_version')),
+            $this->serviceGenerator->urlResource($model['name']),
+            $this->serviceGenerator->modelNameNotPluralFe($model['name']),
+            $this->serviceGenerator->modelNamePlural($model['name']),
+            $this->serviceGenerator->modelNameNotPlural($model['name']),
+            $this->serviceGenerator->modelNameNotPlural($model['name']),
+        ], $templateData);
 
         $fileName = $this->serviceGenerator->folderPages($model['name']).".{$this->jsType('ext')}";
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
@@ -31,7 +47,7 @@ class ApiGenerator extends BaseGenerator
             file_put_contents($pathApi, '');
         }
         $templateDataReal = $this->serviceGenerator->getFile('api', 'vue', $fileNameReal);
-        $templateDataReal .= "export { default as {$model['name']}Resource } from './{$this->serviceGenerator->folderPages($model['name'])}';";
+        $templateDataReal .= "export * from './{$this->serviceGenerator->folderPages($model['name'])}';\n";
         $this->serviceFile->createFileReal($pathApi, $templateDataReal);
     }
 }

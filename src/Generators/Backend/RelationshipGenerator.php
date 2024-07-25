@@ -157,6 +157,7 @@ class RelationshipGenerator extends BaseGenerator
             $this->_generateDocs($model, $modelCurrent, $relationship === $this->relationship['has_one'] ? $this->relationship['has_many'] : $this->relationship['has_one']); // reserve
             $this->_generateFactory($modelCurrent, $model, $columnChildren);
             $this->_generateSeeder($modelCurrent, $model, $relationship);
+            $this->_generateTests($modelCurrent, $model, $columnChildren);
             $this->_generateRequest($model, $relationship, $columnChildren);
             //generate frontend
             $this->_generateFormFe($modelCurrent, $model, $column, $options, $relationship, $columnChildren);
@@ -262,7 +263,7 @@ class RelationshipGenerator extends BaseGenerator
             $templateColumn = str_replace(['{{$FIELD_NAME$}}', '{{$FORM_SORTABLE$}}', '{{$FORM_ALIGN$}}', '{{$FORM_LABEL$}}'], [Str::camel($tableFunctionRelationship) . ".$columnRelationship", in_array($configOptions['sort'], $options) ? "'custom'" : 'false', 'left', "label: t('route.{$this->serviceGenerator->tableNameNotPlural($model)}'),"], $templateColumn);
             if ($isMTM) {
                 $templateRow = <<<TEMPLATE
-                template: ({ row }) => row.$tableFunctionRelationship.map(item => <el-tag key={item.id}>{item.$columnRelationship}</el-tag>),
+                template: ({ row }) => row.$tableFunctionRelationship?.map(item => <el-tag key={item.id}>{item.$columnRelationship}</el-tag>),
                 TEMPLATE;
             } else {
                 $templateRow = <<<TEMPLATE
@@ -377,16 +378,23 @@ class RelationshipGenerator extends BaseGenerator
         }
         // form
         $templateDataRealForm = $this->serviceGenerator->getFile('views', 'vue', $fileName);
-        $useModel = "use{$this->serviceGenerator->modelNamePlural($model)}Apis";
+        $useModel = "use{$this->serviceGenerator->modelNameNotPlural($model)}Apis";
+        $useKey = "get{$this->serviceGenerator->modelNamePlural($model)}";
         $templateDataRealForm = $this->phpParserService->runParserJS($pathFile, [
             'key' => 'views.form:import',
             'name' => $useModel,
-            'path' => "{$this->getImportJsOrTs()}/uses",
+            'path' => "{$this->getImportJsOrTs()}/api",
             'useName' => $useModel,
-            'useKey' => "list: {$this->serviceGenerator->modelNameNotPluralFe($model)}List",
+            'useKey' => $useKey,
         ], $templateDataRealForm);
         $stubGetData = $this->serviceGenerator->get_template('getDataRelationship', 'Handler/', 'vue');
-        $stubGetData = str_replace(['{{$USE_MODEL_RELATIONSHIP$}}', '{{$MODEL_RELATIONSHIP$}}'], ["{$this->serviceGenerator->modelNameNotPluralFe($model)}List", $nameModelRelationship], $stubGetData);
+        $stubGetData = str_replace([
+            '{{$USE_MODEL_RELATIONSHIP$}}',
+            '{{$MODEL_RELATIONSHIP$}}',
+        ], [
+            $useKey,
+            $nameModelRelationship,
+        ], $stubGetData);
         $templateDataRealForm = $this->phpParserService->runParserJS($pathFile, [
             'key' => 'views.form:create',
             'content' => $stubGetData,
@@ -629,5 +637,16 @@ class RelationshipGenerator extends BaseGenerator
             );
             $this->serviceFile->createFileReal($path.$fileName, $templateDataReal);
         }
+    }
+
+    private function _generateTests(string $modelCurrent, string $model, string $columnChildren): void
+    {
+        $seederNotDelete = config('generator.not_delete.laravel.db.seeder');
+        $path = config('generator.path.laravel.tests.feature');
+        $pathTemplate = 'Tests/';
+        $templateDataReal = $this->serviceGenerator->getFile('tests.feature', 'laravel', "{$model}Test.php");
+        $templateDataReal = str_replace($seederNotDelete, "'$columnChildren' => \App\Models\\{$modelCurrent}::factory()->create()->id,", $templateDataReal);
+
+        $this->serviceFile->createFileReal($path."/{$model}Test.php", $templateDataReal);
     }
 }

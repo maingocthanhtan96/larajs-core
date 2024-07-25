@@ -1,1 +1,0 @@
-<el-time-picker v-model={form.{{$FIELD_NAME$}}} value-format="HH:mm:ss" />

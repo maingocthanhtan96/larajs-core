@@ -241,7 +241,7 @@ class RequestUpdateGenerator extends BaseGenerator
                 break;
             case $this->dbType['string']:
             case $this->dbType['text']:
-            case $this->dbType['longtext']:
+            case $this->dbType['longText']:
                 $field = 'string';
                 break;
             case $this->dbType['enum']:

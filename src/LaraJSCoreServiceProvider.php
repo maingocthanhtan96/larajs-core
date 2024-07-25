@@ -24,12 +24,6 @@ class LaraJSCoreServiceProvider extends ServiceProvider
             ],
             'larajs-core-config',
         );
-        $this->publishes(
-            [
-                __DIR__ . '/../config/generator-mono.php' => config_path('generator.php'),
-            ],
-            'larajs-core-config-mono',
-        );
         $this->mergeConfigFrom(__DIR__ . '/../config/generator.php', 'generator');
         $this->publishes(
             [

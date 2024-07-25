@@ -17,7 +17,15 @@ class ViewTableGenerator extends BaseGenerator
     private function _generate($model): void
     {
         $templateData = $this->serviceGenerator->get_template('index', 'Views/', 'vue');
-        $templateData = str_replace(['{{$NAME_MODEL$}}', '{{$TABLE_MODEL_CLASS$}}', '{{$NAME_ROUTE$}}'], [$this->serviceGenerator->modelNameNotPlural($model['name']), $this->serviceGenerator->tableNameNotPlural($model['name']), $this->serviceGenerator->modelNameNotPlural($model['name'])], $templateData);
+        $templateData = str_replace([
+            '{{$NAME_MODEL$}}',
+            '{{$TABLE_MODEL_CLASS$}}',
+            '{{$NAME_ROUTE$}}',
+        ], [
+            $this->serviceGenerator->modelNameNotPlural($model['name']),
+            $this->serviceGenerator->tableNameNotPlural($model['name']),
+            $this->serviceGenerator->modelNameNotPlural($model['name']),
+        ], $templateData);
         $folderName = $this->path.$this->serviceGenerator->folderPages($model['name']);
         if (!is_dir($folderName) && !mkdir($folderName, 0755, true) && !is_dir($folderName)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $folderName));

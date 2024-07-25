@@ -673,7 +673,7 @@ class GeneratorService
             $dbType['tinyText'] => "['$required', 'string', 'max:{$field['length_varchar']}']",
             $dbType['mediumText'],
             $dbType['text'],
-            $dbType['longtext'] => "['$required', 'string']",
+            $dbType['longText'] => "['$required', 'string']",
             $dbType['enum'] => "['$required','in:".implode(',', $field['enum'])."']",
             $dbType['json'],
             $dbType['jsonb'] => "['$required', 'json']",
@@ -715,7 +715,7 @@ class GeneratorService
             $dbType['tinyText'] => "$fieldName => \$faker->randomLetter(),",
             $dbType['text'],
             $dbType['mediumText'],
-            $dbType['longtext'] => "$fieldName => \$faker->paragraph(),",
+            $dbType['longText'] => "$fieldName => \$faker->paragraph(),",
             $dbType['enum'] => "$fieldName => \$faker->randomElement(" . json_encode($field['enum']) . '),',
             $dbType['json'],
             $dbType['jsonb'] => "$fieldName => '{}',",
@@ -928,7 +928,7 @@ class GeneratorService
                 $template = $this->get_template('tableColumnBoolean', 'Handler/', 'vue');
                 $template = str_replace('{{$FIELD_NAME$}}', $field['field_name'], $template);
                 break;
-            case $dbType['longtext']:
+            case $dbType['longText']:
                 $template = $this->get_template('tableColumnLongText', 'Handler/', 'vue');
                 $template = str_replace('{{$FIELD_NAME$}}', $field['field_name'], $template);
                 break;
@@ -974,7 +974,7 @@ class GeneratorService
         $importVueJS = config('generator.import.vue');
         foreach ($fields as $field) {
             if (
-                $field['db_type'] === $dbType['longtext'] &&
+                $field['db_type'] === $dbType['longText'] &&
                 $flags['long_text']
             ) {
                 $templateDataReal = $phpParserService->runParserJS($path, [
@@ -1074,7 +1074,7 @@ class GeneratorService
                 $dbType['tinyText'],
                 $dbType['mediumText'],
                 $dbType['text'],
-                $dbType['longtext'] => 'string',
+                $dbType['longText'] => 'string',
                 $dbType['json'],
                 $dbType['jsonb'] => 'Record<string, unknown>',
                 default => '',

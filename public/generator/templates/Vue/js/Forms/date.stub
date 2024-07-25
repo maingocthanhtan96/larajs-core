@@ -1,1 +1,0 @@
-<el-date-picker v-model={form.{{$FIELD_NAME$}}} type="date" value-format="YYYY-MM-DD" />

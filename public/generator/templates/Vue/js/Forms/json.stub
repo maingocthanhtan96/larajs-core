@@ -1,1 +1,0 @@
-<JsonEditor v-model={form.{{$FIELD_NAME$}}} />

@@ -156,7 +156,7 @@ class BaseGenerator
                     $formFeGenerateField->generateInput('textarea', $tableName, $field, $index),
                     $templateFormItemClone,
                 ),
-                $this->dbType['longtext'] => str_replace(
+                $this->dbType['longText'] => str_replace(
                     '{{$COMPONENT$}}',
                     $formFeGenerateField->generateTinymce($tableName, $field),
                     $templateFormItemClone,

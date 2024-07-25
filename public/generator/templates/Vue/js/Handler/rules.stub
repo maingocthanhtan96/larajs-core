@@ -1,3 +1,0 @@
-{{$FIELD$}}: [
-          { required: true, message: t('validation.required', { attribute: {{$ATTRIBUTE_FIELD$}} }), trigger: '{{$TRIGGER$}}' },
-        ],

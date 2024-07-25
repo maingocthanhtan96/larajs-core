@@ -299,7 +299,7 @@ class PhpParserService
                     ],
                     $dbType['mediumText'],
                     $dbType['text'],
-                    $dbType['longtext'] => [
+                    $dbType['longText'] => [
                         'faker' => 'text',
                         'args' => [],
                     ],
