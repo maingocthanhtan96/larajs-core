@@ -19,8 +19,7 @@ class RequestGenerator extends BaseGenerator
     {
         $pathTemplate = 'Requests/';
         $templateData = $this->serviceGenerator->get_template('store', $pathTemplate);
-        $templateData = str_replace('{{VERSION}}', config('generator.api_version'), $templateData);
-        $templateData = str_replace('{{MODEL_CLASS}}', $model['name'], $templateData);
+        $templateData = str_replace(['{{VERSION}}', '{{MODEL_CLASS}}'], [config('generator.api_version'), $model['name']], $templateData);
         $templateData = $this->serviceGenerator->replaceNotDelete(
             $this->notDelete['rule'],
             $this->_generateFields($fields),

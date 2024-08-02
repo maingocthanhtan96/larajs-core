@@ -17,8 +17,7 @@ class ResourceGenerator extends BaseGenerator
     private function _generate($model): void
     {
         $templateData = $this->serviceGenerator->get_template('resource', 'Resources/');
-        $templateData = str_replace('{{VERSION}}', config('generator.api_version'), $templateData);
-        $templateData = str_replace('{{MODEL_CLASS}}', $model['name'], $templateData);
+        $templateData = str_replace(['{{VERSION}}', '{{MODEL_CLASS}}'], [config('generator.api_version'), $model['name']], $templateData);
         $fileName = "{$model['name']}Resource.php";
 
         $this->serviceFile->createFile($this->path, $fileName, $templateData);

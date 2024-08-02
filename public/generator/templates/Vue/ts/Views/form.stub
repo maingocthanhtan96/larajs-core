@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { onBeforeMount } from 'vue';
 import { LaraForm } from '@larajs/components';
-import { use{{$NAME_MODEL$}}Forms, use{{$NAME_USES$}} } from '@larajs/cms/uses';
+import { use{{$NAME_MODEL$}}Forms } from '@larajs/cms/uses';
+import { use{{$NAME_API$}}Apis } from '@larajs/cms/api';
 import { useCancelToken } from '@larajs/uses';
 import { useCoreStore } from '@larajs/core';
 import { useI18n } from 'vue-i18n';
@@ -9,7 +10,7 @@ import { objectAssign } from '@larajs/utils';
 
 const { t } = useI18n();
 const { id, form, state, formElement } = use{{$NAME_MODEL$}}Forms(); // eslint-disable-line unused-imports/no-unused-vars
-const { show } = use{{$NAME_USES$}}();
+const { get{{$API_ONE$}} } = use{{$NAME_API$}}Apis();
 const coreStore = useCoreStore();
 const cancelToken = useCancelToken();
 
@@ -18,7 +19,7 @@ onBeforeMount(async () => {
   if (id) {
     const {
       data: { data: {{$CONST_MODEL_CLASS$}} },
-    } = await show(id, { cancelToken });
+    } = await get{{$API_ONE$}}(id, { cancelToken });
     objectAssign(form, {{$CONST_MODEL_CLASS$}});
   }
   coreStore.setLoading(false);

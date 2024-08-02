@@ -1,5 +1,6 @@
 import { Resource } from '@larajs/cms/api';
-import { {{$MODEL_CLASS$}} } from '@larajs/common';
+import type { AxiosRequestConfig } from 'axios';
+import type { IQuery, {{$MODEL_CLASS$}} } from '@larajs/common';
 
 class {{$MODEL_CLASS$}}Resource extends Resource<{{$MODEL_CLASS$}}> {
   constructor() {
@@ -7,4 +8,20 @@ class {{$MODEL_CLASS$}}Resource extends Resource<{{$MODEL_CLASS$}}> {
   }
 }
 
-export default new {{$MODEL_CLASS$}}Resource();
+export function use{{$NAME_API$}}Apis() {
+  const {{$NAME_MODEL$}}Resource = new {{$MODEL_CLASS$}}Resource();
+
+  const get{{$API_ALL$}} = (query: IQuery, props?: AxiosRequestConfig) => {{$NAME_MODEL$}}Resource.getAll(query, props);
+  const get{{$API_ONE$}} = (id: number | string, props?: AxiosRequestConfig) => {{$NAME_MODEL$}}Resource.getOne(id, props);
+  const create{{$API_ONE$}} = (data: {{$MODEL_CLASS$}}, props?: AxiosRequestConfig) => {{$NAME_MODEL$}}Resource.create(data, props);
+  const update{{$API_ONE$}} = (id: number | string, data: Partial<{{$MODEL_CLASS$}}>, props?: AxiosRequestConfig) => {{$NAME_MODEL$}}Resource.update(id, data, props);
+  const delete{{$API_ONE$}} = (id: number | string, props?: AxiosRequestConfig) => {{$NAME_MODEL$}}Resource.delete(id, props);
+
+  return {
+    get{{$API_ALL$}},
+    get{{$API_ONE$}},
+    create{{$API_ONE$}},
+    update{{$API_ONE$}},
+    delete{{$API_ONE$}},
+  };
+}

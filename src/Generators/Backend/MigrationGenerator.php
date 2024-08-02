@@ -20,12 +20,7 @@ class MigrationGenerator extends BaseGenerator
     {
         $pathTemplate = 'Databases/Migrations/';
         $templateData = $this->serviceGenerator->get_template('migration', $pathTemplate);
-        $templateData = str_replace('{{FIELDS}}', $this->_generateFields($fields, $model), $templateData);
-        $templateData = str_replace(
-            '{{TABLE_NAME}}',
-            $this->serviceGenerator->tableName($model['name']),
-            $templateData,
-        );
+        $templateData = str_replace(['{{FIELDS}}', '{{TABLE_NAME}}'], [$this->_generateFields($fields, $model), $this->serviceGenerator->tableName($model['name'])], $templateData);
         $fileName = date('Y_m_d_His')."_create_{$this->serviceGenerator->tableName($model['name'])}_table.php";
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
 
@@ -38,41 +33,36 @@ class MigrationGenerator extends BaseGenerator
 
         $configDBType = config('generator.db_type');
         $configDefaultValue = config('generator.default_value');
-        $fieldsGenerate[] = '$table->bigIncrements("id");';
+
         foreach ($fields as $index => $field) {
-            $table = '';
-            foreach ($configDBType as $typeLaravel => $typeDB) {
-                if ($field['db_type'] === $configDBType['string']) {
-                    $table = '$table->string("'.trim($field['field_name']).'", '.$field['length_varchar'].')';
-                    break;
-                }
-                $migrationField = $this->serviceGenerator->migrationFields(
-                    $field,
-                    $configDBType,
-                    $typeDB,
-                    $typeLaravel,
-                    $model,
-                );
-                if ($migrationField) {
-                    $table = $migrationField;
-                    break;
-                }
+            if ($index === 0) {
+                $fieldsGenerate[] = '$table->bigIncrements("id");';
+
+                continue;
             }
+            $fieldType = $field['db_type'];
+            $fieldName = trim($field['field_name']);
+            $fieldLength = $field['length_varchar'] ?? 191;
+
+            $table = match (true) {
+                in_array($fieldType, [$configDBType['string'], $configDBType['char']], false) => "\$table->string('$fieldName'" . ($fieldLength ? ", $fieldLength" : '') . ')',
+                default => $this->serviceGenerator->migrationFields($field, $configDBType, $fieldType, array_search($fieldType, $configDBType, false)),
+            };
             $table .= $this->serviceGenerator->migrationDefaultValue($field, $configDefaultValue);
             $table .= $this->serviceGenerator->migrationOption($field);
-            if ($index > 0) {
-                $table .= ';';
-                $fieldsGenerate[] = $table;
-            }
+            $table .= ';';
+            $fieldsGenerate[] = $table;
         }
-        if ($this->serviceGenerator->getOptions(config('generator.model.options.user_signature'), $model['options'])) {
-            $fieldsGenerate[] = '$table->unsignedBigInteger(\'created_by\')->nullable();';
-            $fieldsGenerate[] = '$table->unsignedBigInteger(\'updated_by\')->nullable();';
+
+        $modelOptions = $model['options'] ?? [];
+        if ($this->serviceGenerator->getOptions(config('generator.model.options.user_signature'), $modelOptions)) {
+            $fieldsGenerate[] = "\$table->foreignId('created_by')->index();";
+            $fieldsGenerate[] = "\$table->foreignId('updated_by')->index();";
         }
-        if ($this->serviceGenerator->getOptions(config('generator.model.options.timestamps'), $model['options'])) {
+        if ($this->serviceGenerator->getOptions(config('generator.model.options.timestamps'), $modelOptions)) {
             $fieldsGenerate[] = '$table->timestamps();';
         }
-        if ($this->serviceGenerator->getOptions(config('generator.model.options.soft_deletes'), $model['options'])) {
+        if ($this->serviceGenerator->getOptions(config('generator.model.options.soft_deletes'), $modelOptions)) {
             $fieldsGenerate[] = '$table->softDeletes();';
         }
 

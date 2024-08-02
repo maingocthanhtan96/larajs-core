@@ -47,9 +47,6 @@ class RequestUpdateGenerator extends BaseGenerator
     {
         $fileName = 'Store'.$model['name'].'Request.php';
         $templateDataReal = $this->serviceGenerator->getFile('request', 'laravel', $fileName);
-        $templateDataReal = $this->_generateFieldsDrop($updateFields['dropFields'], $templateDataReal);
-        $templateDataReal = $this->_generateFieldsRename($updateFields['renameFields'], $templateDataReal);
-        $templateDataReal = $this->_generateFieldsChange($generator, $updateFields['changeFields'], $templateDataReal);
         $templateDataReal = $this->_generateFieldsUpdate($updateFields['updateFields'], $templateDataReal);
         $fileName = $this->path.$fileName;
         $this->serviceFile->createFileReal($fileName, $templateDataReal);
@@ -244,7 +241,7 @@ class RequestUpdateGenerator extends BaseGenerator
                 break;
             case $this->dbType['string']:
             case $this->dbType['text']:
-            case $this->dbType['longtext']:
+            case $this->dbType['longText']:
                 $field = 'string';
                 break;
             case $this->dbType['enum']:

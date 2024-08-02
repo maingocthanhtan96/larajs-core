@@ -157,6 +157,7 @@ class RelationshipGenerator extends BaseGenerator
             $this->_generateDocs($model, $modelCurrent, $relationship === $this->relationship['has_one'] ? $this->relationship['has_many'] : $this->relationship['has_one']); // reserve
             $this->_generateFactory($modelCurrent, $model, $columnChildren);
             $this->_generateSeeder($modelCurrent, $model, $relationship);
+            $this->_generateTests($modelCurrent, $model, $columnChildren);
             $this->_generateRequest($model, $relationship, $columnChildren);
             //generate frontend
             $this->_generateFormFe($modelCurrent, $model, $column, $options, $relationship, $columnChildren);
@@ -212,11 +213,10 @@ class RelationshipGenerator extends BaseGenerator
         }
         if (!$isMTM) {
             $templateRules = $this->_getHandlerTemplate();
-            $templateRules = str_replace('{{$FIELD$}}', $columnChildren, $templateRules);
-            $templateRules = str_replace('{{$ATTRIBUTE_FIELD$}}', 't(\'route.'.Str::snake($model).'\')', $templateRules);
-            $templateRules = str_replace('{{$TRIGGER$}}', 'change', $templateRules);
+            $templateRules = str_replace(['{{$FIELD$}}', '{{$ATTRIBUTE_FIELD$}}', '{{$TRIGGER$}}'], [$columnChildren, 't(\'route.' . Str::snake($model) . '\')', 'change'], $templateRules);
             $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->jsType('form')}", [
                 'key' => 'uses.form:rules',
+                'variable' => $this->serviceGenerator->modelNameNotPluralFe($modelRelationship).'Rules',
                 'items' => [
                     $columnChildren => $templateRules,
                 ],
@@ -260,25 +260,10 @@ class RelationshipGenerator extends BaseGenerator
         if (in_array($configOptions['show'], $options)) {
             $templateDataReal = $this->serviceGenerator->getFile('uses', 'vue', "/$folderName/{$this->jsType('table')}");
             $templateColumn = $this->serviceGenerator->get_template('column', 'Forms/', 'vue');
-            $templateColumn = str_replace(
-                '{{$FIELD_NAME$}}',
-                Str::camel($tableFunctionRelationship).".$columnRelationship",
-                $templateColumn,
-            );
-            $templateColumn = str_replace(
-                '{{$FORM_SORTABLE$}}',
-                in_array($configOptions['sort'], $options) ? "'custom'" : 'false',
-                $templateColumn,
-            );
-            $templateColumn = str_replace('{{$FORM_ALIGN$}}', 'left', $templateColumn);
-            $templateColumn = str_replace(
-                '{{$FORM_LABEL$}}',
-                "label: t('route.{$this->serviceGenerator->tableNameNotPlural($model)}'),",
-                $templateColumn,
-            );
+            $templateColumn = str_replace(['{{$FIELD_NAME$}}', '{{$FORM_SORTABLE$}}', '{{$FORM_ALIGN$}}', '{{$FORM_LABEL$}}'], [Str::camel($tableFunctionRelationship) . ".$columnRelationship", in_array($configOptions['sort'], $options) ? "'custom'" : 'false', 'left', "label: t('route.{$this->serviceGenerator->tableNameNotPlural($model)}'),"], $templateColumn);
             if ($isMTM) {
                 $templateRow = <<<TEMPLATE
-                template: ({ row }) => row.$tableFunctionRelationship.map(item => <el-tag key={item.id}>{item.$columnRelationship}</el-tag>),
+                template: ({ row }) => row.$tableFunctionRelationship?.map(item => <el-tag key={item.id}>{item.$columnRelationship}</el-tag>),
                 TEMPLATE;
             } else {
                 $templateRow = <<<TEMPLATE
@@ -385,7 +370,7 @@ class RelationshipGenerator extends BaseGenerator
                 'key' => 'uses.form',
                 'name' => $model,
                 'path' => '@larajs/common',
-                'interface' => "{$modelRelationship}Root",
+                'interface' => "{$modelRelationship}StateRoot",
                 'items' => [
                     $nameModelRelationship => "{$model}[];",
                 ],
@@ -393,21 +378,23 @@ class RelationshipGenerator extends BaseGenerator
         }
         // form
         $templateDataRealForm = $this->serviceGenerator->getFile('views', 'vue', $fileName);
-        $useModel = "use{$this->serviceGenerator->modelNamePlural($model)}";
+        $useModel = "use{$this->serviceGenerator->modelNameNotPlural($model)}Apis";
+        $useKey = "get{$this->serviceGenerator->modelNamePlural($model)}";
         $templateDataRealForm = $this->phpParserService->runParserJS($pathFile, [
             'key' => 'views.form:import',
             'name' => $useModel,
-            'path' => "{$this->getImportJsOrTs()}/uses",
+            'path' => "{$this->getImportJsOrTs()}/api",
             'useName' => $useModel,
-            'useKey' => "list: {$this->serviceGenerator->modelNameNotPluralFe($model)}List",
+            'useKey' => $useKey,
         ], $templateDataRealForm);
         $stubGetData = $this->serviceGenerator->get_template('getDataRelationship', 'Handler/', 'vue');
-        $stubGetData = str_replace(
+        $stubGetData = str_replace([
             '{{$USE_MODEL_RELATIONSHIP$}}',
-            "{$this->serviceGenerator->modelNameNotPluralFe($model)}List",
-            $stubGetData,
-        );
-        $stubGetData = str_replace('{{$MODEL_RELATIONSHIP$}}', $nameModelRelationship, $stubGetData);
+            '{{$MODEL_RELATIONSHIP$}}',
+        ], [
+            $useKey,
+            $nameModelRelationship,
+        ], $stubGetData);
         $templateDataRealForm = $this->phpParserService->runParserJS($pathFile, [
             'key' => 'views.form:create',
             'content' => $stubGetData,
@@ -449,41 +436,13 @@ class RelationshipGenerator extends BaseGenerator
         if (!$templateDataReal) {
             return;
         }
-        $templateDataReal = str_replace('{{MODEL_CLASS}}', $model, $templateDataReal);
-        $templateDataReal = str_replace(
-            '{{MODEL_CLASS_PARAM}}',
-            $this->serviceGenerator->modelNameNotPluralFe($model),
-            $templateDataReal,
-        );
+        $templateDataReal = str_replace(['{{MODEL_CLASS}}', '{{MODEL_CLASS_PARAM}}'], [$model, $this->serviceGenerator->modelNameNotPluralFe($model)], $templateDataReal);
         // saved
         $templateSaved = $this->serviceGenerator->get_template('saved', $pathTemplate);
-        $templateSaved = str_replace(
-            '{{FIELD_NAME}}',
-            $this->serviceGenerator->tableNameNotPlural($modelRelationship).self::_IDS,
-            $templateSaved,
-        );
-        $templateSaved = str_replace(
-            '{{MODEL_CLASS_PARAM}}',
-            $this->serviceGenerator->modelNameNotPluralFe($model),
-            $templateSaved,
-        );
-        $templateSaved = str_replace(
-            '{{FUNCTION_NAME}}',
-            $this->serviceGenerator->modelNamePluralFe($modelRelationship),
-            $templateSaved,
-        );
+        $templateSaved = str_replace(['{{FIELD_NAME}}', '{{MODEL_CLASS_PARAM}}', '{{FUNCTION_NAME}}'], [$this->serviceGenerator->tableNameNotPlural($modelRelationship) . self::_IDS, $this->serviceGenerator->modelNameNotPluralFe($model), $this->serviceGenerator->modelNamePluralFe($modelRelationship)], $templateSaved);
         // deleted
         $templateDeleted = $this->serviceGenerator->get_template('deleted', $pathTemplate);
-        $templateDeleted = str_replace(
-            '{{MODEL_CLASS_PARAM}}',
-            $this->serviceGenerator->modelNameNotPluralFe($model),
-            $templateDeleted,
-        );
-        $templateDeleted = str_replace(
-            '{{FUNCTION_NAME}}',
-            $this->serviceGenerator->modelNamePluralFe($modelRelationship),
-            $templateDeleted,
-        );
+        $templateDeleted = str_replace(['{{MODEL_CLASS_PARAM}}', '{{FUNCTION_NAME}}'], [$this->serviceGenerator->modelNameNotPluralFe($model), $this->serviceGenerator->modelNamePluralFe($modelRelationship)], $templateDeleted);
         //replace delete
         $templateDataReal = $this->phpParserService->addCodeToFunction($templateDataReal, $templateSaved, 'saved');
         $templateDataReal = $this->phpParserService->addCodeToFunction($templateDataReal, $templateDeleted, 'deleted');
@@ -509,28 +468,12 @@ class RelationshipGenerator extends BaseGenerator
 
     private function _replaceTemplateRelationship($model, $modelDif, $templateData, $columnChildren): string
     {
-        $templateData = str_replace('{{TABLE_NAME}}', $this->serviceGenerator->tableName($model), $templateData);
-        $templateData = str_replace('{{FOREIGN_KEY}}', $columnChildren, $templateData);
-
-        return str_replace('{{TABLE_FOREIGN_KEY}}', $this->serviceGenerator->tableName($modelDif), $templateData);
+        return str_replace(['{{TABLE_NAME}}', '{{FOREIGN_KEY}}', '{{TABLE_FOREIGN_KEY}}'], [$this->serviceGenerator->tableName($model), $columnChildren, $this->serviceGenerator->tableName($modelDif)], $templateData);
     }
 
     private function _replaceTemplateRelationshipMTM($model, $modelCurrent, $templateData, $modelName): string
     {
-        $templateData = str_replace(
-            '{{TABLE_NAME}}',
-            $this->serviceGenerator->tableName($modelName),
-            $templateData,
-        );
-        $templateData = str_replace('{{FOREIGN_KEY_1}}', Str::snake($model).self::_ID, $templateData);
-        $templateData = str_replace('{{FOREIGN_KEY_2}}', Str::snake($modelCurrent).self::_ID, $templateData);
-        $templateData = str_replace(
-            '{{TABLE_FOREIGN_KEY_1}}',
-            $this->serviceGenerator->tableName($model),
-            $templateData,
-        );
-
-        return str_replace('{{TABLE_FOREIGN_KEY_2}}', $this->serviceGenerator->tableName($modelCurrent), $templateData);
+        return str_replace(['{{TABLE_NAME}}', '{{FOREIGN_KEY_1}}', '{{FOREIGN_KEY_2}}', '{{TABLE_FOREIGN_KEY_1}}', '{{TABLE_FOREIGN_KEY_2}}'], [$this->serviceGenerator->tableName($modelName), Str::snake($model) . self::_ID, Str::snake($modelCurrent) . self::_ID, $this->serviceGenerator->tableName($model), $this->serviceGenerator->tableName($modelCurrent)], $templateData);
     }
 
     private function _generateModel($modelRelationship, $columnChildren): void
@@ -549,17 +492,10 @@ class RelationshipGenerator extends BaseGenerator
         $fieldModelCurrent = Str::snake($modelCurrent).self::_ID;
         $pathTemplate = 'Models/';
         $templateData = $this->serviceGenerator->get_template('model', $pathTemplate);
-        $templateData = str_replace('{{MODEL_CLASS}}', $modelName, $templateData);
-        $templateData = str_replace(['//{{USE_CLASS}}', '//{{USE}}', '//{{TIMESTAMPS}}'], '', $templateData);
+        $templateData = str_replace(['{{MODEL_CLASS}}', '//{{USE_CLASS}}', '//{{USE}}', '//{{TIMESTAMPS}}'], [$modelName, '', '', ''], $templateData);
         $arFields = ["'".$fieldModel."',", "'".$fieldModelCurrent."',"];
         $implodeFields = implode($this->serviceGenerator->infy_nl_tab(1, 2), $arFields);
-        $templateData = str_replace('{{FIELDS}}', $implodeFields, $templateData);
-        $templateData = str_replace(
-            '{{TABLE_NAME}}',
-            $this->serviceGenerator->tableName($modelName),
-            $templateData,
-        );
-        $templateData = str_replace('{{CATS}}', '', $templateData);
+        $templateData = str_replace(['{{FIELDS}}', '{{TABLE_NAME}}', '{{CATS}}'], [$implodeFields, $this->serviceGenerator->tableName($modelName), ''], $templateData);
         $path = config('generator.path.laravel.model');
         $this->serviceFile->createFile($path, "$modelName.php", $templateData);
     }
@@ -619,13 +555,8 @@ class RelationshipGenerator extends BaseGenerator
             $nameModelRelationship = $this->serviceGenerator->modelNamePluralFe($funcName);
         }
         $templateFormItem = $this->serviceGenerator->get_template('itemRelationship', 'Forms/', 'vue');
-        $templateFormItem = str_replace('{{$LABEL$}}', 't(\'route.'.$funcName.'\')', $templateFormItem);
-        $templateFormItem = str_replace('{{$PROP_NAME$}}', $field, $templateFormItem);
-        $templateFormItem = str_replace('{{$COLUMNS$}}', self::NUMBER_COLUMN, $templateFormItem);
-        $formTemplate = str_replace('{{$FIELD_NAME$}}', $field, $formTemplate);
-        $formTemplate = str_replace('{{$LIST_SELECT$}}', $nameModelRelationship, $formTemplate);
-        $formTemplate = str_replace('{{$LABEL_OPTION$}}', 'item.'.$column, $formTemplate);
-        $formTemplate = str_replace('{{$VALUE_OPTION$}}', 'item.id', $formTemplate);
+        $templateFormItem = str_replace(['{{$LABEL$}}', '{{$PROP_NAME$}}', '{{$COLUMNS$}}'], ['t(\'route.' . $funcName . '\')', $field, self::NUMBER_COLUMN], $templateFormItem);
+        $formTemplate = str_replace(['{{$FIELD_NAME$}}', '{{$LIST_SELECT$}}', '{{$LABEL_OPTION$}}', '{{$VALUE_OPTION$}}'], [$field, $nameModelRelationship, 'item.' . $column, 'item.id'], $formTemplate);
 
         return str_replace('{{$COMPONENT$}}', $formTemplate, $templateFormItem);
     }
@@ -706,5 +637,16 @@ class RelationshipGenerator extends BaseGenerator
             );
             $this->serviceFile->createFileReal($path.$fileName, $templateDataReal);
         }
+    }
+
+    private function _generateTests(string $modelCurrent, string $model, string $columnChildren): void
+    {
+        $seederNotDelete = config('generator.not_delete.laravel.db.seeder');
+        $path = config('generator.path.laravel.tests.feature');
+        $pathTemplate = 'Tests/';
+        $templateDataReal = $this->serviceGenerator->getFile('tests.feature', 'laravel', "{$model}Test.php");
+        $templateDataReal = str_replace($seederNotDelete, "'$columnChildren' => \App\Models\\{$modelCurrent}::factory()->create()->id,", $templateDataReal);
+
+        $this->serviceFile->createFileReal($path."/{$model}Test.php", $templateDataReal);
     }
 }

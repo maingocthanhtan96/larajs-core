@@ -1,1 +1,0 @@
-<Tinymce v-model={form.{{$FIELD_NAME$}}} />

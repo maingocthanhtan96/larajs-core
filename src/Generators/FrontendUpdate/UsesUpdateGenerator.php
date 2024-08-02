@@ -41,6 +41,7 @@ class UsesUpdateGenerator extends BaseGenerator
         ], $templateDataReal);
         $templateDataReal = $this->phpParserService->runParserJS("{$path}{$this->jsType('form')}", [
             'key' => 'uses.form:rules',
+            'variable' => $this->serviceGenerator->modelNameNotPluralFe($model['name']).'Rules',
             'items' => $this->serviceGenerator->generateRules($updateFields['updateFields'], $model),
         ], $templateDataReal);
         $templateDataReal = $this->phpParserService->runParserJS("{$path}{$this->jsType('form')}", [

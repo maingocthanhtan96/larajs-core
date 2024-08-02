@@ -1,13 +1,11 @@
 <?php
 
-$API_VERSION = env('API_VERSION_GENERATOR', 'v1').'/';
+$API_VERSION = strtoupper(env('GENERATOR_API_VERSION', 'V1')) . '/';
 
 return [
-    'js_language' => 'js',
-    'api_version' => env('API_VERSION_GENERATOR', 'v1'),
-    'permission' => [
-        'view_menu' => 'VIEW_MENU',
-    ],
+    'js_language' => 'ts',
+    'api_version' => strtoupper(env('GENERATOR_API_VERSION', 'V1')),
+    'node_path' => env('GENERATOR_NODE_PATH', 'node'),
     /*
     |--------------------------------------------------------------------------
     | Templates
@@ -17,6 +15,7 @@ return [
     'template' => [
         'laravel' => public_path('vendor/generator/templates/Laravel/'),
         'vue' => public_path('vendor/generator/templates/Vue/'),
+        'package' => public_path('vendor/generator/templates/Package/'),
     ],
 
     /*
@@ -32,14 +31,16 @@ return [
             'factory' => base_path('database/factories/'),
             'model' => app_path('Models/'),
             'repository' => app_path('Repositories/'),
+            'service' => app_path('Services/' . $API_VERSION),
             'observer' => app_path('Observers/'),
             'provider' => app_path('Providers/'),
-            'api_routes' => base_path('routes/api-'.env('API_VERSION_GENERATOR', 'v1').'.php'),
-            'api_controller' => app_path('Http/Controllers/Api/'.$API_VERSION),
+            'api_routes' => base_path('routes/api-' . strtolower(env('GENERATOR_API_VERSION', 'V1')) . '.php'),
+            'api_controller' => app_path('Http/Controllers/Api/' . $API_VERSION),
+            'resources' => app_path('Http/Resources/' . $API_VERSION),
             'lang' => base_path('lang/'),
-            'request' => app_path('Http/Requests/'),
+            'request' => app_path('Http/Requests/' . $API_VERSION),
             'tests' => [
-                'feature' => base_path('tests/Feature/Controllers/Api/'.$API_VERSION),
+                'feature' => base_path('tests/Feature/'),
             ],
         ],
         'delete_files' => [
@@ -49,35 +50,37 @@ return [
                 'factory' => '/database/factories/',
                 'model' => '/app/Models/',
                 'repository' => '/app/Repositories/',
+                'service' => '/app/Services/' . $API_VERSION,
                 'observer' => '/app/Observers/',
                 'provider' => '/app/Providers/',
                 'api_routes' => '/routes/api-v1.php',
-                'api_controller' => '/app/Http/Controllers/Api/'.$API_VERSION,
+                'api_controller' => '/app/Http/Controllers/Api/' . $API_VERSION,
+                'resources' => '/app/Http/Resources/' . $API_VERSION,
                 'lang' => '/lang/',
-                'request' => '/app/Http/Requests/',
+                'request' => '/app/Http/Requests/' . $API_VERSION,
                 'tests' => [
-                    'feature' => '/tests/Feature/Controllers/Api/'.$API_VERSION,
+                    'feature' => '/tests/Feature/',
                 ],
             ],
             'vue' => [
-                'api' => '/resources/scripts/api/'.$API_VERSION,
-                'uses' => '/resources/scripts/uses/',
-                'views' => '/resources/scripts/views/',
-                'router_modules' => '/resources/scripts/router/modules/',
-                'router' => '/resources/scripts/router/',
-                'resource_js' => '/resources/scripts/',
+                'api' => '../cms/src/api/',
+                'uses' => '../cms/src/uses/',
+                'views' => '../cms/src/views/',
+                'router_modules' => '../cms/src/router/modules/',
+                'router' => '../cms/src/router/',
+                'resource_js' => '../cms/src/',
             ],
             'package' => [
                 'model' => '../../packages/common/src/models/',
             ],
         ],
         'vue' => [
-            'api' => base_path('resources/scripts/api/'.$API_VERSION),
-            'views' => base_path('resources/scripts/views/'),
-            'router_modules' => base_path('resources/scripts/router/modules/'),
-            'router' => base_path('resources/scripts/router/'),
-            'resource_js' => base_path('resources/scripts/'),
-            'uses' => base_path('resources/scripts/uses/'),
+            'api' => cms_path('api/'),
+            'views' => cms_path('views/'),
+            'router_modules' => cms_path('router/modules/'),
+            'router' => cms_path('router/'),
+            'resource_js' => cms_path(),
+            'uses' => cms_path('uses/'),
         ],
         'package' => [
             'model' => package_path('common', 'models/'),
@@ -111,21 +114,37 @@ return [
     */
     'db_type' => [
         'increments' => 'Increments',
-        'integer' => 'INT',
+        'integer' => 'INTEGER',
+        'unsignedInteger' => 'UNSIGNED INTEGER',
+        'tinyInteger' => 'TINYINT',
+        'unsignedTinyInteger' => 'UNSIGNED TINYINT',
+        'smallInteger' => 'SMALLINT',
+        'unsignedSmallInteger' => 'UNSIGNED SMALLINT',
+        'mediumInteger' => 'MEDIUMINT',
+        'unsignedMediumInteger' => 'UNSIGNED MEDIUMINT',
         'bigInteger' => 'BIGINT',
+        'unsignedBigInteger' => 'UNSIGNED BIGINT',
         'float' => 'FLOAT',
         'double' => 'DOUBLE',
+        'decimal' => 'DECIMAL',
         'boolean' => 'BOOLEAN',
         'date' => 'DATE',
         'dateTime' => 'DATETIME',
         'timestamp' => 'TIMESTAMP',
         'time' => 'TIME',
         'year' => 'YEAR',
+        'char' => 'CHAR',
         'string' => 'VARCHAR',
+        'tinyText' => 'TINYTEXT',
+        'mediumText' => 'MEDIUMTEXT',
         'text' => 'TEXT',
-        'longtext' => 'LONGTEXT',
+        'longText' => 'LONGTEXT',
         'enum' => 'ENUM',
         'json' => 'JSON',
+        'jsonb' => 'JSONB',
+        // relationship
+        'hasOne' => 'hasOne',
+        'hasMany' => 'hasMany',
     ],
 
     /*
@@ -152,7 +171,7 @@ return [
     'namespace' => [
         'model' => 'App\Models',
         'repository' => 'App\Repositories',
-        'api_controller' => 'App\Http\Controllers\Api\\'.env('API_VERSION_GENERATOR', 'v1'),
+        'api_controller' => 'App\Http\Controllers\Api\\' . env('GENERATOR_API_VERSION', 'V1'),
     ],
 
     /*
@@ -163,11 +182,7 @@ return [
     */
     'not_delete' => [
         'laravel' => [
-            'model' => [
-                'use_class' => '//{{USE_CLASS_NOT_DELETE_THIS_LINE}}',
-                'use' => '//{{USE_NOT_DELETE_THIS_LINE}}',
-                'timestamps' => '//{{TIMESTAMPS_NOT_DELETE_THIS_LINE}}',
-            ],
+            'model' => [],
             'route' => [
                 'api' => [
                     'user' => '//{{ROUTE_USER_NOT_DELETE_THIS_LINE}}',
@@ -175,16 +190,16 @@ return [
             ],
             'lang' => [
                 'en' => [
-                    'route' => '//{{LANG_ROUTE_NOT_DELETE_THIS_LINE}}',
-                    'table' => '//{{LANG_TABLE_NOT_DELETE_THIS_LINE}}',
+                    'route' => '',
+                    'table' => '',
                 ],
                 'ja' => [
-                    'route' => '//{{LANG_ROUTE_NOT_DELETE_THIS_LINE}}',
-                    'table' => '//{{LANG_TABLE_NOT_DELETE_THIS_LINE}}',
+                    'route' => '',
+                    'table' => '',
                 ],
                 'vi' => [
-                    'route' => '//{{LANG_ROUTE_NOT_DELETE_THIS_LINE}}',
-                    'table' => '//{{LANG_TABLE_NOT_DELETE_THIS_LINE}}',
+                    'route' => '',
+                    'table' => '',
                 ],
             ],
             'db' => [
@@ -193,58 +208,23 @@ return [
             'request' => [
                 'rule' => '//{{REQUEST_RULES_NOT_DELETE_THIS_LINE}}',
             ],
-            'repository' => [
-                'use_class' => '//{{USE_CLASS_NOT_DELETE_THIS_LINE}}',
-                'provider' => [
-                    'use_class' => '//{{USE_CLASS_SERVICE_PROVIDER_NOT_DELETE_THIS_LINE}}',
-                    'register' => '//{{REGISTER_SERVICE_PROVIDER_NOT_DELETE_THIS_LINE}}',
-                ],
-            ],
-            'observer' => [
-                'observer_mtm_saved' => '//{{OBSERVER_RELATIONSHIP_MTM_SAVED_NOT_DELETE_THIS_LINE}}',
-                'observer_mtm_deleted' => '//{{OBSERVER_RELATIONSHIP_MTM_DELETED_NOT_DELETE_THIS_LINE}}',
-                'provider' => [
-                    'use_class' => '//{{USE_CLASS_SERVICE_PROVIDER_EVENT_NOT_DELETE_THIS_LINE}}',
-                    'register' => '//{{REGISTER_SERVICE_PROVIDER_EVENT_NOT_DELETE_THIS_LINE}}',
-                ],
-            ],
-            'tests' => [
-            ],
+            'repository' => [],
+            'observer' => [],
+            'tests' => [],
         ],
         'vue' => [
-            'route' => [
-                'import' => '// {{$IMPORT_ROUTE_NOT_DELETE_THIS_LINE$}}',
-                'async' => '// {{$ROUTE_ASYNC_NOT_DELETE_THIS_LINE$}}',
-            ],
+            'route' => [],
             'form' => [
-                'fields' => '// {{$FORM_FIELDS_NOT_DELETE_THIS_LINE$}}',
-                'rules' => '// {{$RULES_NOT_DELETE_THIS_LINE$}}',
-                'import_component' => '// {{$IMPORT_COMPONENT_NOT_DELETE_THIS_LINE$}}',
                 'create' => '// {{$CREATE_NOT_DELETE_THIS_LINE$}}',
                 'edit' => '// {{$EDIT_NOT_DELETE_THIS_LINE$}}',
-                'data' => '// {{$DATA_NOT_DELETE_THIS_LINE$}}',
-                'api' => '// {{$API_NOT_DELETE_THIS_LINE$}}',
-                'column' => '// {{$COLUMN_NOT_DELETE_THIS_LINE$}}',
-                'state_root' => '// {{$STATE_ROOT_NOT_DELETE_THIS_LINE$}}',
             ],
             'uses' => [
                 'use' => '// {{$IMPORT_USE_NOT_DELETE_THIS_LINE$}}',
-                'form' => [
-                    'item' => '// {{$FORM_ITEM_NOT_DELETE_THIS_LINE$}}',
-                ],
-                'api' => '// {{$IMPORT_API_NOT_DELETE_THIS_LINE$}}',
-                'function' => [
-                    'import' => '// {{$IMPORT_FUNCTION_NOT_DELETE_THIS_LINE$}}',
-                    'export' => '// {{$EXPORT_FUNCTION_NOT_DELETE_THIS_LINE$}}',
-                ],
-                'query' => [
-                    'column_search' => '// {{$COLUMN_SEARCH_NOT_DELETE_THIS_LINE$}}',
-                    'relationship' => '// {{$COLUMN_RELATIONSHIP_NOT_DELETE_THIS_LINE$}}',
-                ],
+                'form' => [],
             ],
-            'api' => [
-            ],
+            'api' => [],
         ],
+        'package' => [],
     ],
 
     /*
@@ -273,15 +253,15 @@ return [
         'vue' => [
             'tinymce' => [
                 'name' => 'Tinymce',
-                'path' => '@/components/Tinymce/index.vue',
+                'path' => '@larajs/components',
             ],
             'json_editor' => [
                 'name' => 'JsonEditor',
-                'path' => '@/components/JsonEditor/index.vue',
+                'path' => '@larajs/components',
             ],
             'parse_time' => [
                 'name' => 'parseTime',
-                'path' => '@libs/utils',
+                'path' => '@larajs/utils',
             ],
         ],
     ],

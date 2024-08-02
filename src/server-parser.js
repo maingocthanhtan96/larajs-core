@@ -99,7 +99,7 @@ try {
                 t.identifier(field),
                 t.genericTypeAnnotation(t.identifier(data.items[field]))
               );
-              path.node.body.body.push(item);
+              path.node.body.body?.push(item);
             });
           }
         },
@@ -118,7 +118,7 @@ try {
             if (returnStatement) {
               const returnObject = returnStatement.get('argument');
               returnStatement.insertBefore(astParser(data.value));
-              returnObject.node.properties.push(babelParser.parse(data.property).program.body[0].expression);
+              returnObject.node.properties?.push(babelParser.parse(data.property).program.body[0].expression);
             }
           }
         },
@@ -139,7 +139,7 @@ try {
                 t.identifier(field),
                 t.genericTypeAnnotation(t.identifier(data.items[field]))
               );
-              path.node.body.body.push(item);
+              path.node.body.body?.push(item);
             });
           }
         },
@@ -159,10 +159,13 @@ try {
                 case 'string': {
                   return t.stringLiteral(item.value);
                 }
+                case 'boolean': {
+                  return t.booleanLiteral(item.value);
+                }
                 case 'array': {
                   const array = t.arrayExpression([]);
                   (item.value || []).forEach(value => {
-                    array.elements.push(isNaN(value) ? t.stringLiteral(value) : t.numericLiteral(+value)); // eslint-disable-line
+                    array.elements?.push(isNaN(value) ? t.stringLiteral(value) : t.numericLiteral(+value)); // eslint-disable-line
                   });
                   return array;
                 }
@@ -188,12 +191,15 @@ try {
     }
     case 'uses.form:rules': {
       traverse(ast, {
-        VariableDeclarator(path) {
-          if (t.isIdentifier(path.node.id) && path.node.id.name === 'rules') {
-            Object.keys(data.items).forEach(field => {
-              path.node.init?.arguments[0]?.body?.properties.push(
-                t.objectProperty(t.identifier(field), parserExpression(data.items[field]))
-              );
+        FunctionDeclaration(path) {
+          if (t.isIdentifier(path.node.id) && path.node.id.name === data.variable) {
+            path.traverse({
+              ReturnStatement(path) {
+                Object.keys(data.items).forEach(field => {
+                  const properties = path.node.argument.properties;
+                  properties?.push(t.objectProperty(t.identifier(field), parserExpression(data.items[field])));
+                });
+              },
             });
           }
         },
@@ -238,7 +244,7 @@ try {
               };
               astItems = findAstItem();
               if (!astItems) {
-                queryAstItems.value.properties.push(
+                queryAstItems.value.properties?.push(
                   t.objectProperty(
                     t.identifier(name),
                     t.objectExpression([t.objectProperty(t.identifier('column'), t.stringLiteral(''))])
@@ -352,19 +358,19 @@ try {
             );
             if (!paramsNode) {
               paramsNode = t.objectProperty(t.identifier('params'), t.objectExpression([]));
-              path.node.arguments[1].properties.push(paramsNode);
+              path.node.arguments[1].properties?.push(paramsNode);
             }
             let includeNode = paramsNode.value.properties?.find(prop => {
               return t.isIdentifier(prop.key, { name: 'include' });
             });
             if (includeNode) {
-              includeNode.value.elements.push(t.stringLiteral(data.relationFunction));
+              includeNode.value.elements?.push(t.stringLiteral(data.relationFunction));
             } else {
               includeNode = t.objectProperty(
                 t.identifier('include'),
                 t.arrayExpression([t.stringLiteral(data.relationFunction)])
               );
-              paramsNode.value.properties.push(includeNode);
+              paramsNode.value.properties?.push(includeNode);
             }
           }
         },
@@ -372,7 +378,7 @@ try {
           const { node } = path;
           if (hasIdIdentifierInCondition(node.test)) {
             const code = astParser(data.content);
-            node.consequent.body.push(...code.program.body);
+            node.consequent.body?.push(...code.program.body);
           }
         },
       });

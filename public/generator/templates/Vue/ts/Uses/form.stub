@@ -1,34 +1,33 @@
 import { computed, ref, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
-import { FormInstance, FormRules } from 'element-plus';
-import { use{{$NAME_USES$}} } from '@larajs/cms/uses';
+import type { FormInstance, FormRules } from 'element-plus';
+import { use{{$NAME_API$}}Apis } from '@larajs/cms/api';
 import type { {{$NAME_MODEL$}} } from '@larajs/common';
 import type { LaraFormType } from '@larajs/components';
 
-export interface {{$NAME_MODEL$}}Root {}
+export interface {{$NAME_MODEL$}}StateRoot {}
 
 export function use{{$NAME_MODEL$}}Forms() {
   const route = useRoute();
   const { t } = useI18n(); // eslint-disable-line
   const id = route.params.id as string;
-  const { store, update } = use{{$NAME_USES$}}();
+  const { create{{$API_ONE$}}, update{{$API_ONE$}} } = use{{$NAME_API$}}Apis();
   const formRef = ref<FormInstance>();
   const form = reactive<{{$NAME_MODEL$}}>({});
-  const state = reactive<{{$NAME_MODEL$}}Root>({});
-  const rules = computed<FormRules>(() => ({}));
+  const state = reactive<{{$NAME_MODEL$}}StateRoot>({});
 
   const formElement: LaraFormType<{{$NAME_MODEL$}}> ={
     name: '{{$NAME_TABLE$}}',
     ref: formRef,
     form: {
       model: form,
-      rules: rules,
+      rules: {{$CONST_NAME_MODEL$}}Rules(),
     },
     items: [],
     actions: {
-      store,
-      update
+      create: create{{$API_ONE$}},
+      update: update{{$API_ONE$}},
     },
   };
 
@@ -38,4 +37,10 @@ export function use{{$NAME_MODEL$}}Forms() {
     state,
     formElement,
   };
+}
+
+export function {{$CONST_NAME_MODEL$}}Rules(): FormRules<Partial<{{$NAME_MODEL$}}>> {
+  const { t } = useI18n(); // eslint-disable-line
+
+  return {};
 }

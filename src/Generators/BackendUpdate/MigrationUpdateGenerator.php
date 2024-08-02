@@ -80,18 +80,7 @@ class MigrationUpdateGenerator extends BaseGenerator
         $pathTemplate = 'Databases/Migrations/';
         $templateData = $this->serviceGenerator->get_template('migrationUpdate', $pathTemplate);
         $generateFileUp = $this->_generateFieldsUp($updateFields, $model);
-        $templateData = str_replace('{{FIELDS_UP}}', $generateFileUp, $templateData);
-        $templateData = str_replace(
-            '{{FIELDS_DOWN}}',
-            $this->_generateFieldsDown($generator, $updateFields),
-            $templateData,
-        );
-        $templateData = str_replace('{{DATE_TIME}}', $now->toDateTimeString(), $templateData);
-        $templateData = str_replace(
-            '{{TABLE_NAME}}',
-            $this->serviceGenerator->tableName($model['name']),
-            $templateData,
-        );
+        $templateData = str_replace(['{{FIELDS_UP}}', '{{FIELDS_DOWN}}', '{{DATE_TIME}}', '{{TABLE_NAME}}'], [$generateFileUp, $this->_generateFieldsDown($generator, $updateFields), $now->toDateTimeString(), $this->serviceGenerator->tableName($model['name'])], $templateData);
         $fileName =
             date('Y_m_d_His')."_update_{$this->serviceGenerator->tableName($model['name'])}_{$timeName}_table.php";
         if ($generateFileUp) {
@@ -100,25 +89,14 @@ class MigrationUpdateGenerator extends BaseGenerator
         }
     }
 
-    private function _generateChange($generator, $updateFields, $model)
+    private function _generateChange($generator, $updateFields, $model): void
     {
         $now = Carbon::now();
         $timeName = date('YmdHis');
         $pathTemplate = 'Databases/Migrations/';
         $templateData = $this->serviceGenerator->get_template('migrationChange', $pathTemplate);
         $generateFieldChangeUp = $this->_generateFieldsChangeUp($generator, $updateFields);
-        $templateData = str_replace('{{FIELDS_UP}}', $generateFieldChangeUp, $templateData);
-        $templateData = str_replace(
-            '{{FIELDS_DOWN}}',
-            $this->_generateFieldsChangeDown($generator, $updateFields),
-            $templateData,
-        );
-        $templateData = str_replace('{{DATE_TIME}}', $now->toDateTimeString(), $templateData);
-        $templateData = str_replace(
-            '{{TABLE_NAME}}',
-            $this->serviceGenerator->tableName($model['name']),
-            $templateData,
-        );
+        $templateData = str_replace(['{{FIELDS_UP}}', '{{FIELDS_DOWN}}', '{{DATE_TIME}}', '{{TABLE_NAME}}'], [$generateFieldChangeUp, $this->_generateFieldsChangeDown($generator, $updateFields), $now->toDateTimeString(), $this->serviceGenerator->tableName($model['name'])], $templateData);
         $fileName =
             date('Y_m_d_His')."_change_{$this->serviceGenerator->tableName($model['name'])}_{$timeName}_table.php";
         if ($generateFieldChangeUp) {
@@ -135,55 +113,23 @@ class MigrationUpdateGenerator extends BaseGenerator
         $configDefaultValue = config('generator.default_value');
 
         foreach ($updateFields['updateFields'] as $field) {
-            $table = '';
+            $fieldType = $field['db_type'];
+            $fieldName = trim($field['field_name']);
+            $fieldLength = $field['length_varchar'] ?? 191;
+
+            $table = match (true) {
+                in_array($fieldType, [$configDBType['string'], $configDBType['char']], false) => "\$table->string('$fieldName'" . ($fieldLength ? ", $fieldLength" : '') . ')',
+                default => $this->serviceGenerator->migrationFields($field, $configDBType, $fieldType, array_search($fieldType, $configDBType, false)),
+            };
+            $table .= $this->serviceGenerator->migrationDefaultValue($field, $configDefaultValue);
+            $table .= $this->serviceGenerator->migrationOption($field);
             $afterColumn = '';
             if ($field['after_column']) {
                 $afterColumn = $field['after_column'];
                 $afterColumn = '->after("'.$afterColumn.'")';
             }
-            foreach ($configDBType as $typeLaravel => $typeDB) {
-                $migrationField = $this->serviceGenerator->migrationFields(
-                    $field,
-                    $configDBType,
-                    $typeDB,
-                    $typeLaravel,
-                    $model
-                );
-                if ($migrationField) {
-                    $table = $migrationField;
-                    break;
-                }
-            }
-            $table .= $this->serviceGenerator->migrationDefaultValue($field, $configDefaultValue);
-            $table .= $this->serviceGenerator->migrationOption($field);
-            if ($table) {
-                $table .= $afterColumn.'; // Update';
-                $fieldsGenerate[] = $table;
-            }
-        }
-
-        foreach ($updateFields['renameFields'] as $rename) {
-            $tableRename =
-                '$table->renameColumn("'.
-                trim($rename['field_name_old']['field_name']).
-                '", "'.
-                trim($rename['field_name_new']['field_name']).
-                '"); // Rename';
-            $fieldsGenerate[] = $tableRename;
-        }
-
-        $dropFields = '';
-        foreach ($updateFields['dropFields'] as $index => $drop) {
-            $name = $drop['field_name'];
-            if ($index === count($updateFields['dropFields']) - 1) {
-                $dropFields .= "'$name'";
-            } else {
-                $dropFields .= "'$name',";
-            }
-        }
-        if ($dropFields) {
-            $tableDrop = '$table->dropColumn(['.$dropFields.']); // Drop';
-            $fieldsGenerate[] = $tableDrop;
+            $table .= "$afterColumn;";
+            $fieldsGenerate[] = $table;
         }
 
         return implode($this->serviceGenerator->infy_nl_tab(1, 3), $fieldsGenerate);
@@ -234,7 +180,7 @@ class MigrationUpdateGenerator extends BaseGenerator
                 }
                 $tableDrop .= $this->serviceGenerator->migrationDefaultValue($change, $configDefaultValue);
                 if ($tableDrop) {
-                    $tableDrop .= '; // Add Drop Func Up';
+                    $tableDrop .= ';';
                     $fieldsGenerate[] = $tableDrop;
                 }
             }

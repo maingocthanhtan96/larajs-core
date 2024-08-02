@@ -1,16 +1,16 @@
 import { useI18n } from 'vue-i18n';
-import { use{{$NAME_USES$}} } from '@larajs/cms/uses';
+import { use{{$NAME_API$}}Apis } from '@larajs/cms/api';
 import type { LaraTableType } from '@larajs/components';
 import type { {{$NAME_MODEL$}} } from '@larajs/common';
 
 export function use{{$NAME_MODEL$}}Tables() {
-  const { list, destroy } = use{{$NAME_USES$}}();
+  const { get{{$API_ALL$}}, delete{{$API_ONE$}} } = use{{$NAME_API$}}Apis();
   const { t } = useI18n();
   const table: LaraTableType<{{$NAME_MODEL$}}> = {
     name: '{{$NAME_TABLE$}}',
     actions: {
-      list,
-      destroy,
+      getAll: get{{$API_ALL$}},
+      delete: delete{{$API_ONE$}},
     },
     query: {
       orderBy: '-id',

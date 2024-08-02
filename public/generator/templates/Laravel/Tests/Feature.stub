@@ -5,7 +5,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 
 uses(WithFaker::class);
 
-beforeAll(function () {
+beforeEach(function () {
     $faker = $this->faker;
     $this->data = [
         {{FIELDS}}
@@ -30,6 +30,19 @@ test('get list {{ROUTE_RESOURCE}} -> 200', function () {
         ->toHaveCount(5);
 });
 
+test('show a {{MODEL_TEST}} -> 200', function () {
+    ${{MODEL_VARIABLE}} = {{MODEL}}::factory()->create();
+    $response = asAdmin()
+        ->get(route('{{ROUTE_RESOURCE}}.show', ['{{MODEL_SINGULAR}}' => ${{MODEL_VARIABLE}}->id]))
+        ->assertOK()
+        ->json();
+
+    expect($response)
+        ->toHaveKeys(['data'])
+        ->and($response['data'])
+        ->id->toBe(${{MODEL_VARIABLE}}->id);
+});
+
 test('store a {{MODEL_TEST}} -> 201', function () {
     $response = asAdmin()
         ->post(route('{{ROUTE_RESOURCE}}.store'), $this->data)
@@ -42,19 +55,6 @@ test('store a {{MODEL_TEST}} -> 201', function () {
         ->toBe(trans('messages.create'))
         ->and($response['data'])
         ->not->toBeEmpty();
-});
-
-test('show a {{MODEL_TEST}} -> 200', function () {
-    ${{MODEL_VARIABLE}} = {{MODEL}}::factory()->create();
-    $response = asAdmin()
-        ->get(route('{{ROUTE_RESOURCE}}.show', ['{{MODEL_SINGULAR}}' => ${{MODEL_VARIABLE}}->id]))
-        ->assertOK()
-        ->json();
-
-    expect($response)
-        ->toHaveKeys(['data'])
-        ->and($response['data'])
-        ->id->toBe(${{MODEL_VARIABLE}}->id);
 });
 
 test('update a {{MODEL_TEST}} -> 200', function () {

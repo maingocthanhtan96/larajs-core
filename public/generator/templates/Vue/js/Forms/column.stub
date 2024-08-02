@@ -1,7 +1,0 @@
-{
-        field: '{{$FIELD_NAME$}}',
-        sortable: {{$FORM_SORTABLE$}},
-        align: '{{$FORM_ALIGN$}}',
-        {{$FORM_LABEL$}}
-        {{$FORM_TEMPLATE$}}
-      },

@@ -95,15 +95,27 @@ class BaseGenerator
             }
             $tableName = $this->serviceGenerator->tableNameNotPlural($model['name']);
             $templateFormItemClone = $templateFormItem;
-            $templateFormItemClone = str_replace('{{$PROP_NAME$}}', $field['field_name'], $templateFormItemClone);
-            $templateFormItemClone = str_replace('{{$COLUMNS$}}', $field['position_column'], $templateFormItemClone);
+            $templateFormItemClone = str_replace(['{{$PROP_NAME$}}', '{{$COLUMNS$}}'], [$field['field_name'], $field['position_column']], $templateFormItemClone);
             $fieldsGenerate[] = match ($field['db_type']) {
                 $this->dbType['integer'],
+                $this->dbType['tinyInteger'],
+                $this->dbType['smallInteger'],
+                $this->dbType['mediumInteger'],
                 $this->dbType['bigInteger'],
                 $this->dbType['float'],
-                $this->dbType['double'] => str_replace(
+                $this->dbType['double'],
+                $this->dbType['decimal'] => str_replace(
                     '{{$COMPONENT$}}',
                     $formFeGenerateField->generateInput('inputNumber', $tableName, $field, $index),
+                    $templateFormItemClone,
+                ),
+                $this->dbType['unsignedInteger'],
+                $this->dbType['unsignedTinyInteger'],
+                $this->dbType['unsignedSmallInteger'],
+                $this->dbType['unsignedMediumInteger'],
+                $this->dbType['unsignedBigInteger'] => str_replace(
+                    '{{$COMPONENT$}}',
+                    $formFeGenerateField->generateInput('inputNumberUnsigned', $tableName, $field, $index),
                     $templateFormItemClone,
                 ),
                 $this->dbType['boolean'] => str_replace(
@@ -131,17 +143,20 @@ class BaseGenerator
                     $formFeGenerateField->generateDateTime('year', $tableName, $field),
                     $templateFormItemClone,
                 ),
-                $this->dbType['string'] => str_replace(
+                $this->dbType['char'],
+                $this->dbType['string'],
+                $this->dbType['tinyText'] => str_replace(
                     '{{$COMPONENT$}}',
                     $formFeGenerateField->generateInput('input', $tableName, $field, $index, $this->dbType['string']),
                     $templateFormItemClone,
                 ),
+                $this->dbType['mediumText'],
                 $this->dbType['text'] => str_replace(
                     '{{$COMPONENT$}}',
                     $formFeGenerateField->generateInput('textarea', $tableName, $field, $index),
                     $templateFormItemClone,
                 ),
-                $this->dbType['longtext'] => str_replace(
+                $this->dbType['longText'] => str_replace(
                     '{{$COMPONENT$}}',
                     $formFeGenerateField->generateTinymce($tableName, $field),
                     $templateFormItemClone,
@@ -151,7 +166,8 @@ class BaseGenerator
                     $formFeGenerateField->generateEnum($tableName, $field),
                     $templateFormItemClone,
                 ),
-                $this->dbType['json'] => str_replace(
+                $this->dbType['json'],
+                $this->dbType['jsonb'] => str_replace(
                     '{{$COMPONENT$}}',
                     $formFeGenerateField->generateJson($tableName, $field),
                     $templateFormItemClone,

@@ -18,13 +18,7 @@ class ModelGenerator extends BaseGenerator
     {
         $pathTemplate = 'Models/';
         $templateData = $this->serviceGenerator->get_template('model', $pathTemplate);
-        $templateData = str_replace('{{MODEL_CLASS}}', $model['name'], $templateData);
-        $templateData = str_replace('{{FIELDS}}', $this->_generateFields($fields), $templateData);
-        $templateData = str_replace(
-            '{{TABLE_NAME}}',
-            $this->serviceGenerator->tableName($model['name']),
-            $templateData,
-        );
+        $templateData = str_replace(['{{MODEL_CLASS}}', '{{FIELDS}}', '{{TABLE_NAME}}'], [$model['name'], $this->_generateFields($fields), $this->serviceGenerator->tableName($model['name'])], $templateData);
         //create sort delete
         $importLaravel = config('generator.import.laravel.use');
         $importLaravelModel = config('generator.import.laravel.model');
