@@ -40,38 +40,36 @@ class {{CONTROLLER_CLASS}}Controller extends Controller implements HasMiddleware
 
     /**
      * Get {{MODEL_CLASS_PARAM_LIST}}
-     * @queryParam select string Select column. No-example
-     * @queryParam include string[] Specify relationships and aggregate. No-example
-     * @queryParam filter string. No-example
-     * @queryParam search[value] string The search value. No-example
-     * @queryParam search[column] string The search column. No-example
-     * @queryParam date[value] string[] The date value. No-example
+     *
      * @queryParam date[column] string The date column. No-example
+     * @queryParam date[value] string[] The date value. No-example
+     * @queryParam filter string. No-example
+     * @queryParam include string[] Specify relationships and aggregate. No-example
      * @queryParam orderBy string. Example: -id
-     * @queryParam pagination[page] number Page equals -1 get all records. Example: 1
      * @queryParam pagination[limit] number Limit. Example: 25
+     * @queryParam pagination[page] number Page equals -1 get all records. Example: 1
      * @queryParam pagination[type] string Type pagination: simple | cursor | default. Example: default
+     * @queryParam search[column] string The search column. No-example
+     * @queryParam search[value] string The search value. No-example
+     * @queryParam select string Select column. No-example
+     *
+     * @response status=403 {"message": "User does not have the right permissions."}
      */
-    #[ResponseFromApiResource({{MODEL_CLASS}}Resource::class, {{MODEL_CLASS}}::class, collection: true, with: [], paginate: 5)]
+     #[
+        ResponseFromApiResource(
+            name: {{MODEL_CLASS}}Resource::class,
+            model: {{MODEL_CLASS}}::class,
+            status: 200,
+            collection: true,
+            with: ['roles.permissions'],
+            paginate: 5,
+        ),
+    ]
 	public function index(Request $request): JsonResponse
 	{
         ${{MODEL_CLASS_PARAM_LIST}} = $this->{{MODEL_CLASS_PARAM}}Service->findAll($request);
 
         return $this->responseResource({{MODEL_CLASS}}Resource::collection(${{MODEL_CLASS_PARAM_LIST}}));
-	}
-
-    /**
-     * Get {{MODEL_CLASS_PARAM}}
-     *
-     * @queryParam select string Select column. No-example.
-     * @queryParam include string[] Specify relationships and aggregate. No-example.
-     */
-    #[ResponseFromApiResource({{MODEL_CLASS}}Resource::class, {{MODEL_CLASS}}::class, with: [])]
-	public function show(int $id, Request $request): JsonResponse
-	{
-        ${{MODEL_CLASS_PARAM}} = $this->{{MODEL_CLASS_PARAM}}Service->find($id, $request);
-
-        return $this->responseResource({{MODEL_CLASS}}Resource::make(${{MODEL_CLASS_PARAM}}));
 	}
 
     /**
@@ -82,6 +80,12 @@ class {{CONTROLLER_CLASS}}Controller extends Controller implements HasMiddleware
      * @apiResourceModel App\Models\{{MODEL_CLASS}}
      *
      * @apiResourceAdditional message="Create successfully!"
+     *
+     * @response status=403 {"message": "User does not have the right permissions."}
+     * @response 422 {
+     *  "message": "The given data was invalid.",
+     *  "errors": {"field": ["message"]}
+     * }
      */
 	public function store(Store{{MODEL_CLASS}}Request $request): JsonResponse
 	{
@@ -91,13 +95,37 @@ class {{CONTROLLER_CLASS}}Controller extends Controller implements HasMiddleware
 	}
 
     /**
+     * Get {{MODEL_CLASS_PARAM}}
+     *
+     * @queryParam include string[] Specify relationships and aggregate. No-example.
+     * @queryParam select string Select column. No-example.
+     *
+     * @response status=403 {"message": "User does not have the right permissions."}
+     * @response status=404 {"message": "Not found!"}
+     */
+    #[ResponseFromApiResource(name: {{MODEL_CLASS}}Resource::class, model: {{MODEL_CLASS}}::class, status: 200, with: [])]
+	public function show(int $id, Request $request): JsonResponse
+	{
+        ${{MODEL_CLASS_PARAM}} = $this->{{MODEL_CLASS_PARAM}}Service->find($id, $request);
+
+        return $this->responseResource({{MODEL_CLASS}}Resource::make(${{MODEL_CLASS_PARAM}}));
+	}
+
+    /**
      * Update {{MODEL_CLASS_PARAM}}
      *
-     * @apiResource App\Http\Resources\{{VERSION}}\{{MODEL_CLASS}}Resource
+     * @apiResource App\Http\Resources\{{VERSION}}\{{MODEL_CLASS}}Resource status=200
      *
      * @apiResourceModel App\Models\{{MODEL_CLASS}}
      *
      * @apiResourceAdditional message="Update successfully!"
+     *
+     * @response status=403 {"message": "User does not have the right permissions."}
+     * @response status=404 {"message": "Not found!"}
+     * @response 422 {
+     *  "message": "The given data was invalid.",
+     *  "errors": {"field": ["message"]}
+     * }
      */
 	public function update(int $id, Store{{MODEL_CLASS}}Request $request): JsonResponse
 	{
@@ -110,6 +138,8 @@ class {{CONTROLLER_CLASS}}Controller extends Controller implements HasMiddleware
      * Delete {{MODEL_CLASS_PARAM}}
      *
      * @response 200 {"message": "Delete successfully!"}
+     * @response status=403 {"message": "User does not have the right roles."}
+     * @response status=404 {"message": "Not found!"}
      */
     public function destroy(int $id): JsonResponse
     {
