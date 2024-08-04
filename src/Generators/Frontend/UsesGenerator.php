@@ -41,6 +41,20 @@ class UsesGenerator extends BaseGenerator
             $this->serviceGenerator->modelNameNotPlural($model['name']),
             $this->serviceGenerator->modelNamePlural($model['name']),
         ], $templateData);
+        // Run before runJS because to format code
+        if ($this->serviceGenerator->getOptions(config('generator.model.options.timestamps'), $model['options'])) {
+            $templateData = str_replace('{{$FILTER_DATE$}}', '', $templateData);
+        } else {
+            $templateData = str_replace('{{$FILTER_DATE$}}', <<<'FILTER_DATE'
+            filters: {
+              templates: [
+                {
+                  template: 'search',
+                },
+              ],
+            },
+            FILTER_DATE , $templateData);
+        }
         $templateData = $this->phpParserService->runParserJS("$path{$this->jsType('table')}", [
             'key' => 'uses.table:columns',
             'items' => $this->serviceGenerator->generateColumns($fields, $model),

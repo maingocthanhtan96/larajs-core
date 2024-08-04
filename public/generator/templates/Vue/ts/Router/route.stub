@@ -8,6 +8,7 @@ const {{$NAME_CONST$}}: RouterMapping = {
   meta: {
     title: '{{$TITLE_ROUTE_MODEL_CLASS$}}',
     icon: 'menu',
+    permissions: [PermissionType.VISIT],
   },
   redirect: { name: '{{$NAME_ROUTE_MODEL_CLASS$}}Overview' },
   children: [

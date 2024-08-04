@@ -16,6 +16,7 @@ export function use{{$NAME_MODEL$}}Tables() {
       orderBy: '-id',
       include: [],
     },
+    {{$FILTER_DATE$}}
     columns: [
       {
         field: 'id',

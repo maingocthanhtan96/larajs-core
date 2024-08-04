@@ -294,7 +294,7 @@ class PhpParserService
                     $dbType['char'],
                     $dbType['string'],
                     $dbType['tinyText'] => [
-                        'faker' => 'randomLetter',
+                        'faker' => $field['options']['unique'] ? 'unique()->randomLetter' : 'randomLetter',
                         'args' => [],
                     ],
                     $dbType['mediumText'],
