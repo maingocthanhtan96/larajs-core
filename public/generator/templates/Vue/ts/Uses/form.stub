@@ -39,7 +39,7 @@ export function use{{$NAME_MODEL$}}Forms() {
   };
 }
 
-export function {{$CONST_NAME_MODEL$}}Rules(): FormRules<Partial<{{$NAME_MODEL$}}>> {
+export function {{$CONST_NAME_MODEL$}}Rules(): FormRules {
   const { t } = useI18n(); // eslint-disable-line
 
   return {};
