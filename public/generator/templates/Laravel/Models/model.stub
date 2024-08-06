@@ -22,7 +22,7 @@ class {{MODEL_CLASS}} extends Model
     ];
 
     /**
-     * @return array<string, string>[]
+     * @return array<string, array<int, string>>
      */
     public function allowQueryParsers(): array
     {

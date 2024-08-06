@@ -579,7 +579,7 @@ class RelationshipGenerator extends BaseGenerator
                 [
                     'key' => 'common.import',
                     'name' => $model,
-                    'path' => './index',
+                    'path' => "./{$this->serviceGenerator->folderPages($model)}",
                     'interface' => $this->serviceGenerator->modelNameNotPlural($modelCurrent),
                     'items' => [
                         "$modelIds?" => 'number[];',
@@ -609,7 +609,7 @@ class RelationshipGenerator extends BaseGenerator
                 [
                     'key' => 'common.import',
                     'name' => $model,
-                    'path' => './index',
+                    'path' => "./{$this->serviceGenerator->folderPages($model)}",
                     'interface' => $this->serviceGenerator->modelNameNotPlural($modelCurrent),
                     'items' => $items,
                 ],
@@ -626,7 +626,7 @@ class RelationshipGenerator extends BaseGenerator
                 [
                     'key' => 'common.import',
                     'name' => $modelCurrent,
-                    'path' => './index',
+                    'path' => "./{$this->serviceGenerator->folderPages($modelCurrent)}",
                     'interface' => $this->serviceGenerator->modelNameNotPlural($model),
                     'items' => [
                         "$fieldModelCurrent?" => 'number | null;',

@@ -712,7 +712,7 @@ class GeneratorService
             $dbType['year'] => "$fieldName => \$faker->year(),",
             $dbType['char'],
             $dbType['string'],
-            $dbType['tinyText'] => "$fieldName => \$faker->randomLetter(),",
+            $dbType['tinyText'] => "$fieldName => \$faker".($field['options']['unique'] ? '->unique()' : '').'->randomLetter(),',
             $dbType['text'],
             $dbType['mediumText'],
             $dbType['longText'] => "$fieldName => \$faker->paragraph(),",
