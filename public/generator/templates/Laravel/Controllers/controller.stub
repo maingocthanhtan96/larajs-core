@@ -61,7 +61,7 @@ class {{CONTROLLER_CLASS}}Controller extends Controller implements HasMiddleware
             model: {{MODEL_CLASS}}::class,
             status: 200,
             collection: true,
-            with: ['roles.permissions'],
+            with: [],
             paginate: 5,
         ),
     ]
