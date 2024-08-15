@@ -22,7 +22,10 @@ class WriteRepository implements WriteRepositoryInterface
      */
     public function create(array $data)
     {
-        return $this->save(new $this->model(), $data);
+        $model = new $this->model();
+        $model->fill($data)->save();
+
+        return $model;
     }
 
     /**
@@ -32,7 +35,9 @@ class WriteRepository implements WriteRepositoryInterface
      */
     public function update(int $id, array $data)
     {
-        return $this->save($this->model->findOrFail($id), $data);
+        $model = $this->model->findOrFail($id);
+
+        return $model->fill($data)->save();
     }
 
     /**
@@ -42,17 +47,5 @@ class WriteRepository implements WriteRepositoryInterface
     public function delete(int $id): bool
     {
         return $this->model->findOrFail($id)->delete();
-    }
-
-    /**
-     * @param  Model  $model
-     * @param  array  $data
-     * @return T
-     */
-    public function save(Model $model, array $data)
-    {
-        $model->fill($data)->save();
-
-        return $model;
     }
 }

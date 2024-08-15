@@ -2,8 +2,6 @@
 
 namespace LaraJS\Core\Repositories;
 
-use Illuminate\Database\Eloquent\Model;
-
 /**
  * @template T
  */
@@ -27,11 +25,4 @@ interface WriteRepositoryInterface
      * @return bool
      */
     public function delete(int $id): bool;
-
-    /**
-     * @param  Model  $model
-     * @param  array  $data
-     * @return T
-     */
-    public function save(Model $model, array $data);
 }

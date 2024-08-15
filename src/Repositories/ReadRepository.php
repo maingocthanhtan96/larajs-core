@@ -8,6 +8,7 @@ use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use LaraJS\QueryParser\LaraJSQueryParser;
 
@@ -29,7 +30,7 @@ class ReadRepository implements ReadRepositoryInterface
 
     /**
      * @param  Request  $request
-     * @return LengthAwarePaginator|CursorPaginator|Paginator|T[]
+     * @return LengthAwarePaginator|CursorPaginator|Paginator|Collection<int, T>
      */
     public function findAll(Request $request): LengthAwarePaginator|CursorPaginator|Paginator|Collection
     {
@@ -50,16 +51,28 @@ class ReadRepository implements ReadRepositoryInterface
 
     /**
      * @param  int  $id
-     * @param  Request  $request
+     * @param  ?Request  $request
      * @return T
      */
-    public function find(int $id, Request $request)
+    public function find(int $id, ?Request $request = null)
+    {
+        return $this->applyQueryBuilder($this->query(), $request)->find($id);
+    }
+
+    /**
+     * @param  int  $id
+     * @param  ?Request  $request
+     * @return T
+     *
+     * @throws ModelNotFoundException<T>
+     */
+    public function findOrFail(int $id, ?Request $request = null)
     {
         return $this->applyQueryBuilder($this->query(), $request)->findOrFail($id);
     }
 
     /**
-     * @return Builder
+     * @return Builder<T>
      */
     public function query(): Builder
     {

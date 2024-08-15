@@ -8,6 +8,7 @@ use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 /**
@@ -90,18 +91,8 @@ abstract class BaseLaraJSRepository implements ReadRepositoryInterface, WriteRep
     }
 
     /**
-     * @param  Model  $model
-     * @param  array  $data
-     * @return T
-     */
-    public function save(Model $model, array $data)
-    {
-        return $this->writeRepository->save($model, $data);
-    }
-
-    /**
      * @param  Request  $request
-     * @return LengthAwarePaginator|CursorPaginator|Paginator|T[]
+     * @return LengthAwarePaginator|CursorPaginator|Paginator|Collection<int, T>
      */
     public function findAll(Request $request): LengthAwarePaginator|CursorPaginator|Paginator|Collection
     {
@@ -110,12 +101,24 @@ abstract class BaseLaraJSRepository implements ReadRepositoryInterface, WriteRep
 
     /**
      * @param  int  $id
-     * @param  Request  $request
+     * @param  ?Request  $request
      * @return T
      */
-    public function find(int $id, Request $request)
+    public function find(int $id, ?Request $request = null)
     {
         return $this->readRepository->find($id, $request);
+    }
+
+    /**
+     * @param  int  $id
+     * @param  ?Request  $request
+     * @return T
+     *
+     * @throws ModelNotFoundException<T>
+     */
+    public function findOrFail(int $id, ?Request $request = null)
+    {
+        return $this->readRepository->findOrFail($id, $request);
     }
 
     /**
