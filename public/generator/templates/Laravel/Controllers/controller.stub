@@ -93,7 +93,7 @@ class {{CONTROLLER_CLASS}}Controller extends Controller implements HasMiddleware
 	{
         ${{MODEL_CLASS_PARAM}} = $this->{{MODEL_CLASS_PARAM}}Service->create($request->validated());
 
-        return $this->responseResource({{MODEL_CLASS}}Resource::make(${{MODEL_CLASS_PARAM}}), trans('messages.create'), Response::HTTP_CREATED);
+        return $this->responseResource({{MODEL_CLASS}}Resource::make(${{MODEL_CLASS_PARAM}}), __('messages.create'), Response::HTTP_CREATED);
 	}
 
     /**
@@ -142,7 +142,7 @@ class {{CONTROLLER_CLASS}}Controller extends Controller implements HasMiddleware
 	{
         ${{MODEL_CLASS_PARAM}} = $this->{{MODEL_CLASS_PARAM}}Service->update($id, $request->validated());
 
-        return $this->responseResource({{MODEL_CLASS}}Resource::make(${{MODEL_CLASS_PARAM}}), trans('messages.update'));
+        return $this->responseResource({{MODEL_CLASS}}Resource::make(${{MODEL_CLASS_PARAM}}), __('messages.update'));
 	}
 
     /**
@@ -156,6 +156,6 @@ class {{CONTROLLER_CLASS}}Controller extends Controller implements HasMiddleware
     {
         $this->{{MODEL_CLASS_PARAM}}Service->delete($id);
 
-        return $this->responseMessage(trans('messages.delete'));
+        return $this->responseMessage(__('messages.delete'));
     }
 }

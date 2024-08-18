@@ -104,7 +104,7 @@ class GeneratorController extends BaseLaraJSController
         $this->_exportDataGenerator();
         $this->_runCommand($model);
 
-        return $this->responseMessage(trans('messages.success'));
+        return $this->responseMessage(__('messages.success'));
     }
 
     public function update(Request $request, Generator $generator): JsonResponse
@@ -141,7 +141,7 @@ class GeneratorController extends BaseLaraJSController
         $this->_exportDataGenerator();
         $this->_runCommand();
 
-        return $this->responseMessage(trans('messages.success'));
+        return $this->responseMessage(__('messages.success'));
     }
 
     public function destroy(Generator $generator): JsonResponse
@@ -320,7 +320,7 @@ class GeneratorController extends BaseLaraJSController
         $generator->delete();
         $this->_runPrettier();
 
-        return $this->responseMessage(trans('messages.success'));
+        return $this->responseMessage(__('messages.success'));
     }
 
     public function checkModel(Request $request): JsonResponse
@@ -390,7 +390,7 @@ class GeneratorController extends BaseLaraJSController
         }
         $this->_runCommand();
 
-        return $this->responseMessage(trans('messages.success'));
+        return $this->responseMessage(__('messages.success'));
     }
 
     public function generateDiagram(Request $request): JsonResponse

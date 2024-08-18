@@ -52,7 +52,7 @@ test('store a {{MODEL_TEST}} -> 201', function () {
     expect($response)
         ->toHaveKeys(['message', 'data'])
         ->and($response['message'])
-        ->toBe(trans('messages.create'))
+        ->toBe(__('messages.create'))
         ->and($response['data'])
         ->not->toBeEmpty();
 });
@@ -67,7 +67,7 @@ test('update a {{MODEL_TEST}} -> 200', function () {
     expect($response)
         ->toHaveKeys(['message', 'data'])
         ->and($response['message'])
-        ->toBe(trans('messages.update'))
+        ->toBe(__('messages.update'))
         ->and($response['data'])
         ->id->toBe(${{MODEL_VARIABLE}}->id);
 });
@@ -82,5 +82,5 @@ test('destroy a {{MODEL_TEST}} -> 200', function () {
     expect($response)
         ->toHaveKey('message')
         ->message->toBeString()
-        ->toBe(trans('messages.delete'));
+        ->toBe(__('messages.delete'));
 });
