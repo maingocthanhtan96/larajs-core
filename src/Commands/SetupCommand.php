@@ -86,11 +86,11 @@ class SetupCommand extends Command
             $this->_installPackage();
             $this->_generateFile();
             $this->_deployStorage();
-            $this->_copyEnvTesting();
+            //            $this->_copyEnvTesting();
 
             $this->_outputArtisan('config:clear');
             $this->info($this->_textSignature());
-            $this->info('By: Mai Ngọc Thanh Tân');
+            $this->info('Powered by: LaraJS');
             $this->comment('SETUP SUCCESSFULLY!');
         } catch (\Exception $e) {
             $this->error($e->getMessage());
@@ -154,17 +154,17 @@ class SetupCommand extends Command
         $this->dbUsernameStub = '{{DB_USERNAME}}';
         $this->dbPasswordStub = '{{DB_PASSWORD}}';
         $envExample = '.env.example';
-        $parAppUrl = 'http://localhost:8000';
+        $parAppUrl = 'http://127.0.0.1:8000';
         $parHost = '127.0.0.1';
         $parPort = '3306';
         $parDatabase = 'larajs';
         $parUsername = 'root';
         $parPassword = '';
         $this->info('>>> Running: create env');
-        $this->appUrl = $this->anticipate('What is your url?', [$parAppUrl], $parAppUrl);
-        $this->host = $this->anticipate('What is your host?', [$parHost], $parHost);
-        $this->port = $this->anticipate('What is your port?', [$parPort], $parPort);
-        $this->database = $this->anticipate('What is your database?', [$parDatabase], $parDatabase);
+        $this->appUrl = $this->anticipate('What is the url of your app?', [$parAppUrl], $parAppUrl);
+        $this->host = $this->anticipate('What is your database host?', [$parHost], $parHost);
+        $this->port = $this->anticipate('What is your database port?', [$parPort], $parPort);
+        $this->database = $this->anticipate('What is your database name?', [$parDatabase], $parDatabase);
         $this->username = $this->anticipate('What is your username?', [$parUsername], $parUsername);
         $this->password = $this->anticipate('What is your password?', [$parPassword], $parPassword);
 
