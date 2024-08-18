@@ -5,7 +5,7 @@ import type { {{$NAME_MODEL$}} } from '@larajs/common';
 
 export function use{{$NAME_MODEL$}}Tables() {
   const { get{{$API_ALL$}}, delete{{$API_ONE$}} } = use{{$NAME_API$}}Apis();
-  const { t } = useI18n();
+  const { t } = useI18n(); // eslint-disable-line
   const table: LaraTableType<{{$NAME_MODEL$}}> = {
     name: '{{$NAME_TABLE$}}',
     actions: {

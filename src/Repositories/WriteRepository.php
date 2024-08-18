@@ -36,8 +36,9 @@ class WriteRepository implements WriteRepositoryInterface
     public function update(int $id, array $data)
     {
         $model = $this->model->findOrFail($id);
+        $model->fill($data)->save();
 
-        return $model->fill($data)->save();
+        return $model;
     }
 
     /**

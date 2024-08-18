@@ -23,7 +23,7 @@ class UsesUpdateGenerator extends BaseGenerator
         $path = "$this->path{$folderName}/";
         // create table.tsx
         $templateDataReal = $this->serviceGenerator->getFile('uses', 'vue', "/$folderName/table.tsx");
-        $templateDataReal = $this->phpParserService->runParserJS("$path{$this->jsType('table')}", [
+        $templateDataReal = $this->phpParserService->runParserJS("$path{$this->getType('table')}", [
             'key' => 'uses.table:columns',
             'items' => $this->serviceGenerator->generateColumns($updateFields['updateFields'], $model, true),
         ], $templateDataReal);
@@ -34,22 +34,22 @@ class UsesUpdateGenerator extends BaseGenerator
         $this->serviceFile->createFileReal("$path/table.tsx", $templateDataReal);
         // create form.tsx
         $templateDataReal = $this->serviceGenerator->getFile('uses', 'vue', "/$folderName/form.tsx");
-        $templateDataReal = $this->phpParserService->runParserJS("{$path}{$this->jsType('form')}", [
+        $templateDataReal = $this->phpParserService->runParserJS("{$path}{$this->getType('form')}", [
             'key' => 'uses.form:item',
             'variable' => 'form',
             'items' => $this->serviceGenerator->generateFieldForm($updateFields['updateFields']),
         ], $templateDataReal);
-        $templateDataReal = $this->phpParserService->runParserJS("{$path}{$this->jsType('form')}", [
+        $templateDataReal = $this->phpParserService->runParserJS("{$path}{$this->getType('form')}", [
             'key' => 'uses.form:rules',
             'variable' => $this->serviceGenerator->modelNameNotPluralFe($model['name']).'Rules',
             'items' => $this->serviceGenerator->generateRules($updateFields['updateFields'], $model),
         ], $templateDataReal);
-        $templateDataReal = $this->phpParserService->runParserJS("{$path}{$this->jsType('form')}", [
+        $templateDataReal = $this->phpParserService->runParserJS("{$path}{$this->getType('form')}", [
             'key' => 'uses.form:items',
             'items' => $this->generateItems($updateFields['updateFields'], $model),
         ], $templateDataReal);
-        $templateDataReal = $this->serviceGenerator->importComponent($updateFields['updateFields'], $templateDataReal, "{$path}{$this->jsType('form')}", $model);
+        $templateDataReal = $this->serviceGenerator->importComponent($updateFields['updateFields'], $templateDataReal, "{$path}{$this->getType('form')}", $model);
 
-        $this->serviceFile->createFileReal("{$path}{$this->jsType('form')}", $templateDataReal);
+        $this->serviceFile->createFileReal("{$path}{$this->getType('form')}", $templateDataReal);
     }
 }

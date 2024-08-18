@@ -23,7 +23,7 @@ class UsesGenerator extends BaseGenerator
         $path = "$this->path{$folderName}/";
         // create index.ts
         $templateData = $this->serviceGenerator->get_template('use', 'Uses/', 'vue');
-        $this->serviceFile->createFile($path, $this->jsType('index'), $templateData);
+        $this->serviceFile->createFile($path, $this->getType('index'), $templateData);
         // create table.tsx
         $templateData = $this->serviceGenerator->get_template('table', 'Uses/', 'vue');
         $templateData = str_replace([
@@ -55,21 +55,21 @@ class UsesGenerator extends BaseGenerator
             },
             FILTER_DATE , $templateData);
         }
-        $templateData = $this->phpParserService->runParserJS("$path{$this->jsType('table')}", [
+        $templateData = $this->phpParserService->runParserJS("$path{$this->getType('table')}", [
             'key' => 'uses.table:columns',
             'items' => $this->serviceGenerator->generateColumns($fields, $model),
         ], $templateData);
-        $templateData = $this->phpParserService->runParserJS("$path{$this->jsType('table')}", [
+        $templateData = $this->phpParserService->runParserJS("$path{$this->getType('table')}", [
             'key' => 'uses.table:search:column',
             'items' => $this->serviceGenerator->generateColumnSearch($fields),
         ], $templateData);
         if ($this->serviceGenerator->getOptions(config('generator.model.options.timestamps'), $model['options'])) {
-            $templateData = $this->phpParserService->runParserJS("$path{$this->jsType('table')}", [
+            $templateData = $this->phpParserService->runParserJS("$path{$this->getType('table')}", [
                 'key' => 'uses.table:date:column',
                 'items' => [$this->serviceGenerator->tableName($model['name']).'.updated_at'],
             ], $templateData);
         }
-        $this->serviceFile->createFile($path, $this->jsType('table'), $templateData);
+        $this->serviceFile->createFile($path, $this->getType('table'), $templateData);
         // create form.tsx
         $templateData = $this->serviceGenerator->get_template('form', 'Uses/', 'vue');
         $templateData = str_replace([
@@ -85,29 +85,29 @@ class UsesGenerator extends BaseGenerator
             $this->serviceGenerator->modelNameNotPluralFe($model['name']),
             $this->serviceGenerator->modelNameNotPlural($model['name']),
         ], $templateData);
-        $templateData = $this->phpParserService->runParserJS("{$path}{$this->jsType('form')}", [
+        $templateData = $this->phpParserService->runParserJS("{$path}{$this->getType('form')}", [
             'key' => 'uses.form:item',
             'variable' => 'form',
             'items' => $this->serviceGenerator->generateFieldForm($fields),
         ], $templateData);
-        $templateData = $this->phpParserService->runParserJS("{$path}{$this->jsType('form')}", [
+        $templateData = $this->phpParserService->runParserJS("{$path}{$this->getType('form')}", [
             'key' => 'uses.form:item',
             'variable' => 'state',
             'items' => $this->serviceGenerator->generateEnumItem($fields),
         ], $templateData);
-        $templateData = $this->phpParserService->runParserJS("{$path}{$this->jsType('form')}", [
+        $templateData = $this->phpParserService->runParserJS("{$path}{$this->getType('form')}", [
             'key' => 'uses.form:rules',
             'variable' => $this->serviceGenerator->modelNameNotPluralFe($model['name']).'Rules',
             'items' => $this->serviceGenerator->generateRules($fields, $model),
         ], $templateData);
-        $templateData = $this->phpParserService->runParserJS("{$path}{$this->jsType('form')}", [
+        $templateData = $this->phpParserService->runParserJS("{$path}{$this->getType('form')}", [
             'key' => 'uses.form:items',
             'items' => $this->generateItems($fields, $model),
         ], $templateData);
-        $templateData = $this->serviceGenerator->importComponent($fields, $templateData, "{$path}{$this->jsType('form')}", $model);
-        $this->serviceFile->createFile($path, $this->jsType('form'), $templateData);
+        $templateData = $this->serviceGenerator->importComponent($fields, $templateData, "{$path}{$this->getType('form')}", $model);
+        $this->serviceFile->createFile($path, $this->getType('form'), $templateData);
         // import uses/index.ts
-        $fileNameReal = $this->jsType('index');
+        $fileNameReal = $this->getType('index');
         $templateDataReal = $this->serviceGenerator->getFile('uses', 'vue', $fileNameReal);
         $templateDataReal .= "export * from './$folderName';\n";
         $this->serviceFile->createFileReal("{$this->path}$fileNameReal", $templateDataReal);

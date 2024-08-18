@@ -15,7 +15,7 @@ class InterfaceCommonGenerator extends BaseGenerator
 
     private function _generate($fields, $model)
     {
-        $fileName = $this->serviceGenerator->folderPages($model['name']).".{$this->jsType('ext')}";
+        $fileName = $this->serviceGenerator->folderPages($model['name']).".{$this->getType('ext')}";
         $templateData = $this->serviceGenerator->get_template('model', 'Common/', 'package');
         $templateData = str_replace(
             '{{$MODEL$}}',
@@ -33,7 +33,7 @@ class InterfaceCommonGenerator extends BaseGenerator
         );
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
         // import
-        $fileName = "/{$this->jsType('index')}";
+        $fileName = "/{$this->getType('index')}";
         $templateDataReal = $this->serviceGenerator->getFile('model', 'package', $fileName);
         $fileImport = "'./{$this->serviceGenerator->folderPages($model['name'])}'";
         if (!stripos($templateDataReal, $fileImport)) {

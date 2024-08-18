@@ -30,49 +30,24 @@ class BaseGenerator
         $this->dbType = config('generator.db_type');
     }
 
-    public function jsType(?string $type = null)
+    public function getType(?string $type = null): string
     {
-        $isJS = config('generator.js_language') === 'js';
-        switch ($type) {
-            case 'form':
-                if ($isJS) {
-                    return 'form.jsx';
-                } else {
-                    return 'form.tsx';
-                }
-            case 'table':
-                if ($isJS) {
-                    return 'table.jsx';
-                } else {
-                    return 'table.tsx';
-                }
-            case 'index':
-                if ($isJS) {
-                    return 'index.js';
-                } else {
-                    return 'index.ts';
-                }
-            case 'api':
-                if ($isJS) {
-                    return 'api.js';
-                } else {
-                    return 'api.ts';
-                }
-            case 'ext':
-                return config('generator.js_language');
-            default:
-                return $isJS;
-        }
+        return match ($type) {
+            'form' => 'form.tsx',
+            'table' => 'table.tsx',
+            'index' => 'index.ts',
+            'api' => 'api.ts',
+            default => 'ts',
+        };
     }
 
-    public function getImportJsOrTs($isMono = false): string
+    public function getImport($isMono = false): string
     {
-        $isJS = config('generator.js_language') === 'js';
         if ($isMono) {
-            return $isJS ? '@' : '@larajs';
+            return '@larajs';
         }
 
-        return $isJS ? '@' : '@larajs/cms';
+        return '@larajs/cms';
     }
 
     public function rollbackFile($path, $fileName): bool

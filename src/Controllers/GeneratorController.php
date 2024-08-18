@@ -283,7 +283,7 @@ class GeneratorController extends BaseLaraJSController
         $templateDataRouteVueJSReal = $this->serviceGenerator->getFile('router', 'vue', 'index.ts');
         $replace = "import {$generatorService->modelNameNotPluralFe(
             $model['name'],
-        )} from '{$this->baseGenerator->getImportJsOrTs()}/router/modules/{$generatorService->nameAttribute($model['name'])}';";
+        )} from '{$this->baseGenerator->getImport()}/router/modules/{$generatorService->nameAttribute($model['name'])}';";
         $templateDataRouteVueJSReal = str_replace(
             [$replace . PHP_EOL, $replace],
             '',
@@ -305,20 +305,18 @@ class GeneratorController extends BaseLaraJSController
         $fileService->createFileReal("{$pathUses}index.ts", $templateDataUsesIndex);
         // END - USES
         // START - package common
-        if (config('generator.js_language') === 'ts') {
-            $pathPackageModelReal = config('generator.path.package.model').'index.ts';
-            $templateDataPackageModelReal = $this->serviceGenerator->getFile('model', 'package', 'index.ts');
-            $replace = "export * from './{$generatorService->nameAttribute($model['name'])}';";
-            $templateDataPackageModelReal = str_replace(
-                [$replace . PHP_EOL, $replace],
-                '',
-                $templateDataPackageModelReal,
-            );
-            $fileService->createFileReal($pathPackageModelReal, $templateDataPackageModelReal);
-        }
+        $pathPackageModelReal = config('generator.path.package.model').'index.ts';
+        $templateDataPackageModelReal = $this->serviceGenerator->getFile('model', 'package', 'index.ts');
+        $replace = "export * from './{$generatorService->nameAttribute($model['name'])}';";
+        $templateDataPackageModelReal = str_replace(
+            [$replace . PHP_EOL, $replace],
+            '',
+            $templateDataPackageModelReal,
+        );
+        $fileService->createFileReal($pathPackageModelReal, $templateDataPackageModelReal);
         // END - package common
         $generator->delete();
-        $this->_runPrettier();
+        //        $this->_runPrettier();
 
         return $this->responseMessage(__('messages.success'));
     }
@@ -468,9 +466,7 @@ class GeneratorController extends BaseLaraJSController
         new UsesGenerator($fields, $model);
         new ViewTableGenerator($model);
         new FormGenerator($model);
-        if (config('generator.js_language') === 'ts') {
-            new InterfaceCommonGenerator($fields, $model);
-        }
+        new InterfaceCommonGenerator($fields, $model);
     }
 
     private function _generateFile($model): array
@@ -529,9 +525,7 @@ class GeneratorController extends BaseLaraJSController
     private function _generateFrontendUpdate($model, $updateFields): void
     {
         new UsesUpdateGenerator($model, $updateFields);
-        if (config('generator.js_language') === 'ts') {
-            new InterfaceCommonUpdateGenerator($updateFields, $model);
-        }
+        new InterfaceCommonUpdateGenerator($updateFields, $model);
     }
 
     private function _runCommand(array $model = []): void
@@ -543,15 +537,12 @@ class GeneratorController extends BaseLaraJSController
             Artisan::call('migrate');
         }
         Artisan::call('vue-i18n:generate');
-        $this->_runPrettier();
+        //        $this->_runPrettier();
     }
 
     private function _runPrettier(): void
     {
         $basePath = apps_path();
-        if (config('generator.js_language') === 'js') {
-            $basePath = base_path();
-        }
         exec_in_background("(sleep 1 && cd $basePath && node ./node_modules/.bin/pretty-quick)");
     }
 

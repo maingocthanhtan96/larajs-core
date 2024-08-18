@@ -39,9 +39,9 @@ class ApiGenerator extends BaseGenerator
             $this->serviceGenerator->modelNameNotPlural($model['name']),
         ], $templateData);
 
-        $fileName = $this->serviceGenerator->folderPages($model['name']).".{$this->jsType('ext')}";
+        $fileName = $this->serviceGenerator->folderPages($model['name']).".{$this->getType('ext')}";
         $this->serviceFile->createFile($this->path, $fileName, $templateData);
-        $fileNameReal = $this->jsType('index');
+        $fileNameReal = $this->getType('index');
         $pathApi = "{$this->path}$fileNameReal";
         if (!file_exists($pathApi)) {
             file_put_contents($pathApi, '');

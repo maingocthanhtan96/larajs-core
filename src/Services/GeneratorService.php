@@ -78,7 +78,7 @@ class GeneratorService
         } elseif ($typeTemplate === 'package') {
             $templatesPath = config('generator.template.package');
         } else {
-            $templatesPath = config('generator.template.vue').config('generator.js_language').'/';
+            $templatesPath = config('generator.template.vue').'ts/';
         }
         $path = $templatesPath.$templatePath.$templateName.'.stub';
         if (file_exists($path)) {
@@ -1004,7 +1004,7 @@ class GeneratorService
                     'path' => $importVueJS['parse_time']['path'],
                 ], $templateDataReal);
                 $flags['parse_time'] = false;
-            } elseif ($field['db_type'] === $dbType['enum'] && config('generator.js_language') === 'ts') {
+            } elseif ($field['db_type'] === $dbType['enum']) {
                 $templateDataReal = $phpParserService->runParserJS($path, [
                     'key' => 'uses.form',
                     'interface' => "{$model['name']}StateRoot",

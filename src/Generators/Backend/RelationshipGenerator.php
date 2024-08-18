@@ -138,7 +138,7 @@ class RelationshipGenerator extends BaseGenerator
             //generate frontend
             $this->_generateFormFe($modelCurrent, $model, $column, $options, $relationship, Str::snake($modelCurrent).self::_ID);
             $this->_generateFormFe($model, $modelCurrent, $column2, $options, $relationship, Str::snake($model).self::_ID);
-            if (!$this->jsType()) {
+            if (!$this->getType()) {
                 $this->_generateInterfaceCommon($modelCurrent, $model, $relationship, Str::snake($model).self::_IDS);
                 $this->_generateInterfaceCommon($model, $modelCurrent, $relationship, Str::snake($modelCurrent).self::_IDS);
             }
@@ -161,7 +161,7 @@ class RelationshipGenerator extends BaseGenerator
             $this->_generateRequest($model, $relationship, $columnChildren);
             //generate frontend
             $this->_generateFormFe($modelCurrent, $model, $column, $options, $relationship, $columnChildren);
-            if (!$this->jsType()) {
+            if (!$this->getType()) {
                 $this->_generateInterfaceCommon($modelCurrent, $model, $relationship, $columnChildren);
             }
         }
@@ -207,14 +207,14 @@ class RelationshipGenerator extends BaseGenerator
         $folderName = $this->serviceGenerator->folderPages($modelRelationship);
         $path = "$path{$folderName}";
         //create form: form.tsx
-        $templateDataReal = $this->serviceGenerator->getFile('uses', 'vue', "/$folderName/{$this->jsType('form')}");
+        $templateDataReal = $this->serviceGenerator->getFile('uses', 'vue', "/$folderName/{$this->getType('form')}");
         if (!$templateDataReal) {
             return;
         }
         if (!$isMTM) {
             $templateRules = $this->_getHandlerTemplate();
             $templateRules = str_replace(['{{$FIELD$}}', '{{$ATTRIBUTE_FIELD$}}', '{{$TRIGGER$}}'], [$columnChildren, 't(\'route.' . Str::snake($model) . '\')', 'change'], $templateRules);
-            $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->jsType('form')}", [
+            $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->getType('form')}", [
                 'key' => 'uses.form:rules',
                 'variable' => $this->serviceGenerator->modelNameNotPluralFe($modelRelationship).'Rules',
                 'items' => [
@@ -226,7 +226,7 @@ class RelationshipGenerator extends BaseGenerator
         $tableFunctionRelationship = $isMTM
             ? $this->serviceGenerator->tableName($model)
             : $this->serviceGenerator->tableNameNotPlural($model);
-        $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->jsType('form')}", [
+        $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->getType('form')}", [
             'key' => 'uses.form:item',
             'variable' => 'form',
             'items' => [
@@ -243,7 +243,7 @@ class RelationshipGenerator extends BaseGenerator
             $notDelete,
             $relationship,
         );
-        $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->jsType('form')}", [
+        $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->getType('form')}", [
             'key' => 'uses.form:items',
             'items' => [
                 $this->_generateSelect(
@@ -254,11 +254,11 @@ class RelationshipGenerator extends BaseGenerator
                 ),
             ],
         ], $templateDataReal);
-        $this->serviceFile->createFileReal("$path/{$this->jsType('form')}", $templateDataReal);
+        $this->serviceFile->createFileReal("$path/{$this->getType('form')}", $templateDataReal);
         // create column: table.tsx
         $configOptions = config('generator.relationship.options');
         if (in_array($configOptions['show'], $options)) {
-            $templateDataReal = $this->serviceGenerator->getFile('uses', 'vue', "/$folderName/{$this->jsType('table')}");
+            $templateDataReal = $this->serviceGenerator->getFile('uses', 'vue', "/$folderName/{$this->getType('table')}");
             $templateColumn = $this->serviceGenerator->get_template('column', 'Forms/', 'vue');
             $templateColumn = str_replace(['{{$FIELD_NAME$}}', '{{$FORM_SORTABLE$}}', '{{$FORM_ALIGN$}}', '{{$FORM_LABEL$}}'], [Str::camel($tableFunctionRelationship) . ".$columnRelationship", in_array($configOptions['sort'], $options) ? "'custom'" : 'false', 'left', "label: t('route.{$this->serviceGenerator->tableNameNotPlural($model)}'),"], $templateColumn);
             if ($isMTM) {
@@ -271,7 +271,7 @@ class RelationshipGenerator extends BaseGenerator
                 TEMPLATE;
             }
             $templateColumn = str_replace('{{$FORM_TEMPLATE$}}', $templateRow, $templateColumn);
-            $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->jsType('table')}", [
+            $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->getType('table')}", [
                 'key' => 'uses.table:columns',
                 'items' => [$templateColumn],
             ], $templateDataReal);
@@ -283,7 +283,7 @@ class RelationshipGenerator extends BaseGenerator
                 $columnRelationship,
                 $templateDataReal,
             );
-            $this->serviceFile->createFileReal("$path/{$this->jsType('table')}", $templateDataReal);
+            $this->serviceFile->createFileReal("$path/{$this->getType('table')}", $templateDataReal);
         }
         //generate form item
         $this->_generateFormItem($model, $modelRelationship, $isMTM);
@@ -300,14 +300,14 @@ class RelationshipGenerator extends BaseGenerator
                 $relationship === $this->relationship['belongs_to_many']
                     ? $this->serviceGenerator->modelNamePluralFe($model)
                     : $this->serviceGenerator->modelNameNotPluralFe($model);
-            $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->jsType('table')}", [
+            $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->getType('table')}", [
                 'key' => 'uses.table:include',
                 'items' => [$withRelationship],
             ], $templateDataReal);
         }
         if (in_array($configOptions['search'], $options)) {
             $columnDidGenerate = Str::camel($model).".$columnRelationship";
-            $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->jsType('table')}", [
+            $templateDataReal = $this->phpParserService->runParserJS("$path/{$this->getType('table')}", [
                 'key' => 'uses.table:search:column',
                 'items' => [$columnDidGenerate],
             ], $templateDataReal);
@@ -354,7 +354,7 @@ class RelationshipGenerator extends BaseGenerator
             $relationship === $this->relationship['has_one']
                 ? $this->serviceGenerator->modelNameNotPluralFe($model)
                 : $this->serviceGenerator->modelNamePluralFe($model);
-        $templateDataReal = $this->phpParserService->runParserJS("$path{$folderName}/{$this->jsType('form')}", [
+        $templateDataReal = $this->phpParserService->runParserJS("$path{$folderName}/{$this->getType('form')}", [
             'key' => 'uses.form:item',
             'variable' => 'state',
             'items' => [
@@ -365,8 +365,8 @@ class RelationshipGenerator extends BaseGenerator
             ],
         ], $templateDataReal);
         // State Root
-        if (!$this->jsType()) {
-            $templateDataReal = $this->phpParserService->runParserJS("$path{$folderName}/{$this->jsType('form')}", [
+        if (!$this->getType()) {
+            $templateDataReal = $this->phpParserService->runParserJS("$path{$folderName}/{$this->getType('form')}", [
                 'key' => 'uses.form',
                 'name' => $model,
                 'path' => '@larajs/common',
@@ -383,7 +383,7 @@ class RelationshipGenerator extends BaseGenerator
         $templateDataRealForm = $this->phpParserService->runParserJS($pathFile, [
             'key' => 'views.form:import',
             'name' => $useModel,
-            'path' => "{$this->getImportJsOrTs()}/api",
+            'path' => "{$this->getImport()}/api",
             'useName' => $useModel,
             'useKey' => $useKey,
         ], $templateDataRealForm);
@@ -570,7 +570,7 @@ class RelationshipGenerator extends BaseGenerator
     {
         $path = config('generator.path.package.model');
         if ($relationship === $this->relationship['belongs_to_many']) {
-            $fileName = "/{$this->serviceGenerator->folderPages($modelCurrent)}.{$this->jsType('ext')}";
+            $fileName = "/{$this->serviceGenerator->folderPages($modelCurrent)}.{$this->getType('ext')}";
             $nameColumnRelationship = Str::snake(Str::plural($model));
             $templateDataReal = $this->serviceGenerator->getFile('model', 'package', $fileName);
             $modelIds = $field;
@@ -591,7 +591,7 @@ class RelationshipGenerator extends BaseGenerator
             $this->serviceFile->createFileReal($path.$fileName, $templateDataReal);
         } else {
             // hasOne| hasMany
-            $fileName = $this->serviceGenerator->folderPages($modelCurrent).".{$this->jsType('ext')}";
+            $fileName = $this->serviceGenerator->folderPages($modelCurrent).".{$this->getType('ext')}";
             $templateDataReal = $this->serviceGenerator->getFile('model', 'package', $fileName);
             if ($relationship === $this->relationship['has_one']) {
                 $nameColumnRelationship = Str::snake($model);
@@ -617,7 +617,7 @@ class RelationshipGenerator extends BaseGenerator
             );
             $this->serviceFile->createFileReal($path.$fileName, $templateDataReal);
             // belongsTo
-            $fileName = $this->serviceGenerator->folderPages($model).".{$this->jsType('ext')}";
+            $fileName = $this->serviceGenerator->folderPages($model).".{$this->getType('ext')}";
             $templateDataReal = $this->serviceGenerator->getFile('model', 'package', $fileName);
             $fieldModelCurrent = $field;
             $nameColumnRelationship = Str::snake($modelCurrent);
