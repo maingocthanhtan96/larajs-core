@@ -47,7 +47,7 @@ use LaraJS\Core\Services\GeneratorService;
 use LaraJS\QueryParser\LaraJSQueryParser;
 use Symfony\Component\Process\Process;
 
-class GeneratorController extends BaseLaraJSController
+class GeneratorController
 {
     use LaraJSQueryParser;
 
@@ -104,7 +104,11 @@ class GeneratorController extends BaseLaraJSController
         $this->_exportDataGenerator();
         $this->_runCommand($model);
 
-        return $this->responseMessage(__('messages.success'));
+        return response()->json(
+            [
+                'message' => __('messages.success'),
+            ],
+        );
     }
 
     public function update(Request $request, Generator $generator): JsonResponse
@@ -141,7 +145,11 @@ class GeneratorController extends BaseLaraJSController
         $this->_exportDataGenerator();
         $this->_runCommand();
 
-        return $this->responseMessage(__('messages.success'));
+        return response()->json(
+            [
+                'message' => __('messages.success'),
+            ],
+        );
     }
 
     public function destroy(Generator $generator): JsonResponse
@@ -233,37 +241,14 @@ class GeneratorController extends BaseLaraJSController
             $templateRepositoryProviderDataReal,
         );
         $model['class'] = 'Interface';
-        $templateRepositoryProviderDataReal = str_replace(
-            $this->serviceGenerator->generateRepositoryProvider('use_class', $model),
-            '',
-            $templateRepositoryProviderDataReal,
-        );
-        $templateRepositoryProviderDataReal = str_replace(
-            $this->serviceGenerator->generateRepositoryProvider('register', $model),
-            '',
-            $templateRepositoryProviderDataReal,
-        );
+        $templateRepositoryProviderDataReal = str_replace([$this->serviceGenerator->generateRepositoryProvider('use_class', $model), $this->serviceGenerator->generateRepositoryProvider('register', $model)], '', $templateRepositoryProviderDataReal);
         $path = config('generator.path.laravel.provider');
         $fileService->createFileReal("$path/$fileName", $templateRepositoryProviderDataReal);
         // END - repository provider
         // START - event provider
         $fileName = 'EventServiceProvider.php';
         $templateRepositoryProviderDataReal = $this->serviceGenerator->getFile('provider', 'laravel', $fileName);
-        $templateRepositoryProviderDataReal = str_replace(
-            $this->serviceGenerator->generateObserverProvider('use_class_model', $model),
-            '',
-            $templateRepositoryProviderDataReal,
-        );
-        $templateRepositoryProviderDataReal = str_replace(
-            $this->serviceGenerator->generateObserverProvider('use_class_observer', $model),
-            '',
-            $templateRepositoryProviderDataReal,
-        );
-        $templateRepositoryProviderDataReal = str_replace(
-            $this->serviceGenerator->generateObserverProvider('register', $model),
-            '',
-            $templateRepositoryProviderDataReal,
-        );
+        $templateRepositoryProviderDataReal = str_replace([$this->serviceGenerator->generateObserverProvider('use_class_model', $model), $this->serviceGenerator->generateObserverProvider('use_class_observer', $model), $this->serviceGenerator->generateObserverProvider('register', $model)], '', $templateRepositoryProviderDataReal);
         $path = config('generator.path.laravel.provider');
         $fileService->createFileReal("$path/$fileName", $templateRepositoryProviderDataReal);
         // END - event provider
@@ -316,9 +301,12 @@ class GeneratorController extends BaseLaraJSController
         $fileService->createFileReal($pathPackageModelReal, $templateDataPackageModelReal);
         // END - package common
         $generator->delete();
-        //        $this->_runPrettier();
 
-        return $this->responseMessage(__('messages.success'));
+        return response()->json(
+            [
+                'message' => __('messages.success'),
+            ],
+        );
     }
 
     public function checkModel(Request $request): JsonResponse
@@ -329,15 +317,30 @@ class GeneratorController extends BaseLaraJSController
             $name = $serviceGenerator->tableName($name);
             if (Schema::hasTable($name)) {
                 //table exist
-                return $this->responseData(1);
+                return response()->json(
+                    [
+                        'message' => '',
+                        'data' => 1,
+                    ],
+                );
             }
 
             // table not exist
-            return $this->responseData(2);
+            return response()->json(
+                [
+                    'message' => '',
+                    'data' => 2,
+                ],
+            );
         }
 
         //name null
-        return $this->responseData(3);
+        return response()->json(
+            [
+                'message' => '',
+                'data' => 3,
+            ],
+        );
     }
 
     public function generateRelationship(Request $request): JsonResponse
@@ -388,7 +391,11 @@ class GeneratorController extends BaseLaraJSController
         }
         $this->_runCommand();
 
-        return $this->responseMessage(__('messages.success'));
+        return response()->json(
+            [
+                'message' => __('messages.success'),
+            ],
+        );
     }
 
     public function generateDiagram(Request $request): JsonResponse
@@ -396,7 +403,12 @@ class GeneratorController extends BaseLaraJSController
         $model = $request->get('model');
         $diagram = $this->serviceGenerator->getDiagram($model);
 
-        return $this->responseData($diagram);
+        return response()->json(
+            [
+                'message' => '',
+                'data' => $diagram,
+            ],
+        );
     }
 
     public function getModels(Request $request): JsonResponse
@@ -417,7 +429,12 @@ class GeneratorController extends BaseLaraJSController
             }
         }
 
-        return $this->responseData($modelData);
+        return response()->json(
+            [
+                'message' => '',
+                'data' => $modelData,
+            ],
+        );
     }
 
     public function getAllModels(): JsonResponse
@@ -430,7 +447,12 @@ class GeneratorController extends BaseLaraJSController
             !in_array($model, $whiteList) && ($files[] = $model);
         }
 
-        return $this->responseData($files);
+        return response()->json(
+            [
+                'message' => '',
+                'data' => $files,
+            ],
+        );
     }
 
     public function getColumns(Request $request): JsonResponse
@@ -439,7 +461,12 @@ class GeneratorController extends BaseLaraJSController
         $table = Str::snake(Str::plural($table));
         $columns = Schema::getColumnListing($table);
 
-        return $this->responseData($columns);
+        return response()->json(
+            [
+                'message' => '',
+                'data' => $columns,
+            ],
+        );
     }
 
     private function _generateBackend($fields, $model): void
@@ -537,13 +564,6 @@ class GeneratorController extends BaseLaraJSController
             Artisan::call('migrate');
         }
         Artisan::call('vue-i18n:generate');
-        //        $this->_runPrettier();
-    }
-
-    private function _runPrettier(): void
-    {
-        $basePath = apps_path();
-        exec_in_background("(sleep 1 && cd $basePath && node ./node_modules/.bin/pretty-quick)");
     }
 
     private function _exportDataGenerator(): void

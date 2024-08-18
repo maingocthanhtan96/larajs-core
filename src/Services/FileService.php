@@ -10,7 +10,9 @@ class FileService
     public static function createFile($path, $fileName, $contents)
     {
         if (!file_exists($path)) {
-            mkdir($path, 0755, true);
+            if (!mkdir($path, 0755, true) && !is_dir($path)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
+            }
         }
         $path .= $fileName;
         file_put_contents($path, $contents);
@@ -39,8 +41,8 @@ class FileService
         if (file_exists($path) && $replace) {
             rmdir($path);
         }
-        if (!file_exists($path)) {
-            mkdir($path, 0755, true);
+        if (!file_exists($path) && !mkdir($path, 0755, true) && !is_dir($path)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
         }
     }
 
