@@ -307,9 +307,7 @@ if (!function_exists('mime2ext')) {
 if (!function_exists('to_sql_binding')) {
     function to_sql_binding($query): string
     {
-        return vsprintf(str_replace('?', '%s', $query->toSql()), collect($query->getBindings())->map(function ($binding) {
-            return is_numeric($binding) ? $binding : "'$binding'";
-        })->toArray());
+        return vsprintf(str_replace('?', '%s', $query->toSql()), collect($query->getBindings())->map(fn($binding) => is_numeric($binding) ? $binding : "'$binding'")->toArray());
     }
 }
 
@@ -318,22 +316,4 @@ if (!function_exists('exec_in_background')) {
     {
         exec($cmd.' > /dev/null &');
     }
-}
-
-function package_path(string $type, string $path): string
-{
-    return match ($type) {
-        'common' => base_path("../../packages/common/src/$path"),
-        default => base_path("../../packages/$path"),
-    };
-}
-
-function cms_path(string $path = ''): string
-{
-    return base_path("../cms/src/$path");
-}
-
-function apps_path(string $path = ''): string
-{
-    return base_path("../../$path");
 }

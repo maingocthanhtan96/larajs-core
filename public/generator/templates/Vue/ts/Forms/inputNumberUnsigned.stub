@@ -1,1 +1,0 @@
-<el-input-number v-model={form.{{$FIELD_NAME$}}} min={0} controls-position="right" class="w-full" />

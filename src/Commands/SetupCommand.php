@@ -5,15 +5,9 @@ namespace LaraJS\Core\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
-use LaraJS\Core\Services\FileService;
-use LaraJS\Core\Services\GeneratorService;
 
 class SetupCommand extends Command
 {
-    protected GeneratorService $serviceGenerator;
-
-    protected FileService $serviceFile;
-
     protected string $env;
 
     protected string $envTesting;
@@ -66,8 +60,6 @@ class SetupCommand extends Command
     public function __construct()
     {
         parent::__construct();
-        $this->serviceGenerator = new GeneratorService();
-        $this->serviceFile = new FileService();
         $this->env = '.env';
         $this->envTesting = '.env.testing';
         $this->cacheConfig = base_path('bootstrap/cache/config.php');
@@ -180,13 +172,7 @@ class SetupCommand extends Command
 
     private function _replaceEnvConfig($fileEnvEx): string
     {
-        $fileEnvEx = str_replace($this->appUrlStub, $this->appUrl, $fileEnvEx);
-        $fileEnvEx = str_replace($this->dbHostStub, $this->host, $fileEnvEx);
-        $fileEnvEx = str_replace($this->dbPortStub, $this->port, $fileEnvEx);
-        $fileEnvEx = str_replace($this->dbDatabaseStub, $this->database, $fileEnvEx);
-        $fileEnvEx = str_replace($this->dbUsernameStub, $this->username, $fileEnvEx);
-
-        return str_replace($this->dbPasswordStub, $this->password, $fileEnvEx);
+        return str_replace([$this->appUrlStub, $this->dbHostStub, $this->dbPortStub, $this->dbDatabaseStub, $this->dbUsernameStub, $this->dbPasswordStub], [$this->appUrl, $this->host, $this->port, $this->database, $this->username, $this->password], $fileEnvEx);
     }
 
     private function _outputArtisan($command)

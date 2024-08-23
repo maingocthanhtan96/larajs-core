@@ -3,8 +3,7 @@
   "version": "1.0.6",
   "autoload": {
     "psr-4": {
-      "LaraJS\\Core\\": "src/",
-      "Database\\Seeders\\": "database/seeders/"
+      "LaraJS\\Core\\": "src/"
     },
     "files": [
       "src/Helpers/Helper.php"

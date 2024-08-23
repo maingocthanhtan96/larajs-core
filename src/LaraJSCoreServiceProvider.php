@@ -15,28 +15,13 @@ class LaraJSCoreServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->app->singleton('larajs.setup', function () {
-            return new SetupCommand();
+            return new SetupCommand;
         });
         $this->commands('larajs.setup');
-        $this->publishes(
-            [
-                __DIR__ . '/../config/generator.php' => config_path('generator.php'),
-            ],
-            'larajs-core-config',
-        );
-        $this->mergeConfigFrom(__DIR__ . '/../config/generator.php', 'generator');
-        $this->publishes(
-            [
-                __DIR__ . '/../public' => public_path('vendor'),
-            ],
-            'larajs-core-public',
-        );
-        $this->publishes(
-            [
-                __DIR__ . '/../database/migrations' => database_path('migrations'),
-            ],
-            'larajs-core-migrations',
-        );
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+    }
+
+    public function register()
+    {
+        $this->loadRoutesFrom(__DIR__ . '/../routes/api-v1.php');
     }
 }

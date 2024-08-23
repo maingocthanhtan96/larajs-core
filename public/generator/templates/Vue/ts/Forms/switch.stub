@@ -1,8 +1,0 @@
-<el-switch
-  v-model={form.{{$FIELD_NAME$}}}
-  active-value={1}
-  inactive-value={0}
-  active-text={t('common.switch.on')}
-  inactive-text={t('common.switch.off')}
-  inline-prompt
-/>

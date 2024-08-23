@@ -1,1 +1,0 @@
-${{MODEL_CLASS_PARAM}}->{{FUNCTION_NAME}}()->detach();

@@ -1,6 +1,0 @@
-// START - {{LANG_MODEL_CLASS}}
-	'{{LANG_MODEL_CLASS}}' => '{{LANG_MODEL_TRANS_CLASS}}',
-	'{{LANG_MODEL_CLASS}}_overview' => 'Danh sách {{LANG_MODEL_TRANS_CLASS}}',
-	'{{LANG_MODEL_CLASS}}_create' => 'Tạo {{LANG_MODEL_TRANS_CLASS}}',
-	'{{LANG_MODEL_CLASS}}_edit' => 'Sửa {{LANG_MODEL_TRANS_CLASS}}',
-	// END - {{LANG_MODEL_CLASS}}
