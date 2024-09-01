@@ -30,10 +30,8 @@ class BaseLaraJSController
      * @param  int  $status
      * @return JsonResponse
      */
-    public function responseMessage(
-        $message,
-        int $status = Response::HTTP_OK,
-    ): JsonResponse {
+    public function responseMessage($message, int $status = Response::HTTP_OK): JsonResponse
+    {
         return response()->json(
             [
                 'message' => $message,

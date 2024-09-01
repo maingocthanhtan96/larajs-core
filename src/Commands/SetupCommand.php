@@ -5,6 +5,7 @@ namespace LaraJS\Core\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
+use Symfony\Component\Process\Process;
 
 class SetupCommand extends Command
 {
@@ -73,6 +74,7 @@ class SetupCommand extends Command
     public function handle()
     {
         try {
+            $this->_setup();
             $this->_createEnv();
             $this->_installMigrateSeed();
             $this->_installPackage();
@@ -93,6 +95,22 @@ class SetupCommand extends Command
         }
     }
 
+    private function _setup()
+    {
+        $this->info('>>> Running: copy env');
+        $process = new Process(['cp', base_path('.env.example'), base_path('.env')]);
+        $process->run();
+        $this->warn('Done: copy env');
+
+        $this->info('>>> Running: composer install');
+        $process = new Process(['composer', 'install']);
+        $process->run();
+        $this->info($process->getOutput());
+
+        $this->info('>>> Running: config cache');
+        $this->_outputArtisan('config:cache');
+    }
+
     private function _installMigrateSeed()
     {
         $this->info('>>> Running: migrate and seed');
@@ -111,7 +129,7 @@ class SetupCommand extends Command
         $this->comment('GENERATE KEY');
         $this->_outputArtisan('key:generate');
         $this->comment('GENERATE LANG');
-        $this->_outputArtisan('vue-i18n:generate');
+        $this->_outputArtisan('larajs:i18n');
         $this->info('Generate lang successfully.');
     }
 
