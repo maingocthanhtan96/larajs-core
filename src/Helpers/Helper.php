@@ -285,3 +285,25 @@ if (!function_exists('mime2ext')) {
         return $mimeMap[$mime] ?? false;
     }
 }
+
+if (!function_exists('additional_array')) {
+    /**
+     * Additional to array
+     *
+     * @param  array  $rules
+     * @param  array  $additional
+     * @return array
+     */
+    function additional_array(array $rules, array $additional = []): array
+    {
+        return array_map(static function ($ruleSet) use ($additional) {
+            if (is_array($ruleSet)) {
+                // Prepend the custom rules if it's an array of rules
+                return array_merge($additional, $ruleSet);
+            }
+
+            // If the rule set is a single rule, convert it to an array with custom rules
+            return array_merge($additional, [$ruleSet]);
+        }, $rules);
+    }
+}
