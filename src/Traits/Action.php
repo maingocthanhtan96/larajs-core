@@ -6,6 +6,9 @@ use Illuminate\Support\Fluent;
 
 trait Action
 {
+    /**
+     * @return static
+     */
     public static function make(): static
     {
         return app(static::class);
@@ -36,16 +39,43 @@ trait Action
         return $app->handle(...$arguments);
     }
 
+    /**
+     * @param  $boolean
+     * @param  ...$arguments
+     * @return mixed
+     */
     public static function runIf($boolean, ...$arguments): mixed
     {
         return $boolean ? static::run(...$arguments) : new Fluent;
     }
 
     /**
-     * @return mixed|Fluent
+     * @param  $boolean
+     * @param  ...$arguments
+     * @return mixed
+     */
+    public static function runIfValidate($boolean, ...$arguments): mixed
+    {
+        return $boolean ? static::runValidate(...$arguments) : new Fluent;
+    }
+
+    /**
+     * @param  $boolean
+     * @param  ...$arguments
+     * @return mixed
      */
     public static function runUnless($boolean, ...$arguments): mixed
     {
         return static::runIf(!$boolean, ...$arguments);
+    }
+
+    /**
+     * @param  $boolean
+     * @param  ...$arguments
+     * @return mixed
+     */
+    public static function runUnlessValidate($boolean, ...$arguments): mixed
+    {
+        return static::runValidate(!$boolean, ...$arguments);
     }
 }
