@@ -19,9 +19,4 @@ class LaraJSCoreServiceProvider extends ServiceProvider
         });
         $this->commands('larajs.setup');
     }
-
-    public function register()
-    {
-        $this->loadRoutesFrom(__DIR__ . '/../routes/api-v1.php');
-    }
 }
