@@ -4,6 +4,8 @@ namespace LaraJS\Core\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Log;
+use Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class LogRequestResponse
@@ -22,14 +24,16 @@ class LogRequestResponse
 
     public function terminate($request, $response): void
     {
-        \Log::info('Request', [
+        Log::info('Incoming Request', [
+            'method' => $request->method(),
             'url' => $request->fullUrl(),
-            'headers' => $request->headers->all(),
-            'content' => $request->getContent(),
+            'ip' => $request->ip(),
+            'body' => $request->except(['password', 'password_confirmation']),
+            'user_agent' => $request->userAgent(),
         ]);
-        \Log::info('Response', [
-            'headers' => $response->headers,
-            'content' => $response->getContent(),
+        Log::info('Outgoing Response', [
+            'status' => $response->status(),
+            'body_snippet' => Str::limit($response->getContent(), 200),
         ]);
     }
 }
