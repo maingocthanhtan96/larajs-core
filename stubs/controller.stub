@@ -1,0 +1,66 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Actions\{{ name }}\Create{{ name }}Action;
+use App\Actions\{{ name }}\Delete{{ name }}Action;
+use App\Actions\{{ name }}\FindAll{{ name }}Action;
+use App\Actions\{{ name }}\FindOne{{ name }}Action;
+use App\Actions\{{ name }}\Update{{ name }}Action;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+
+final class {{ name }}Controller extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(): JsonResponse
+    {
+        ${{ variables }} = FindAll{{ name }}Action::make()->handle();
+
+        return $this->responseData(${{ variables }});
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request): JsonResponse
+    {
+        ${{ variable }} = Create{{ name }}Action::make()->handle();
+
+        return $this->responseData(${{ variable }}, __('messages.create'), Response::HTTP_CREATED);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(int $id): JsonResponse
+    {
+        ${{ variable }} = FindOne{{ name }}Action::make()->handle();
+
+        return $this->responseData(${{ variable }});
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, int $id): JsonResponse
+    {
+        ${{ variable }} = Update{{ name }}Action::make()->handle();
+
+        return $this->responseData(${{ variable }}, __('messages.update'));
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(int $id): JsonResponse
+    {
+        Delete{{ name }}Action::make()->handle();
+
+        return $this->responseMessage(__('messages.delete'));
+    }
+}
