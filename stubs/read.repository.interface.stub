@@ -1,0 +1,12 @@
+<?php
+
+namespace App\Repositories\{{ name }};
+
+use LaraJS\Query\Repositories\ReadRepositoryInterface;
+
+/**
+ * @template T
+ *
+ * @extends ReadRepositoryInterface<T>
+ */
+interface {{ name }}ReadRepositoryInterface extends ReadRepositoryInterface {}

@@ -5,6 +5,7 @@ namespace LaraJS\Core;
 use Illuminate\Support\ServiceProvider;
 use LaraJS\Core\Commands\GenerateActionCommand;
 use LaraJS\Core\Commands\GenerateControllerCommand;
+use LaraJS\Core\Commands\GenerateRepositoryCommand;
 use LaraJS\Core\Commands\SetupCommand;
 
 class LaraJSCoreServiceProvider extends ServiceProvider
@@ -20,6 +21,7 @@ class LaraJSCoreServiceProvider extends ServiceProvider
             $this->commands([
                 GenerateActionCommand::class,
                 GenerateControllerCommand::class,
+                GenerateRepositoryCommand::class,
                 SetupCommand::class,
             ]);
         }

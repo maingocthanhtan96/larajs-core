@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Repositories\{{ name }};
+
+use App\Models\{{ name }};
+use LaraJS\Query\Repositories\WriteRepository;
+
+/**
+ * @template T of {{ name }}
+ *
+ * @implements {{ name }}WriteRepositoryInterface<T>
+ *
+ * @extends WriteRepository<T>
+ */
+class {{ name }}WriteRepository extends WriteRepository implements {{ name }}WriteRepositoryInterface
+{
+    public function __construct({{ name }} $model)
+    {
+        parent::__construct($model);
+    }
+}

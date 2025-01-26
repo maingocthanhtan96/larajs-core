@@ -1,0 +1,12 @@
+<?php
+
+namespace App\Repositories\{{ name }};
+
+use LaraJS\Query\Repositories\WriteRepositoryInterface;
+
+/**
+ * @template T
+ *
+ * @extends WriteRepositoryInterface<T>
+ */
+interface {{ name }}WriteRepositoryInterface extends WriteRepositoryInterface {}

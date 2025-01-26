@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Repositories\{{ name }};
+
+use App\Models\{{ name }};
+use LaraJS\Query\Repositories\ReadRepository;
+
+/**
+ * @template T of {{ name }}
+ *
+ * @implements {{ name }}ReadRepositoryInterface<T>
+ *
+ * @extends ReadRepository<T>
+ */
+class {{ name }}ReadRepository extends ReadRepository implements {{ name }}ReadRepositoryInterface
+{
+    public function __construct({{ name }} $model)
+    {
+        parent::__construct($model);
+    }
+}
