@@ -6,8 +6,7 @@ use Illuminate\Support\Str;
 
 class GenerateControllerCommand extends GeneratorCommand
 {
-    protected $signature = 'larajs:make:controller
-                            {name : The name of the controller}';
+    protected $signature = 'larajs:make:controller {name : The name of the controller}';
 
     protected $description = 'Generate a new controller';
 

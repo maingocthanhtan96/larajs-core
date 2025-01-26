@@ -2,12 +2,13 @@
 
 namespace App\Actions\{{ name }};
 
+{{ use }}
 use LaraJS\Core\Traits\Action;
 
 final readonly class Delete{{ name }}Action
 {
     use Action;
-
+    {{ repository }}
     public function handle()
     {
         // TODO

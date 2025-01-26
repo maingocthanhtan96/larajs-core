@@ -4,8 +4,7 @@ namespace LaraJS\Core\Commands;
 
 class GenerateRepositoryCommand extends GeneratorCommand
 {
-    protected $signature = 'larajs:make:repository
-                            {name : The name of the repository}';
+    protected $signature = 'larajs:make:repository {name : The name of the repository}';
 
     protected $description = 'Generate a new repository';
 
