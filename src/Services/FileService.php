@@ -22,9 +22,10 @@ readonly class FileService
 
     public function singleUpdate(UploadedFile $file, string $folder, ?string $oldFile): false|string
     {
+        $singleCreate = $this->singleCreate($file, $folder);
         $this->singleDelete($oldFile);
 
-        return $this->singleCreate($file, $folder);
+        return $singleCreate;
     }
 
     public function singleDelete(?string $path): bool

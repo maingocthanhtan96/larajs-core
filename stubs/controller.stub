@@ -37,9 +37,9 @@ final class {{ name }}Controller extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(int $id): JsonResponse
+    public function show(string $id): JsonResponse
     {
-        ${{ variable }} = FindOne{{ name }}Action::make()->handle();
+        ${{ variable }} = FindOne{{ name }}Action::make($id)->handle();
 
         return $this->responseData(${{ variable }});
     }
@@ -47,7 +47,7 @@ final class {{ name }}Controller extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(Request $request, string $id): JsonResponse
     {
         ${{ variable }} = Update{{ name }}Action::make()->handle();
 
@@ -57,7 +57,7 @@ final class {{ name }}Controller extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $id): JsonResponse
+    public function destroy(string $id): JsonResponse
     {
         Delete{{ name }}Action::make()->handle();
 

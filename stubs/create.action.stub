@@ -9,7 +9,7 @@ final readonly class Create{{ name }}Action
 {
     use Action;
     {{ repository }}
-    public function handle()
+    public function handle(array $data): {{ name }}
     {
         // TODO
     }
