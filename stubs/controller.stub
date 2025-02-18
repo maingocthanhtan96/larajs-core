@@ -31,7 +31,7 @@ final class {{ name }}Controller extends Controller
     {
         ${{ variable }} = Create{{ name }}Action::make()->handle();
 
-        return $this->responseData(${{ variable }}, __('messages.create'), Response::HTTP_CREATED);
+        return $this->responseData(${{ variable }}, __('messages.created'), Response::HTTP_CREATED);
     }
 
     /**
@@ -51,7 +51,7 @@ final class {{ name }}Controller extends Controller
     {
         ${{ variable }} = Update{{ name }}Action::make()->handle();
 
-        return $this->responseData(${{ variable }}, __('messages.update'));
+        return $this->responseData(${{ variable }}, __('messages.updated'));
     }
 
     /**
@@ -61,6 +61,6 @@ final class {{ name }}Controller extends Controller
     {
         Delete{{ name }}Action::make()->handle();
 
-        return $this->responseMessage(__('messages.delete'));
+        return $this->responseMessage(__('messages.deleted'));
     }
 }
