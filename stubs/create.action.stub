@@ -11,6 +11,6 @@ final readonly class Create{{ name }}Action
     {{ repository }}
     public function handle(array $data): {{ name }}
     {
-        // TODO
+        {{ repository_handle }}
     }
 }

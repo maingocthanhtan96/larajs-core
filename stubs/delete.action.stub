@@ -11,6 +11,6 @@ final readonly class Delete{{ name }}Action
     {{ repository }}
     public function handle(string $id): bool
     {
-        // TODO
+        {{ repository_handle }}
     }
 }

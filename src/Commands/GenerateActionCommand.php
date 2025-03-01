@@ -22,10 +22,10 @@ class GenerateActionCommand extends GeneratorCommand
     protected function generateFiles(): void
     {
         $this->generateCreateAction();
+        $this->generateUpdateAction();
         $this->generateDeleteAction();
         $this->generateFindAllAction();
         $this->generateFindOneAction();
-        $this->generateUpdateAction();
     }
 
     private function generateCreateAction(): void
@@ -36,8 +36,23 @@ class GenerateActionCommand extends GeneratorCommand
                 'name' => $this->argument('name'),
                 'use' => $this->option('repository') ? $this->generateUse($this->argument('name'), 'Write') : '',
                 'repository' => $this->option('repository') ? $this->generateRepository($this->argument('name'), 'Write') : '',
+                'repository_handle' => $this->option('repository') ? 'return $this->'. Str::camel($this->argument('name')) . 'WriteRepository->create($data);' : '// TODO',
             ],
             "{$this->directoryPath()}/Create{$this->argument('name')}Action.php"
+        );
+    }
+
+    private function generateUpdateAction(): void
+    {
+        $this->generateFile(
+            'update.action',
+            [
+                'name' => $this->argument('name'),
+                'use' => $this->option('repository') ? $this->generateUse($this->argument('name'), 'Write') : '',
+                'repository' => $this->option('repository') ? $this->generateRepository($this->argument('name'), 'Write') : '',
+                'repository_handle' => $this->option('repository') ? 'return $this->'. Str::camel($this->argument('name')) . 'WriteRepository->update($id, $data);' : '// TODO',
+            ],
+            "{$this->directoryPath()}/Update{$this->argument('name')}Action.php"
         );
     }
 
@@ -49,6 +64,7 @@ class GenerateActionCommand extends GeneratorCommand
                 'name' => $this->argument('name'),
                 'use' => $this->option('repository') ? $this->generateUse($this->argument('name'), 'Write') : '',
                 'repository' => $this->option('repository') ? $this->generateRepository($this->argument('name'), 'Write') : '',
+                'repository_handle' => $this->option('repository') ? 'return $this->'. Str::camel($this->argument('name')) . 'WriteRepository->delete($id);' : '// TODO',
             ],
             "{$this->directoryPath()}/Delete{$this->argument('name')}Action.php"
         );
@@ -62,6 +78,7 @@ class GenerateActionCommand extends GeneratorCommand
                 'name' => $this->argument('name'),
                 'use' => $this->option('repository') ? $this->generateUse($this->argument('name'), 'Read') : '',
                 'repository' => $this->option('repository') ? $this->generateRepository($this->argument('name'), 'Read') : '',
+                'repository_handle' => $this->option('repository') ? 'return $this->'. Str::camel($this->argument('name')) . 'ReadRepository->findAll($allow);' : '// TODO',
             ],
             "{$this->directoryPath()}/FindAll{$this->argument('name')}Action.php"
         );
@@ -75,21 +92,9 @@ class GenerateActionCommand extends GeneratorCommand
                 'name' => $this->argument('name'),
                 'use' => $this->option('repository') ? $this->generateUse($this->argument('name'), 'Read') : '',
                 'repository' => $this->option('repository') ? $this->generateRepository($this->argument('name'), 'Read') : '',
+                'repository_handle' => $this->option('repository') ? 'return $this->'. Str::camel($this->argument('name')) . 'ReadRepository->findOrFail($id, $allow);' : '// TODO',
             ],
             "{$this->directoryPath()}/FindOne{$this->argument('name')}Action.php"
-        );
-    }
-
-    private function generateUpdateAction(): void
-    {
-        $this->generateFile(
-            'update.action',
-            [
-                'name' => $this->argument('name'),
-                'use' => $this->option('repository') ? $this->generateUse($this->argument('name'), 'Write') : '',
-                'repository' => $this->option('repository') ? $this->generateRepository($this->argument('name'), 'Write') : '',
-            ],
-            "{$this->directoryPath()}/Update{$this->argument('name')}Action.php"
         );
     }
 
@@ -105,6 +110,14 @@ class GenerateActionCommand extends GeneratorCommand
         public function __construct(private {$name}{$prefix}RepositoryInterface \${$camelName}{$prefix}Repository) {}
 
     TEMPLATE;
+    }
+
+    private function generateRepositoryHandle(string $name, string $prefix, string $action): string
+    {
+        $camelName = Str::camel($name);
+        return <<<TEMPLATE
+        return \$this->{$camelName}{$prefix}Repository->{$action}(\$data);
+        TEMPLATE;
     }
 
     private function generateUse(string $name, string $prefix): string

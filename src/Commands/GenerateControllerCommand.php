@@ -38,6 +38,8 @@ class GenerateControllerCommand extends GeneratorCommand
                 'name' => $this->argument('name'),
                 'variable' => Str::camel($this->argument('name')),
                 'variables' => Str::plural(Str::camel($this->argument('name'))),
+                'query_class' => 'use LaraJS\Query\DTO\QueryParserAllowDTO;',
+                'query_handle' => 'QueryParserAllowDTO::fromArray([])',
             ],
             $this->path
         );

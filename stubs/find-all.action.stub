@@ -4,13 +4,14 @@ namespace App\Actions\{{ name }};
 
 {{ use }}
 use LaraJS\Core\Traits\Action;
+use LaraJS\Query\DTO\QueryParserAllowDTO;
 
 final readonly class FindAll{{ name }}Action
 {
     use Action;
     {{ repository }}
-    public function handle()
+    public function handle(QueryParserAllowDTO $allow)
     {
-        // TODO
+        {{ repository_handle }}
     }
 }

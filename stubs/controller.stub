@@ -10,6 +10,7 @@ use App\Actions\{{ name }}\Update{{ name }}Action;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use LaraJS\Query\DTO\QueryParserAllowDTO;
 use Symfony\Component\HttpFoundation\Response;
 
 final class {{ name }}Controller extends Controller
@@ -19,7 +20,7 @@ final class {{ name }}Controller extends Controller
      */
     public function index(): JsonResponse
     {
-        ${{ variables }} = FindAll{{ name }}Action::make()->handle();
+        ${{ variables }} = FindAll{{ name }}Action::make()->handle(QueryParserAllowDTO::fromArray([]));
 
         return $this->responseData(${{ variables }});
     }
@@ -29,7 +30,7 @@ final class {{ name }}Controller extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        ${{ variable }} = Create{{ name }}Action::make()->handle();
+        ${{ variable }} = Create{{ name }}Action::make()->handle($request->all());
 
         return $this->responseData(${{ variable }}, __('messages.created'), Response::HTTP_CREATED);
     }
@@ -39,7 +40,7 @@ final class {{ name }}Controller extends Controller
      */
     public function show(string $id): JsonResponse
     {
-        ${{ variable }} = FindOne{{ name }}Action::make($id)->handle();
+        ${{ variable }} = FindOne{{ name }}Action::make()->handle($id, QueryParserAllowDTO::fromArray([]));
 
         return $this->responseData(${{ variable }});
     }
@@ -47,9 +48,9 @@ final class {{ name }}Controller extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id): JsonResponse
+    public function update(string $id, Request $request): JsonResponse
     {
-        ${{ variable }} = Update{{ name }}Action::make()->handle();
+        ${{ variable }} = Update{{ name }}Action::make()->handle($id, $request->all());
 
         return $this->responseData(${{ variable }}, __('messages.updated'));
     }
@@ -59,7 +60,7 @@ final class {{ name }}Controller extends Controller
      */
     public function destroy(string $id): JsonResponse
     {
-        Delete{{ name }}Action::make()->handle();
+        Delete{{ name }}Action::make()->handle($id);
 
         return $this->responseMessage(__('messages.deleted'));
     }
