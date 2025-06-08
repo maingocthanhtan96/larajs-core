@@ -15,8 +15,9 @@ class LangMiddleware
      */
     public function handle($request, Closure $next)
     {
-        $cookie = $request->cookie('language', config('app.locale'));
-        App::setLocale($cookie);
+        $lang = $request->header('X-Accept-Language', config('app.locale'));
+
+        App::setLocale($lang);
 
         return $next($request);
     }

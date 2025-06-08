@@ -78,7 +78,7 @@ class GenerateActionCommand extends GeneratorCommand
                 'name' => $this->argument('name'),
                 'use' => $this->option('repository') ? $this->generateUse($this->argument('name'), 'Read') : '',
                 'repository' => $this->option('repository') ? $this->generateRepository($this->argument('name'), 'Read') : '',
-                'repository_handle' => $this->option('repository') ? 'return $this->'. Str::camel($this->argument('name')) . 'ReadRepository->findAll($allow);' : '// TODO',
+                'repository_handle' => $this->option('repository') ? 'return $this->'. Str::camel($this->argument('name')) . 'ReadRepository->findAll(QueryParserAllowDTO::fromArray([]));' : '// TODO',
             ],
             "{$this->directoryPath()}/FindAll{$this->argument('name')}Action.php"
         );
@@ -92,7 +92,7 @@ class GenerateActionCommand extends GeneratorCommand
                 'name' => $this->argument('name'),
                 'use' => $this->option('repository') ? $this->generateUse($this->argument('name'), 'Read') : '',
                 'repository' => $this->option('repository') ? $this->generateRepository($this->argument('name'), 'Read') : '',
-                'repository_handle' => $this->option('repository') ? 'return $this->'. Str::camel($this->argument('name')) . 'ReadRepository->findOrFail($id, $allow);' : '// TODO',
+                'repository_handle' => $this->option('repository') ? 'return $this->'. Str::camel($this->argument('name')) . 'ReadRepository->findOrFail($id, QueryParserAllowDTO::fromArray([]));' : '// TODO',
             ],
             "{$this->directoryPath()}/FindOne{$this->argument('name')}Action.php"
         );
@@ -125,6 +125,7 @@ class GenerateActionCommand extends GeneratorCommand
         return <<<TEMPLATE
         use App\Repositories\\{$name}\\{$name}{$prefix}RepositoryInterface;
         use App\Models\\{$name};
+        use LaraJS\Query\DTO\QueryParserAllowDTO;
         TEMPLATE;
     }
 }

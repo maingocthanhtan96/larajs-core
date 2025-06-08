@@ -12,7 +12,6 @@ use App\Actions\{{ name }}\Update{{ name }}Action;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use LaraJS\Query\DTO\QueryParserAllowDTO;
 use Symfony\Component\HttpFoundation\Response;
 
 final class {{ name }}Controller extends Controller
@@ -22,7 +21,7 @@ final class {{ name }}Controller extends Controller
      */
     public function index(): JsonResponse
     {
-        ${{ variables }} = FindAll{{ name }}Action::make()->handle(QueryParserAllowDTO::fromArray([]));
+        ${{ variables }} = FindAll{{ name }}Action::make()->handle();
 
         return $this->responseData(${{ variables }});
     }
@@ -42,7 +41,7 @@ final class {{ name }}Controller extends Controller
      */
     public function show(string $id): JsonResponse
     {
-        ${{ variable }} = FindOne{{ name }}Action::make()->handle($id, QueryParserAllowDTO::fromArray([]));
+        ${{ variable }} = FindOne{{ name }}Action::make()->handle($id);
 
         return $this->responseData(${{ variable }});
     }
