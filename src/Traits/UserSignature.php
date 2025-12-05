@@ -6,19 +6,17 @@ use Illuminate\Support\Facades\Auth;
 
 trait UserSignature
 {
-    protected static function bootUserSignature()
+    protected static function bootUserSignature(): void
     {
         static::creating(function ($model) {
-            $user = Auth::user();
-            if ($user) {
-                $model->created_by = $user->id;
-                $model->updated_by = $user->id;
+            if ($userId = Auth::id()) {
+                $model->created_by = $userId;
+                $model->updated_by = $userId;
             }
         });
         static::updating(function ($model) {
-            $user = Auth::user();
-            if ($user) {
-                $model->updated_by = $user->id;
+            if ($userId = Auth::id()) {
+                $model->updated_by = $userId;
             }
         });
     }

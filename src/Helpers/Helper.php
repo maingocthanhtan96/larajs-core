@@ -1,13 +1,7 @@
 <?php
 
 if (!function_exists('storage_exist_file')) {
-    /**
-     * Check file exist
-     *
-     * @param  $url
-     * @return bool
-     */
-    function storage_exist_file($url): bool
+    function storage_exist_file(?string $url): bool
     {
         if (!$url) {
             return false;
@@ -18,32 +12,16 @@ if (!function_exists('storage_exist_file')) {
 }
 
 if (!function_exists('storage_delete_file')) {
-    /**
-     * Delete file
-     *
-     * @param  $url
-     * @return void
-     */
-    function storage_delete_file($url): void
+    function storage_delete_file(?string $url): void
     {
-        $disk = \Illuminate\Support\Facades\Storage::disk();
         if (storage_exist_file($url)) {
-            $disk->delete(parse_url($url, PHP_URL_PATH));
+            \Illuminate\Support\Facades\Storage::disk()->delete(parse_url($url, PHP_URL_PATH));
         }
     }
 }
 
 if (!function_exists('save_file_base64')) {
-    /**
-     * Store base64 to file
-     *
-     * @param  $base64
-     * @param  $folder
-     * @return string
-     *
-     * @throws Exception
-     */
-    function save_file_base64($base64, $folder): string
+    function save_file_base64(string $base64, string $folder): string
     {
         [$mimeType, $content] = explode(';', $base64);
         [, $mimeType] = explode(':', $mimeType);
@@ -67,39 +45,24 @@ if (!function_exists('save_file_base64')) {
 }
 
 if (!function_exists('is_file_base64')) {
-    /**
-     * Check file is base64
-     *
-     * @param  $base64
-     * @return bool
-     */
-    function is_file_base64($base64): bool
+    function is_file_base64(string $base64): bool
     {
-        return preg_match('/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).base64,.*/', $base64);
+        return (bool) preg_match('/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9\-.+]+);base64,/', $base64);
     }
 }
 
 if (!function_exists('to_sql_binding')) {
-    /**
-     * Print sql binding parameters
-     *
-     * @param  $query
-     * @return string
-     */
-    function to_sql_binding($query): string
+    function to_sql_binding(object $query): string
     {
-        return vsprintf(str_replace('?', '%s', $query->toSql()), collect($query->getBindings())->map(fn($binding) => is_numeric($binding) ? $binding : "'$binding'")->toArray());
+        return vsprintf(
+            str_replace('?', '%s', $query->toSql()),
+            collect($query->getBindings())->map(fn ($binding) => is_numeric($binding) ? $binding : "'$binding'")->toArray()
+        );
     }
 }
 
 if (!function_exists('mime2ext')) {
-    /**
-     * Convert mime type to extension
-     *
-     * @param  $mime
-     * @return bool|string
-     */
-    function mime2ext($mime): bool|string
+    function mime2ext(string $mime): bool|string
     {
         $mimeMap = [
             'video/3gpp2' => '3g2',
@@ -287,13 +250,6 @@ if (!function_exists('mime2ext')) {
 }
 
 if (!function_exists('additional_array')) {
-    /**
-     * Additional to array
-     *
-     * @param  array  $rules
-     * @param  array  $additional
-     * @return array
-     */
     function additional_array(array $rules, array $additional = []): array
     {
         return array_map(static function ($ruleSet) use ($additional) {

@@ -10,12 +10,7 @@ use LaraJS\Core\Commands\SetupCommand;
 
 class LaraJSCoreServiceProvider extends ServiceProvider
 {
-    public function boot()
-    {
-        $this->bootCommands();
-    }
-
-    private function bootCommands(): void
+    public function boot(): void
     {
         if ($this->app->runningInConsole()) {
             $this->commands([

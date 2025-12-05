@@ -4,8 +4,8 @@ namespace LaraJS\Core\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Log;
-use Str;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class LogRequestResponse

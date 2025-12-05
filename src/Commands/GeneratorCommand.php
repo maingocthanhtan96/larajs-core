@@ -6,7 +6,7 @@ namespace LaraJS\Core\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-use Str;
+use Illuminate\Support\Str;
 
 abstract class GeneratorCommand extends Command
 {

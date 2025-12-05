@@ -3,21 +3,15 @@
 namespace LaraJS\Core\Middleware;
 
 use Closure;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Symfony\Component\HttpFoundation\Response;
 
 class LangMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return mixed
-     */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
-        $lang = $request->header('X-Accept-Language', config('app.locale'));
-
-        App::setLocale($lang);
+        App::setLocale($request->header('X-Accept-Language', config('app.locale')));
 
         return $next($request);
     }
